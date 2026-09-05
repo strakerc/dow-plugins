@@ -1,0 +1,18 @@
+{
+  "name": "dynasty-of-whiners",
+  "owner": {
+    "name": "Straker Carryer"
+  },
+  "plugins": [
+    {
+      "name": "dow-league",
+      "source": "./plugins/dow-league",
+      "description": "League tools for every owner: rules lookup, contract decisions, draft pick ownership, franchise tag pricing, schedule lookup. Install this one first."
+    },
+    {
+      "name": "dow-league-lm",
+      "source": "./plugins/dow-league-lm",
+      "description": "League manager add-on: schedule generation, rookie draft grades, FA auction writeup. Requires dow-league."
+    }
+  ]
+}

@@ -128,6 +128,12 @@ construction cannot see it.
 - **Name the origin owner** whenever a pick is not the holder's own. "Pat's 2027
   2nd" is meaningful in a way "a 2027 2nd" is not.
 - **Give the slot as a tier with its basis**, never a precise pick number.
+- **Never put internal identifiers in the answer.** Franchise ids (`0012`), pick
+  notation (`FP_0012_2027_4`) and player ids (`15742`) are how the API talks, not
+  how the league talks. Resolve every one to a name before you write: "Blake has
+  Zef's 2027 4th", never "Blake holds `FP_0012_2027_4`". **The notation section
+  above exists so you read the data correctly — it is not vocabulary to hand back
+  to an owner.**
 - **Raise an outstanding conditional whenever picks are being counted**, and
   especially before any trade involving that year and round. Say which side owes
   — an obligation recorded backwards is worse than none.

@@ -169,3 +169,12 @@ response carries a `help` field saying what to do. Same fix: ask Straker.
 **Never answer from memory, from the examples in this file, or from general NFL
 knowledge when the tools are unavailable.** There is no league data without the
 connector, and a plausible-looking answer is worse than no answer.
+
+---
+
+## Identifiers in the output
+
+- **Keep internal identifiers out of the prose.** Franchise ids belong in the
+  MFL import block and nowhere else — that block is machine input and must keep
+  them. Everywhere a human reads, use owner names: "Straker at Pat in week 6",
+  never `0001` v `0002`.

@@ -173,6 +173,11 @@ from the tables above, and subtract salary adjustments before stating cap space.
 - **Flag the trap where it applies**, not as a preamble: the short-term dead end,
   the rookie year-1 free cut, the IR asymmetry.
 - **State the deadline** whenever the answer is decision-shaped.
+- **Never put internal identifiers in the answer.** MFL rosters are keyed by
+  player id; an owner does not know or care that Jaylen Warren is `15742`.
+  Resolve every id with `get_players` before writing, and if an id will not
+  resolve, say the player could not be identified rather than printing the
+  number. Same for franchise ids — use the owner's name.
 - **Never quote cap space without adjustments in hand.**
 - Don't explain the format back to the reader; everyone here knows it.
 - Where a number blends sources, give one figure, not two with a slash.

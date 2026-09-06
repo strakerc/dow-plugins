@@ -33,10 +33,6 @@ git config core.hooksPath .githooks    # once per clone — covers both hooks, t
 .githooks/pre-commit                   # run the staged-file gate by hand
 ```
 
-```bash
-.githooks/commit-msg FILE              # run the message gate by hand, FILE holding a draft message
-```
-
 Scripts take **raw connector payloads saved to JSON files**. None of them touch the
 network; you feed them what the MFL tools returned.
 
@@ -82,9 +78,9 @@ that the tool is broken.
    fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
    without the footer for a while and nothing noticed, because the rule was prose.
 6. **No phone numbers or email addresses in added lines, or in the commit message.**
-   `get_league` returns both
-   for all twelve owners; `league-contacts` reads them at run time and the repo
-   stores none. This is the one invariant whose breach cannot be undone — the remote
+   `get_league` returns both for all twelve owners; `league-contacts` reads them at
+   run time and the repo stores none. This is the one invariant whose breach cannot
+   be undone — the remote
    is public, so a number is published the moment it lands, and `git revert` does not
    unpublish it. The check covers ten-digit North American numbers in any of the
    formats owners actually typed into MFL, bare or separated by spaces, dots,
@@ -93,37 +89,16 @@ that the tool is broken.
    **Examples must use exempt values, and the exemption is by value, not by file.**
    Safe: the reserved fictional range — any area code, exchange `555`, line number
    `01XX` — and the `example.com`, `example.org`, `example.net` domains. Nothing else
-   is safe, including in a comment. Two drafts of the hook itself were blocked by
-   this rule for carrying real-format numbers in their own comments, which is the
-   rule working. Describe the shape instead of writing one down.
-
-   **Two hooks, one library.** `pre-commit` scans staged file lines; `commit-msg`
-   scans the message, which `pre-commit` never sees and `git grep` cannot read — a
-   number in a message is exactly as public, and after a push it costs a history
-   rewrite. Both source `.githooks/contact-lib.sh`, so the patterns cannot drift
-   apart. `commit-msg` also *warns*, without blocking, when the git identity itself
-   is a real-looking address; GitHub's per-user noreply form is the safe answer.
-   Neither hook echoes the offending value — the repo is public and the message is
-   about to join it.
+   is safe, including in a comment. Describe the shape instead of writing one down.
 
 The hooks scan **added lines only** (and the message itself) — a rule that re-flags
 existing content trains everyone to use `--no-verify`.
 
 **Invariant 3 needs an interpreter** (it is section 4 in the hook). The JSON check
-wants a working `python3`, `python` or `node`, and the hook probes each candidate
-from *both* sides: it must accept valid JSON and reject invalid JSON. One that exits
-0 for every input would otherwise be selected and turn the check into a no-op that
-still looks active — a worse failure than a false block, because it is silent. When
-no candidate qualifies the check is skipped rather than failed, so a machine without
-an interpreter can still commit, but the hook prints a `note: ... was NOT checked`
+wants a working `python3`, `python` or `node`. When no candidate qualifies the check
+is skipped rather than failed, so a machine without an interpreter can still commit,
+but the hook prints a `note: ... was NOT checked`
 line naming each unchecked file. If you see that note, the manifest was not verified.
-
-The probe exists because Windows ships Microsoft Store stubs at
-`WindowsApps\python3.exe` which sit on PATH, answer before anything else, and exit 49
-with an install message. Straker's box has run Python 3.13.15 ahead of them since
-5 Sep 2026, so invariant 3 is live there. Note the Windows installer creates
-`python.exe` but never `python3.exe` — that file is a hand-made copy, and without it
-`python3` reaches the stub.
 
 ## The two-plugin split
 

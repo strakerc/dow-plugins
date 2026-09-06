@@ -11,7 +11,7 @@
 #      silently replaced at load time with a word from the invocation arguments
 #      -- `+$5` became `+due` -- which rewrote entire price tables into prose
 #      without any error. Amounts under ten are written WITHOUT the sign on
-#      purpose. See plugins/*/README.md and the editing notes in each skill.
+#      purpose. See the repo README and the editing notes in each skill.
 #
 # Install once per clone:
 #     git config core.hooksPath .githooks
@@ -111,23 +111,36 @@ done
 # the failure surfaces in someone else's Claude, not here. Skipped silently if
 # no interpreter is available -- a hook that errors on a clean machine gets
 # disabled.
+#
+# `command -v` is NOT enough to choose one. On Windows the Microsoft Store ships
+# python3 and python as App Execution Alias stubs: they sit on PATH, so
+# `command -v` finds them, but running one prints an install message and exits
+# 49. Trusting that made this check call every valid .json invalid -- and the
+# only way past a false BLOCKED is --no-verify, which switches off the
+# credential and dollar-digit checks at the same time. Probe with known-good
+# JSON and accept only an interpreter that actually parses it.
+json_run() { # $1 = interpreter; reads stdin, exits 0 iff it parsed as JSON
+  case "$1" in
+    node) "$1" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{JSON.parse(s)})' ;;
+    *)    "$1" -c 'import json,sys; json.load(sys.stdin)' ;;
+  esac
+}
+
 json_check=""
-if command -v python3 >/dev/null 2>&1; then json_check="python3"
-elif command -v python  >/dev/null 2>&1; then json_check="python"
-elif command -v node    >/dev/null 2>&1; then json_check="node"
-fi
+for cand in python3 python node; do
+  command -v "$cand" >/dev/null 2>&1 || continue
+  if printf '{"probe":1}' | json_run "$cand" >/dev/null 2>&1; then
+    json_check="$cand"
+    break
+  fi
+done
 
 if [ -n "$json_check" ]; then
   for f in $staged; do
     case "$f" in
       *.json)
-        if [ "$json_check" = "node" ]; then
-          git show ":$f" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{JSON.parse(s)})' 2>/dev/null \
-            || say_fail "$f is not valid JSON."
-        else
-          git show ":$f" | "$json_check" -c 'import json,sys; json.load(sys.stdin)' 2>/dev/null \
-            || say_fail "$f is not valid JSON."
-        fi
+        git show ":$f" | json_run "$json_check" >/dev/null 2>&1 \
+          || say_fail "$f is not valid JSON."
         ;;
     esac
   done

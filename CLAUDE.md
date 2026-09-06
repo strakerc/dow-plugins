@@ -75,8 +75,17 @@ that the tool is broken.
 4. No league data, member contact details, or credentials in the repo at all.
 
 The hook scans **added lines only** — one that re-flags existing content trains
-everyone to use `--no-verify`. It is committed at mode `100644`, so a clone on macOS
-or Linux silently skips it until someone runs `chmod +x .githooks/pre-commit`.
+everyone to use `--no-verify`.
+
+**Invariant 3 is inactive on Straker's machine right now** (it is section 4 in the
+hook). The JSON check needs a working `python3`, `python` or `node`; the hook probes
+each candidate with known-good JSON and skips the check *silently* when none parses
+it, because a gate that errors on a clean machine gets bypassed with `--no-verify`,
+which switches off the other three rules too. That box has no working interpreter —
+the Microsoft Store ships `python3` as a stub that sits on `PATH` and exits 49 — so
+nothing is checking JSON there today. Parse `marketplace.json` and any `plugin.json`
+by hand until Python is installed. The same stub is why the `python3` script commands
+above do not run there either.
 
 ## The two-plugin split
 

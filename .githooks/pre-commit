@@ -40,6 +40,14 @@ say_fail() {
 staged=$(git diff --cached --name-only --diff-filter=ACMR)
 [ -z "$staged" ] && exit 0
 
+# Paths can contain spaces, and every loop below iterates $staged unquoted. Split
+# on newlines only, or "my skill/SKILL.md" becomes two paths and the real file
+# gets no dollar-digit scan at all -- a silent bypass of the rule this hook
+# exists for. NOTE: with IFS set this way, any space-separated literal list must
+# become a newline-separated variable (see json_candidates below).
+IFS='
+'
+
 # ---------------------------------------------------------------------------
 # 1. Filenames that must never be committed
 # ---------------------------------------------------------------------------
@@ -126,13 +134,33 @@ json_run() { # $1 = interpreter; reads stdin, exits 0 iff it parsed as JSON
   esac
 }
 
+# Newline-separated because IFS is a newline; a space-separated list would be
+# read as one word.
+json_candidates='python3
+python
+node'
+
+# Only probe if a .json is actually being committed. Probing costs up to two
+# process spawns per candidate, and most commits here touch only SKILL.md.
+staged_json=""
+for f in $staged; do
+  case "$f" in *.json) staged_json=yes; break ;; esac
+done
+
 json_check=""
-for cand in python3 python node; do
+[ -n "$staged_json" ] && for cand in $json_candidates; do
   command -v "$cand" >/dev/null 2>&1 || continue
-  if printf '{"probe":1}' | json_run "$cand" >/dev/null 2>&1; then
-    json_check="$cand"
-    break
-  fi
+  # Two-sided on purpose: a candidate must accept valid JSON AND reject invalid
+  # JSON. Testing only acceptance would select an interpreter that exits 0 for
+  # every input -- a PATH wrapper, or a future stub that exits 0 rather than 49
+  # -- and this section would quietly become a no-op that still looks active.
+  # That is worse than the false BLOCKED this probe was added to prevent,
+  # because it is silent: a broken marketplace.json would commit clean and
+  # break the install for everyone.
+  printf '{"probe":1}' | json_run "$cand" >/dev/null 2>&1 || continue
+  printf '{"probe":'   | json_run "$cand" >/dev/null 2>&1 && continue
+  json_check="$cand"
+  break
 done
 
 if [ -n "$json_check" ]; then
@@ -141,6 +169,17 @@ if [ -n "$json_check" ]; then
       *.json)
         git show ":$f" | json_run "$json_check" >/dev/null 2>&1 \
           || say_fail "$f is not valid JSON."
+        ;;
+    esac
+  done
+else
+  # Skipping is deliberate, but skipping SILENTLY while .json is being committed
+  # is how invariant 3 goes missing without anyone noticing. Say so; never fail
+  # on it, or a machine with no interpreter cannot commit at all.
+  for f in $staged; do
+    case "$f" in
+      *.json)
+        printf 'note: no working JSON interpreter on PATH — %s was NOT checked.\n' "$f"
         ;;
     esac
   done

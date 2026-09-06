@@ -60,7 +60,7 @@ generator, not a schedule to ship.
 reconcile to 144 picks. A failure means the data moved or the year window shifted, not
 that the tool is broken.
 
-## Hard invariants (the pre-commit hook enforces all four)
+## Hard invariants (the pre-commit hook enforces all five)
 
 1. **Never add a `.mcp.json`.** A plugin *can* declare its own connector, and the
    connector URL carries a per-owner key. This repo is public. Also blocked: `.env*`,
@@ -73,6 +73,10 @@ that the tool is broken.
 3. **All `*.json` must parse.** A broken manifest breaks the install for everyone, and
    the failure surfaces in someone else's Claude.
 4. No league data, member contact details, or credentials in the repo at all.
+5. **Every `SKILL.md` carries the connector footer verbatim.** The canonical text is
+   `.githooks/skill-footer.md` — copy it, don't retype it. Sections *after* it are
+   fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
+   without the footer for a while and nothing noticed, because the rule was prose.
 
 The hook scans **added lines only** — one that re-flags existing content trains
 everyone to use `--no-verify`.
@@ -126,7 +130,8 @@ Key consequences that shape the prose:
   error — so "missing tool" means a key problem, not a broken skill.
 - Every `SKILL.md` ends with the same **"If the league tools aren't there"** footer:
   the connector-setup instructions, the 401 case, and a ban on answering from memory
-  or from examples in the file. Copy it verbatim into any new skill.
+  or from examples in the file. Copy `.githooks/skill-footer.md` into any new skill —
+  it is the canonical copy, and the hook checks staged skills against it.
 - MFL's live feed blanks contract fields the moment a player is dropped, so historical
   questions must use `get_rosters` with an explicit `season` (the week-22 snapshot).
 - **Conditional draft picks are invisible to MFL.** They are agreed in Discord and

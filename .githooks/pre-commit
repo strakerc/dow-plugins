@@ -186,6 +186,66 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# 5. Every SKILL.md carries the connector footer, verbatim
+# ---------------------------------------------------------------------------
+# CLAUDE.md says every skill ends with the "If the league tools aren't there"
+# footer. For a while league-rules did not, and nothing noticed: the rule lived
+# in prose with no check behind it. That footer is what forbids answering from
+# memory when the connector is missing, so a skill without it fails in the worst
+# way available -- confidently, with invented league facts, inside someone
+# else's account.
+#
+# The canonical text is .githooks/skill-footer.md. Copy it into a new skill
+# rather than retyping it. Sections AFTER it are fine -- league-schedule adds
+# one about identifiers -- so only the opening lines have to match. Paraphrase
+# does not count: the wording carries the connector setup steps people follow.
+footer_ref=".githooks/skill-footer.md"
+
+# Read the reference from the INDEX, the same way the skills below are read.
+# Comparing staged content against the working-tree copy makes the verdict depend
+# on edits nobody is committing: a half-finished reword of the footer blocks
+# unrelated skill commits, and a reference edited to match a bad footer would wave
+# that footer through. Fall back to disk only when the reference is untracked.
+ref_text=$(git show ":$footer_ref" 2>/dev/null)
+if [ -z "$ref_text" ] && [ -f "$footer_ref" ]; then
+  ref_text=$(cat "$footer_ref")
+fi
+
+if [ -n "$ref_text" ]; then
+  # awk counts a final unterminated line as a record; `wc -l` counts newlines and
+  # would return one fewer for a reference saved without a trailing newline, so
+  # the comparison would quietly skip its last line -- the one banning answers
+  # from memory. Silent weakening is exactly what this rule exists to stop.
+  ref_lines=$(printf '%s\n' "$ref_text" | awk 'END{print NR}')
+  for f in $staged; do
+    case "$f" in
+      *SKILL.md)
+        got=$(git show ":$f" 2>/dev/null \
+              | awk '/^## If the league tools aren.t there/{p=1} p' \
+              | head -n "$ref_lines")
+        if [ -z "$got" ]; then
+          say_fail "$f has no \"If the league tools aren't there\" footer — append $footer_ref verbatim."
+        elif [ "$got" != "$ref_text" ]; then
+          say_fail "$f's connector footer is not verbatim; it must match $footer_ref."
+          if command -v diff >/dev/null 2>&1; then
+            printf '%s\n' "$got" | diff "$footer_ref" - | head -8 | sed 's/^/          /'
+          fi
+        fi
+        ;;
+    esac
+  done
+else
+  # Only reachable if the reference is gone from both index and disk. Say so
+  # rather than failing: a hook that blocks every commit gets bypassed, and that
+  # takes the other four rules with it.
+  for f in $staged; do
+    case "$f" in
+      *SKILL.md) printf 'note: %s is missing, so SKILL.md footers were NOT checked.\n' "$footer_ref"; break ;;
+    esac
+  done
+fi
+
+# ---------------------------------------------------------------------------
 if [ "$fail" -ne 0 ]; then
   printf '\n%sCommit refused.%s Fix the above, or `git commit --no-verify` if you are certain.\n' "$bold" "$off"
   exit 1

@@ -77,21 +77,21 @@ that the tool is broken.
 The hook scans **added lines only** — one that re-flags existing content trains
 everyone to use `--no-verify`.
 
-**Invariant 3 is inactive on Straker's machine** (it is section 4 in the hook). The
-JSON check needs a working `python3`, `python` or `node`, and the hook probes each
-candidate from *both* sides: it must accept valid JSON and reject invalid JSON. One
-that exits 0 for every input would otherwise be selected and turn the check into a
-no-op that still looks active — a worse failure than a false block, because it is
-silent. When no candidate qualifies the check is skipped rather than failed, so a
-machine without an interpreter can still commit, but the hook prints a
-`note: ... was NOT checked` line naming each unchecked file.
+**Invariant 3 needs an interpreter** (it is section 4 in the hook). The JSON check
+wants a working `python3`, `python` or `node`, and the hook probes each candidate
+from *both* sides: it must accept valid JSON and reject invalid JSON. One that exits
+0 for every input would otherwise be selected and turn the check into a no-op that
+still looks active — a worse failure than a false block, because it is silent. When
+no candidate qualifies the check is skipped rather than failed, so a machine without
+an interpreter can still commit, but the hook prints a `note: ... was NOT checked`
+line naming each unchecked file. If you see that note, the manifest was not verified.
 
-Python 3.13.15 is installed on that box as of 5 Sep 2026 but sits on no persisted
-PATH, so nothing finds it — the Microsoft Store stubs at `WindowsApps\python3.exe`
-answer first and exit 49. Until `%LOCALAPPDATA%\Programs\Python\Python313` is on the
-user PATH, parse `marketplace.json` and any `plugin.json` by hand. The same gap is
-why the four `python3` commands above do not run there: the Windows installer creates
-`python.exe` but never `python3.exe`.
+The probe exists because Windows ships Microsoft Store stubs at
+`WindowsApps\python3.exe` which sit on PATH, answer before anything else, and exit 49
+with an install message. Straker's box has run Python 3.13.15 ahead of them since
+5 Sep 2026, so invariant 3 is live there. Note the Windows installer creates
+`python.exe` but never `python3.exe` — that file is a hand-made copy, and without it
+`python3` reaches the stub.
 
 ## The two-plugin split
 

@@ -3,8 +3,8 @@
 # dow-plugins pre-commit hook
 # ---------------------------------------------------------------------------
 # This repository is PUBLIC and its contents load as instructions inside other
-# people's Claude accounts. Two classes of mistake are expensive enough to be
-# worth blocking before they leave the machine:
+# people's Claude accounts. It enforces the six invariants listed in CLAUDE.md.
+# Two of them are why it exists at all:
 #
 #   1. Committing a credential. Public repo; a leaked key is leaked to everyone.
 #   2. Reintroducing `$` followed by a single digit in a SKILL.md. That gets
@@ -243,7 +243,7 @@ if [ -n "$ref_text" ]; then
 else
   # Only reachable if the reference is gone from both index and disk. Say so
   # rather than failing: a hook that blocks every commit gets bypassed, and that
-  # takes the other four rules with it.
+  # takes the other five rules with it.
   for f in $staged; do
     case "$f" in
       *SKILL.md) printf 'note: %s is missing, so SKILL.md footers were NOT checked.\n' "$footer_ref"; break ;;

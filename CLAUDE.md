@@ -26,11 +26,15 @@ conventions below.
 ## Commands
 
 ```bash
-git config core.hooksPath .githooks    # once per clone — the hook is the only gate
+git config core.hooksPath .githooks    # once per clone — covers both hooks, the only gate
 ```
 
 ```bash
-.githooks/pre-commit                   # run the gate manually against staged files
+.githooks/pre-commit                   # run the staged-file gate by hand
+```
+
+```bash
+.githooks/commit-msg FILE              # run the message gate by hand, FILE holding a draft message
 ```
 
 Scripts take **raw connector payloads saved to JSON files**. None of them touch the
@@ -60,7 +64,7 @@ generator, not a schedule to ship.
 reconcile to 144 picks. A failure means the data moved or the year window shifted, not
 that the tool is broken.
 
-## Hard invariants (the pre-commit hook enforces all six)
+## Hard invariants (the git hooks enforce all six)
 
 1. **Never add a `.mcp.json`.** A plugin *can* declare its own connector, and the
    connector URL carries a per-owner key. This repo is public. Also blocked: `.env*`,
@@ -77,7 +81,8 @@ that the tool is broken.
    `.githooks/skill-footer.md` — copy it, don't retype it. Sections *after* it are
    fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
    without the footer for a while and nothing noticed, because the rule was prose.
-6. **No phone numbers or email addresses in added lines.** `get_league` returns both
+6. **No phone numbers or email addresses in added lines, or in the commit message.**
+   `get_league` returns both
    for all twelve owners; `league-contacts` reads them at run time and the repo
    stores none. This is the one invariant whose breach cannot be undone — the remote
    is public, so a number is published the moment it lands, and `git revert` does not
@@ -92,8 +97,17 @@ that the tool is broken.
    this rule for carrying real-format numbers in their own comments, which is the
    rule working. Describe the shape instead of writing one down.
 
-The hook scans **added lines only** — one that re-flags existing content trains
-everyone to use `--no-verify`.
+   **Two hooks, one library.** `pre-commit` scans staged file lines; `commit-msg`
+   scans the message, which `pre-commit` never sees and `git grep` cannot read — a
+   number in a message is exactly as public, and after a push it costs a history
+   rewrite. Both source `.githooks/contact-lib.sh`, so the patterns cannot drift
+   apart. `commit-msg` also *warns*, without blocking, when the git identity itself
+   is a real-looking address; GitHub's per-user noreply form is the safe answer.
+   Neither hook echoes the offending value — the repo is public and the message is
+   about to join it.
+
+The hooks scan **added lines only** (and the message itself) — a rule that re-flags
+existing content trains everyone to use `--no-verify`.
 
 **Invariant 3 needs an interpreter** (it is section 4 in the hook). The JSON check
 wants a working `python3`, `python` or `node`, and the hook probes each candidate

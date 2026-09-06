@@ -7,7 +7,7 @@
     {
       "name": "dow-league",
       "source": "./plugins/dow-league",
-      "description": "League tools for every owner: rules lookup, contract decisions, draft pick ownership, franchise tag pricing, schedule lookup. Install this one first."
+      "description": "League tools for every owner: rules lookup, contract decisions, draft pick ownership, franchise tag pricing, schedule lookup, member contact lookup. Install this one first."
     },
     {
       "name": "dow-league-lm",

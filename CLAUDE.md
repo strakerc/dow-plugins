@@ -142,6 +142,7 @@ Key consequences that shape the prose:
 | Who holds which future pick, conditional obligations | `league-draft-picks` |
 | Reading the schedule back | `league-matchups` (read-only) |
 | Generating the schedule | `league-schedule` (LM-only) |
+| Contact details — phone, email, the member directory | `league-contacts` (read-only) |
 
 Duplicating a price table across skills is how the two skills drift apart. Cross-
 reference instead, as they currently do.
@@ -151,6 +152,10 @@ reference instead, as they currently do.
 - **Never surface internal identifiers in an answer** — franchise ids (`0001`), pick
   notation (`FP_0012_2027_4`), player ids (`15742`). Resolve them to names first. The
   one exception is the MFL schedule import block, which is machine input.
+- **Never surface emails, phone numbers, or MFL usernames.** `get_league` carries all
+  three for all twelve owners, and every member-facing skill calls it.
+  `league-contacts` is the sole exception, and only when contact details are what was
+  asked for.
 - **Never quote a script's raw output as prose.** The scripts print for a developer;
   `own gone: [4]` becomes "his own 2027 4th is gone".
 - **Relative-slot vocabulary is settled — do not re-derive it.**

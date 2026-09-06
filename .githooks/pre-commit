@@ -105,7 +105,13 @@ for f in $staged; do
       hits=$(git show ":$f" 2>/dev/null | grep -nE '\$[0-9]([^0-9]|$)')
       if [ -n "$hits" ]; then
         say_fail "$f contains \$ followed by a single digit — that gets silently replaced at load time."
-        printf '%s\n' "$hits" | sed 's/^/          /'
+        # Redact contact-shaped text before echoing the line. Rule 6 withholds
+        # such values on purpose, and printing the whole line here would put a
+        # phone number into scrollback and CI logs anyway whenever one line
+        # carries both faults.
+        printf '%s\n' "$hits" \
+          | sed -E 's/[0-9]{3}[-. )]*[0-9]{3}[-. ][0-9]{4}/[redacted]/g; s/[0-9]{10}/[redacted]/g; s/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/[redacted]/g' \
+          | sed 's/^/          /'
         printf '          Write amounts under ten without the sign (+5), or put the unit in the table header.\n'
       fi
       ;;
@@ -244,6 +250,112 @@ else
     esac
   done
 fi
+# ---------------------------------------------------------------------------
+# 6. Contact data — phone numbers and email addresses
+# ---------------------------------------------------------------------------
+# get_league returns every owner's phone and email, and league-contacts reads
+# them at run time. None of it belongs in the repo. This is the one category
+# where a mistake cannot be taken back: the remote is public, so a number is
+# published the moment it lands, and `git revert` does not unpublish it.
+#
+# ADDED LINES ONLY, like rules 1 and 2. A rule that re-flags existing content
+# trains everyone to reach for --no-verify, which switches off the credential
+# checks at the same time.
+#
+# The offending value is deliberately NOT printed. The author can see their own
+# line; echoing a real number into terminal scrollback or a CI log spreads it
+# further, which is the opposite of the point.
+#
+# Placeholders are exempt by VALUE, never by file. Exempting a file is exactly
+# where a real number would eventually be written:
+#   phones  — the reserved fictional range, any area code + 555 + 01XX
+#   emails  — example.com, example.org, example.net
+#
+# The ten-digit match is bounded by non-digits on both sides, so a longer digit
+# run is not a phone number: the Discord channel id in fa-auction-grades is 18
+# digits and must not trip this.
+# Boundaries must NOT be consumed. With the ERE form `(^|[^0-9])...([^0-9]|$)`,
+# grep -o eats the separator between two adjacent numbers, so in
+# "<placeholder> <real number>" the placeholder matches, is exempted, and the
+# real number beside it is never seen -- a silent miss on exactly the sentence a
+# doc writes ("use this, not that"). PCRE lookarounds do not consume, so prefer
+# grep -P and fall back to the ERE only where PCRE is unavailable. Probe rather
+# than assume: a `grep -P` that is present but unusable would take the check with
+# it, the same way the Store python stub once did to the JSON rule.
+# The probe string is deliberately not phone-shaped: an earlier draft used real
+# example numbers here and rule 6 blocked its own source file, twice.
+if echo 'x12 34' | grep -qoP '(?<![0-9])12' 2>/dev/null; then
+  PHONE_GREP="-oP"
+  PHONE_RE='(?<![0-9])\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}(?![0-9])'
+  PHONE_FILTER="-P"
+else
+  PHONE_GREP="-oE"
+  PHONE_RE='(^|[^0-9])\(?[0-9]{3}\)?[-. ]?[0-9]{3}[-. ]?[0-9]{4}([^0-9]|$)'
+  PHONE_FILTER="-E"
+fi
+EMAIL_RE='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+
+bad_phone_in() { # echoes the digits of any non-exempt number on the line
+  # One match at a time, re-supplying a non-digit boundary each round. With the
+  # ERE fallback a match consumes the character separating it from the next
+  # number, so a single -o pass finds only the first of two adjacent numbers --
+  # and if that first one is an exempt placeholder, the real number beside it is
+  # never examined. Prefixing "x" after each strip restores the boundary. The
+  # loop is harmless under PCRE, where nothing is consumed, so both dialects run
+  # the same code rather than only one of them being exercised.
+  _rest=$1
+  while :; do
+    _m=$(printf '%s' "$_rest" | grep $PHONE_GREP "$PHONE_RE" | head -1)
+    [ -z "$_m" ] && break
+    printf '%s' "$_m" | sed 's/[^0-9]//g' \
+      | grep -E '^[0-9]{10}$' | grep -vE '^[0-9]{3}55501[0-9]{2}$'
+    _next=${_rest#*"$_m"}
+    [ "$_next" = "$_rest" ] && break   # no progress; refuse to spin
+    _rest="x$_next"
+  done
+}
+
+bad_email_in() {
+  printf '%s' "$1" | grep -oE "$EMAIL_RE" \
+    | grep -viE '@example\.(com|org|net)$'
+}
+
+# Added lines of one file, each as "<new-file line number>:<text>".
+added_lines_of() {
+  git diff --cached -U0 --diff-filter=ACMR -- "$1" | awk '
+    /^\+\+\+/ { next }
+    /^@@/     { split($3, a, ","); ln = substr(a[1], 2) + 0; next }
+    /^\+/     { print ln ":" substr($0, 2); ln++ }
+  '
+}
+
+for f in $staged; do
+  al=$(added_lines_of "$f")
+  [ -z "$al" ] && continue
+  # Pre-filter so the per-line loop runs only where something might match. It
+  # reuses the real patterns on purpose: a hand-written cheaper one was stricter
+  # than PHONE_RE -- it had no ")" in its separator class -- and silently skipped
+  # every parenthesised-area-code number before the real check ever saw it.
+  # $PHONE_FILTER matches the dialect PHONE_RE was written in: -P when the probe
+  # above chose lookarounds, -E otherwise. Hardcoding -E here would feed a PCRE
+  # to an ERE engine and the pre-filter would stop matching phone numbers at all.
+  cand=$(printf '%s\n' "$al" | grep $PHONE_FILTER "$PHONE_RE|$EMAIL_RE")
+  [ -z "$cand" ] && continue
+  hits=$(printf '%s\n' "$cand" | while IFS= read -r entry; do
+    n=${entry%%:*}
+    t=${entry#*:}
+    [ -n "$(bad_phone_in "$t")" ] && printf '%s a phone number\n' "$n"
+    [ -n "$(bad_email_in "$t")" ] && printf '%s an email address\n' "$n"
+  done)
+  if [ -n "$hits" ]; then
+    say_fail "$f adds contact data — this repo is PUBLIC, and pushing it publishes it."
+    printf '%s\n' "$hits" | sed 's/^/          line /'
+    printf '          The value is not echoed here on purpose. Contact details live in MFL\n'
+    printf '          and league-contacts reads them at run time; the repo stores none.\n'
+    printf '          Examples must use 555-01XX numbers or example.com addresses.\n'
+  fi
+done
+
 
 # ---------------------------------------------------------------------------
 if [ "$fail" -ne 0 ]; then

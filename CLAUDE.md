@@ -60,7 +60,7 @@ generator, not a schedule to ship.
 reconcile to 144 picks. A failure means the data moved or the year window shifted, not
 that the tool is broken.
 
-## Hard invariants (the pre-commit hook enforces all five)
+## Hard invariants (the pre-commit hook enforces all six)
 
 1. **Never add a `.mcp.json`.** A plugin *can* declare its own connector, and the
    connector URL carries a per-owner key. This repo is public. Also blocked: `.env*`,
@@ -77,6 +77,20 @@ that the tool is broken.
    `.githooks/skill-footer.md` — copy it, don't retype it. Sections *after* it are
    fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
    without the footer for a while and nothing noticed, because the rule was prose.
+6. **No phone numbers or email addresses in added lines.** `get_league` returns both
+   for all twelve owners; `league-contacts` reads them at run time and the repo
+   stores none. This is the one invariant whose breach cannot be undone — the remote
+   is public, so a number is published the moment it lands, and `git revert` does not
+   unpublish it. The check covers ten-digit North American numbers in any of the
+   formats owners actually typed into MFL, bare or separated by spaces, dots,
+   hyphens or parentheses, plus standard email addresses.
+
+   **Examples must use exempt values, and the exemption is by value, not by file.**
+   Safe: the reserved fictional range — any area code, exchange `555`, line number
+   `01XX` — and the `example.com`, `example.org`, `example.net` domains. Nothing else
+   is safe, including in a comment. Two drafts of the hook itself were blocked by
+   this rule for carrying real-format numbers in their own comments, which is the
+   rule working. Describe the shape instead of writing one down.
 
 The hook scans **added lines only** — one that re-flags existing content trains
 everyone to use `--no-verify`.

@@ -47,6 +47,22 @@ always a conditional settling.** In `get_transactions(transaction_type="TRADE")`
 that shows as an empty `franchise1_gave_up` or `franchise2_gave_up`. It is the
 only machine-readable signal available.
 
+### The vocabulary — settled 5 Sep 2026
+
+These words have league meanings. Draft order is reverse standings, so a pick
+from a team that finished *well* lands late in its round and is worth less.
+
+| Word | Selects | Position in the round | Origin team finished |
+|---|---|---|---|
+| **earliest**, **best** | the better pick | first | worse |
+| **latest**, **worst**, **lowest** | the poorer pick | last | better |
+
+**"highest" is NOT settled — do not infer it.** Obligation #1 was written as
+"highest at end of season" and the pick that actually conveyed matched no reading
+of it: not the earliest slot, not the latest, not the best-finishing origin. Its
+meaning is genuinely unknown, so symmetry with the table above is a guess. If a
+row says "highest", ask the two owners rather than resolving it yourself.
+
 **Scan the gSheet Trade History on relative-slot language, not the word
 "conditional"** — the outstanding one below is labelled only "Latest". Match on:
 `latest · earliest · highest · lowest · better of · worse of · contingent · swap`.
@@ -61,17 +77,20 @@ record means X's column is the one that gave it.
 
 ### Outstanding as of 4 Sep 2026
 
-**Pat (`0002`) owes Zef (`0012`) a 2027 3rd — "Latest 27'3rd". Not conveyed.**
+**Pat owes Zef a 2027 3rd — the "Latest 27'3rd". Not conveyed.**
 
+- **"Latest" means the WORST pick of that round.** Settled by Straker, 5 Sep 2026.
+  This is no longer an open question: do not present it as ambiguous, and do not
+  offer the reading that Zef gets the better pick.
+- Draft order is reverse standings, so the latest 3rd is the one whose **origin
+  team finished best**. Pat holds two 2027 3rds — his own and Paul's — and which
+  of them is "latest" is decided by the **2026** season, not 2025. It is not
+  knowable until the regular season ends in week 14.
 - Check window **mid-Dec 2026 → mid-Jan 2027** (precedent: the previous
   conditional settled 31 Dec). **Hard backstop: before the 2027 rookie draft**,
-  which will likely run early August. Once the pick is used it is unfixable.
-- **"Latest" has never been defined and here it bites.** Pat holds two 2027 3rds
-  today — his own and Paul's — so the word actually selects. Pin down *now*:
-  does it range over every 2027 3rd Pat holds at settlement or only those he
-  held at trade time; latest = last in draft order (best-finishing origin team);
-  and the tiebreak if two origins finish level.
-- To check: does Zef hold any 2027 round-3 pick whose origin is **not** `0012`?
+  likely early August. Once the pick is used it is unfixable.
+- To check whether it has settled: does Zef hold any 2027 round-3 pick that did
+  not originate with him?
 
 Full history, the corrected trade record, and the resolved case are in
 `conditional-picks.md`.
@@ -134,6 +153,10 @@ construction cannot see it.
   Zef's 2027 4th", never "Blake holds `FP_0012_2027_4`". **The notation section
   above exists so you read the data correctly — it is not vocabulary to hand back
   to an owner.**
+
+- **Never quote the script's raw output either.** `own gone: [4]` is a column
+  name, not English — write "his own 2027 4th is gone". The ledger prints for a
+  developer; you are writing for an owner.
 - **Raise an outstanding conditional whenever picks are being counted**, and
   especially before any trade involving that year and round. Say which side owes
   — an obligation recorded backwards is worse than none.

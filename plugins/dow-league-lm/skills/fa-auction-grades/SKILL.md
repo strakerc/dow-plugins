@@ -56,6 +56,22 @@ Neither is negotiable on time pressure. Nothing about this post is urgent.
 6. **Review gate.** Deliver the file. Stop.
 7. **Post** to `#draft` (`703738094259666964`), sequentially, 2,000 chars per message.
 
+## If the post fails
+
+**The post is the delivery mechanism, not the deliverable.** The report is the work;
+`#draft` is only where it lands.
+
+- If `send_message` errors — permissions, a disabled flag, an outage — say plainly
+  that posting failed and what the error said, then **output the whole report in the
+  response**, split at the same 2,000-character cut points, ready to paste by hand.
+  A run must never end with the report stranded inside a failed tool call.
+- **Never retry.** A silent retry is how `#draft` gets the same message twice. If the
+  sequence failed part-way, name the messages that landed and output only the ones
+  that did not; pasting the whole report over a partial post duplicates it.
+- `Unknown tool` rather than an error means a key problem, not a bug here — the
+  Discord tools come through the same gateway as everything else and need an `lm`
+  key. Say so and hand over the text.
+
 ## Formatting
 
 - Single newline after a standalone bold entry title — Discord already gives a

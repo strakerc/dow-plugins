@@ -37,6 +37,16 @@ Neither rule bends for time pressure. Nothing about this post is urgent.
 6. **Review gate** (rule 1)
 7. Post to `#draft` — split under 2000 characters at team boundaries, posted sequentially, order matters
 
+## If the post fails
+
+**The post is the delivery mechanism, not the deliverable.** The writeup is the work; `#draft` is only where it lands.
+
+If `send_message` errors — permissions, a disabled flag, an outage — say plainly that posting failed and what the error said, then **output the complete writeup in the response**, split at the same cut points, ready to paste by hand. Never end a run with the writeup stranded inside a failed tool call. This is written twice a year over several revision rounds; a regenerated one is a different post, not a recovered one.
+
+**Do not retry.** A silent retry is how `#draft` ends up with the same message twice. If the sequence failed part-way, say which messages landed and output only the ones that did not — pasting the whole writeup on top of a partial post duplicates what already went out.
+
+If `send_message` comes back as `Unknown tool` rather than failing, that is a key problem and not a bug in this skill: the Discord tools reach through the same gateway as everything else and need an `lm` key. Say so, and hand over the text.
+
 ## Tone
 
 Funny with real analysis underneath. Mean is fine; humour matters more than ruthlessness. Every joke should sit on a real number or a real news item. Do not explain league or format context back to the audience — they know what superflex is; jokes that *use* the format are good, explainers are not. Grade the commissioner honestly, including onto the worst-reaches list when that is where the numbers put him.

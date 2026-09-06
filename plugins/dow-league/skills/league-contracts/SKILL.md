@@ -25,8 +25,8 @@ salaries by position. Don't compute the positional floor here.
 > was called with — the digit picks which word. It reads as ordinary prose, which
 > is why it went unnoticed until 4 Sep 2026, by which point it had rewritten this
 > file's entire price ladder into nonsense. Two or more digits (`$25`, `$375`)
-> are safe and keep their sign. **All figures are US dollars.** Details:
-> `claude/plugin-distribution.md`.
+> are safe and keep their sign. **All figures are US dollars.** Details: the
+> repo README, "A convention that looks like a typo and is not".
 
 ---
 

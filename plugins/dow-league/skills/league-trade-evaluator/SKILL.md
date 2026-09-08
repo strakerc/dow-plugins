@@ -65,6 +65,10 @@ a past trade was good:
 3. Flag that the league-adjusted half will not invert exactly, because it prices
    contracts against each team's cap position *today*, which is post-trade.
 
+**`league-trade-history` is the skill for this.** It judges completed trades on
+what the assets actually did — real points, the player a pick became, dead money
+on a cut — rather than re-pricing them against today's board.
+
 ## A refusal is the tool working
 
 `ok: false` means it declined to guess, which is the behaviour that makes it

@@ -73,7 +73,7 @@ Access is not enforced here. It is enforced by the gateway in front of the tools
 which needs a per-person key, and the only key holders are the twelve members.
 Revoking a key removes this along with everything else.
 
-The workers ran open until 6 Sep 2026, when the gate was switched on, so a key is now
+The workers ran open until 5 Sep 2026, when the gate was switched on, so a key is now
 genuinely required rather than merely expected. If that ever changes back, this
 section is the thing to correct.
 

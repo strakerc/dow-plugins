@@ -120,7 +120,7 @@ new skill in the owning plugin's `README.md` table.
 Every fact comes from MyFantasyLeague (league `29557`) through a per-owner connector
 that each person adds to their own account. The plugin carries no key and no data —
 **without a key it is inert**, which is the intended security model, not a bug. The
-gateway began *enforcing* that on 6 Sep 2026; the workers ran open before then, so
+gateway began *enforcing* that on 5 Sep 2026; the workers ran open before then, so
 anything written earlier described the intent rather than the behaviour.
 
 Common tools: `get_rosters`, `get_future_draft_picks`, `get_salary_adjustments`,

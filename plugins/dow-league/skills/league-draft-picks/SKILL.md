@@ -32,7 +32,7 @@ both numbers start at zero — `DP_1_3` is round 2, pick 4, not round 1, pick 3.
 `FP_{origin}_{year}_{round}` uses real round numbers; do not read the two the
 same way. Confirm any `DP_` reference against `get_draft_results` for that
 season before naming a slot: an off-by-one here produces a plausible pick with
-no error anywhere. Found 8 Sep 2026, when `DP_1_3` in a 2026 trade was reported
+no error anywhere. Found 7 Sep 2026, when `DP_1_3` in a 2026 trade was reported
 as 1.03 and was actually 2.04.
 
 **Only the upcoming three seasons are tradeable.** In the 2026 offseason

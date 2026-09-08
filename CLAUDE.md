@@ -153,6 +153,7 @@ Key consequences that shape the prose:
 | Reading the schedule back | `league-matchups` (read-only) |
 | Generating the schedule | `league-schedule` (LM-only) |
 | Contact details — phone, email, the member directory | `league-contacts` (read-only) |
+| Scoring a proposed trade, market vs league-adjusted | `league-trade-evaluator` |
 
 Duplicating a price table across skills is how the two skills drift apart. Cross-
 reference instead, as they currently do.

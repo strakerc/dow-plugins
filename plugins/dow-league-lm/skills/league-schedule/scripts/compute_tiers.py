@@ -67,6 +67,10 @@ def compute(data):
         "tiers": {"T1": tier1, "T2": tier2, "T3": tier3},
         "rematches": data["final_two_games"],
         "names": names,
+        # Keyed by franchise id, for build_schedule.py's opponent-strength
+        # report. `_working.regular_season_pf` below is the same numbers keyed by
+        # NAME, for a human reading the working -- not safe to consume.
+        "prior_pf": {t: reg[t] for t in fr},
         "_working": {
             "regular_season_pf": {nm(t): reg[t] for t in
                                   sorted(fr, key=lambda x: -reg[x])},

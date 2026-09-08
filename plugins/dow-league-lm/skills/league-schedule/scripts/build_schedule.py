@@ -50,6 +50,10 @@ ROUND_ROBIN_WEEKS = [1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14]
 RIVALRY_WEEKS = [4, 8, 12]
 pair = lambda a, b: tuple(sorted((a, b)))
 
+# Opponent-strength swing worth naming out loud, in points per game. NOT a
+# pass/fail threshold -- see opponent_strength() for why there cannot be one.
+MATERIAL_SOS_DELTA = 25.0
+
 
 # ---------------------------------------------------------------- round robin
 def circle_round_robin(teams, rng):
@@ -194,17 +198,146 @@ def validate(sched, tiers, rematches, teams):
     return checks
 
 
+# ------------------------------------------------------ opponent strength
+# The eight checks verify that a schedule is STRUCTURALLY valid. They say nothing
+# about whether it is competitively neutral, and nothing was looking at that. The
+# 2026 correction passed all eight and still moved one owner's average opponent
+# down 76 points a game and another's up 76, with everyone else inside +/-2.
+#
+# So this is a DISCLOSURE, not a check. There is deliberately no pass/fail
+# threshold: there is no correct spread, and a threshold would either block a
+# legitimate correction or lend false authority to whatever it let through.
+def opponent_strength(sched, prior_pf, teams):
+    """Mean prior-season regular-season PF of each team's 14 opponents."""
+    opps = defaultdict(list)
+    for ms in sched.values():
+        for a, h in ms:
+            opps[a].append(h)
+            opps[h].append(a)
+    return {t: sum(prior_pf[o] for o in opps[t]) / len(opps[t])
+            for t in teams if opps[t]}
+
+
+def load_import_block(path):
+    """Parse a saved MFL import block -- `week,away,home` rows, as printed below.
+
+    Deliberately lenient about comments and blank lines so a file saved straight
+    out of MFL's setup box, or one of this script's own outputs, both work.
+    """
+    sched = defaultdict(list)
+    for raw in open(path):
+        parts = [p.strip() for p in raw.strip().split(",")]
+        if len(parts) != 3 or not parts[0].isdigit():
+            continue
+        sched[int(parts[0])].append((parts[1], parts[2]))
+    return dict(sched)
+
+
+def compare_problems(old, teams, prior_pf):
+    """Reasons a compared schedule cannot yield an honest delta. Empty == usable.
+
+    Checked BEFORE any arithmetic: opponent_strength indexes prior_pf directly,
+    so an unknown franchise in the compared file is a KeyError that would abort
+    the run and take the import block with it.
+    """
+    out = []
+    want = len(teams) // 2 * 14
+    games = sum(len(v) for v in old.values())
+    if games != want:
+        out.append(f"parsed as {games} games, expected {want}")
+    named = {t for ms in old.values() for m in ms for t in m}
+    unknown = sorted(named - set(prior_pf))
+    if unknown:
+        out.append("names franchises with no prior_pf: " + ", ".join(unknown))
+    opps = Counter()
+    for ms in old.values():
+        for a, h in ms:
+            opps[a] += 1
+            opps[h] += 1
+    wrong = sorted(t for t in teams if opps[t] != 14)
+    if wrong:
+        out.append(f"does not give 14 opponents to {len(wrong)} of {len(teams)} teams")
+    return out
+
+
+def print_after_only(after, teams, nm):
+    print(f"  {'Owner':<12}{'avg opp':>9}")
+    for t in sorted(teams, key=lambda x: -after[x]):
+        print(f"  {nm(t):<12}{after[t]:>9.0f}")
+
+
+def print_opponent_strength(sched, prior_pf, teams, nm, compare_path=None):
+    print("\nOPPONENT STRENGTH  (avg opponent prior-season regular-season PF, 14 games)")
+    if not prior_pf:
+        print("  SKIPPED: the config has no `prior_pf`. compute_tiers.py emits it --")
+        print("  regenerate season-YYYY.json to get this report.")
+        return
+    missing = sorted(t for t in teams if t not in prior_pf)
+    if missing:
+        print("  SKIPPED: `prior_pf` is missing " +
+              ", ".join(nm(t) for t in missing) + ".")
+        print("  A mean over some opponents is not a strength of schedule.")
+        return
+
+    after = opponent_strength(sched, prior_pf, teams)
+    print("  A disclosure, not a check -- there is no correct spread.")
+
+    if compare_path is None:
+        print_after_only(after, teams, nm)
+        print("  Pass --compare <import-block-file> to see the change against an "
+              "existing schedule.")
+        return
+
+    old = load_import_block(compare_path)
+    problems = compare_problems(old, teams, prior_pf)
+    if problems:
+        # Refuse the delta rather than computing one from a partial opponent set.
+        # A truncated file yields deltas of tens of points that are pure artifact
+        # and are formatted exactly like real ones -- including the flag telling
+        # someone to report them to the league. Same reasoning as the partial
+        # prior_pf path above: a mean over some opponents is not a strength of
+        # schedule, and a caution above a confident table does not survive being
+        # read out loud.
+        for p in problems:
+            print(f"  CANNOT COMPARE: {compare_path} {p}.")
+        print("  Delta suppressed. Showing this schedule only.")
+        print_after_only(after, teams, nm)
+        return
+
+    before = opponent_strength(old, prior_pf, teams)
+    print(f"  {'Owner':<12}{'before':>9}{'after':>9}{'change':>9}")
+    rows = [(t, before[t], after[t]) for t in teams]
+    rows.sort(key=lambda r: -abs(r[2] - r[1]))
+    for t, b, a in rows:
+        d = a - b
+        flag = "   <-- report this to the league" if abs(d) >= MATERIAL_SOS_DELTA else ""
+        print(f"  {nm(t):<12}{b:>9.0f}{a:>9.0f}{d:>+9.0f}{flag}")
+
+    # A team's 14 opponents are all eleven others once plus its three tier-mates
+    # again, so the opponent SET is fixed by the tiering alone -- reshuffling the
+    # weeks cannot change it. All-zero is the expected result of a regeneration
+    # that keeps the tiers, not a broken report. Say so, or it reads as one.
+    if all(abs(a - b) < 0.005 for _, b, a in rows):
+        print("  All zero, which is correct: both schedules use the same tiers.")
+        print("  Every team plays the other eleven once and its three tier-mates")
+        print("  twice, so only a TIER change can move these numbers.")
+
+
 # -------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True, help="JSON: tiers, rematches, names")
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--attempts", type=int, default=400)
+    ap.add_argument("--compare", metavar="FILE",
+                    help="an existing MFL import block; adds a per-owner "
+                         "opponent-strength delta to the report")
     args = ap.parse_args()
     cfg = json.load(open(args.config))
     tiers = {k: list(v) for k, v in cfg["tiers"].items()}
     rematches = [tuple(r) for r in cfg["rematches"]]
     names = cfg.get("names", {})
+    prior_pf = cfg.get("prior_pf", {})
     teams = [t for four in tiers.values() for t in four]
 
     assert len(teams) == 12 and len(set(teams)) == 12, "need 12 distinct franchises"
@@ -241,6 +374,7 @@ def main():
     print("CHECKS")
     for label, ok in validate(sched, tiers, rematches, teams):
         print(f"  [{'PASS' if ok else 'FAIL'}] {label}")
+    print_opponent_strength(sched, prior_pf, teams, nm, args.compare)
     print("\nMFL IMPORT BLOCK  (League > Setup > Fantasy Schedule Setup)")
     print("!! Saving OVERWRITES the entire schedule and there is no undo.")
     print("!! Copy the existing contents of that box to a file first.\n")

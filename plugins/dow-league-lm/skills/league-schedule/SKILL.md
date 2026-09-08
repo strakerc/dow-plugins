@@ -12,6 +12,10 @@ team-number assignment, and the "big ass random numbers" duplicate checksum.
 Paul Gaffney has built this by hand since 2024 and it takes him hours. He knows
 this tool exists. Treat his judgement as the reference, not this file.
 
+**2026 is done.** The season was rebuilt on the corrected tiering and imported
+8 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
+work — check MFL first.
+
 ## Structure — the part the constitution does not spell out
 
     14 weeks = an 11-week full round robin + 3 rivalry weeks (4, 8, 12)
@@ -71,9 +75,13 @@ python3 scripts/build_schedule.py --config season-YYYY.json [--seed N]
 ```
 
 `compute_tiers.py` shows its working and warns when the Tier 2/3 margin is tight.
-`build_schedule.py` prints the schedule, the eight checks, and the MFL block, and
-asserts both rematch teams are Tier 1 — the assertion that would have caught the
-2026 error.
+`build_schedule.py` prints the schedule, the eight checks, **the opponent-strength
+report**, and the MFL block, and asserts both rematch teams are Tier 1 — the
+assertion that would have caught the 2026 error.
+
+Pass `--compare <saved-import-block>` to get the per-owner opponent-strength
+delta against the schedule currently live. `compute_tiers.py` emits the `prior_pf`
+the report needs; without it the report says so and skips rather than guessing.
 
 ### The algorithm, if the scripts are absent
 
@@ -104,6 +112,28 @@ asserts both rematch teams are Tier 1 — the assertion that would have caught t
     week 1 carries both rematches
     home/away balanced 7H/7A for all 12
 
+### The opponent-strength report — not a ninth check
+
+**A schedule change is never competitively neutral.** Report the per-owner
+opponent-strength delta before importing, and name any owner who gains or loses
+materially — especially if that owner is the person running this.
+
+The eight checks verify that a schedule is *structurally* valid. Fairness is not a
+structural property and they cannot see it. The 2026 correction passed all eight
+and still moved one owner's average opponent down 76 points a game and another's
+up 76, with everyone else inside two points. Nothing was looking.
+
+There is no pass/fail line here on purpose. There is no correct spread, and a
+threshold would either block a legitimate correction or lend false authority to
+whatever it let through. It is a disclosure: publish it, name who moved, and let
+the league weigh it.
+
+**A delta of zero across the board is the normal result of a rebuild**, not a
+broken report. Each team plays the other eleven once and its three tier-mates
+twice, so the opponent set is fixed by the tiering alone — only a *tier* change
+can move these numbers. Which is exactly why a tier correction is the case that
+needs disclosing.
+
 ## Correcting an existing schedule
 
 Read the live one back first: `get_weekly_results` on a **future** week returns
@@ -128,6 +158,10 @@ duplicated tab himself.
 
 **Ship exactly one import file.** Several near-identical candidates next to an
 irreversible paste-and-save button is how the wrong one gets used.
+
+**Ship the opponent-strength delta with it**, in the review sheet, not buried in
+console output. It is the one number in the package that a leaguemate would want
+to see before the import rather than after.
 
 ## Never automate these
 

@@ -14,7 +14,7 @@ found a pick had already moved since the 29 Aug snapshot.
 
 ---
 
-## Two things that trip people
+## Three things that trip people
 
 **1. The franchise id in a pick's name is its ORIGIN, not its holder.**
 `FP_0002_2027_2` is Pat's 2027 2nd wherever it currently sits. Notation is
@@ -25,6 +25,15 @@ Draft order is reverse regular-season standings, so how good a pick is depends
 entirely on how the team it came from does in the season *before* the draft.
 Early in a season the prior year is a weak anchor — say so rather than implying
 precision.
+
+**3. `DP_` is a different notation from `FP_`, and it is zero-based.**
+`DP_{round}_{pick}` appears in trade records for current-year rookie picks, and
+both numbers start at zero — `DP_1_3` is round 2, pick 4, not round 1, pick 3.
+`FP_{origin}_{year}_{round}` uses real round numbers; do not read the two the
+same way. Confirm any `DP_` reference against `get_draft_results` for that
+season before naming a slot: an off-by-one here produces a plausible pick with
+no error anywhere. Found 8 Sep 2026, when `DP_1_3` in a 2026 trade was reported
+as 1.03 and was actually 2.04.
 
 **Only the upcoming three seasons are tradeable.** In the 2026 offseason
 that is 2027, 2028 and 2029.

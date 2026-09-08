@@ -1,6 +1,6 @@
 {
   "name": "dow-league",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Dynasty of Whiners league tools: rules lookup, contract decisions, draft pick ownership, franchise tag pricing, schedule lookup, and member contact lookup. Everything is computed live from MyFantasyLeague on each run.",
   "author": { "name": "Straker Carryer" },
   "keywords": ["fantasy-football", "dynasty", "myfantasyleague"]

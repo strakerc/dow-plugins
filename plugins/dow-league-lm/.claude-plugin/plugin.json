@@ -1,6 +1,6 @@
 {
   "name": "dow-league-lm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "League manager add-on for the Dynasty of Whiners. Schedule generation, rookie draft grades, and the FA auction writeup. Requires the dow-league plugin, which carries the rules these depend on.",
   "author": { "name": "Straker Carryer" },
   "keywords": ["fantasy-football", "dynasty", "myfantasyleague", "commissioner"]

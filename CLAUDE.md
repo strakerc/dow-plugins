@@ -23,6 +23,12 @@ There is no build, no dependency manifest, no test suite, and no runtime beyond
 Owners read the output in a chat window, mid-trade. Not developers. That shapes the
 conventions below.
 
+**All dates in this project are Pacific, and every timestamp carries its zone.**
+This is the rule at the top of `START-HERE.md` and it applies here too. Evening work
+otherwise reads a day ahead in the doc that describes it and a day behind in the
+commit that lands it, which is how a correct set of dates got "corrected" once
+already.
+
 ## Commands
 
 ```bash

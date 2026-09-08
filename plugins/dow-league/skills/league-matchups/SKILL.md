@@ -43,7 +43,7 @@ week, and non-playoff teams keep playing consolation games, so all twelve
 franchises carry points from weeks 15 on. Subtract those before ranking anyone,
 and say you did.
 
-**2026 note.** The schedule was rebuilt on 8 Sep 2026 PT after the original was
+**2026 note.** The schedule was rebuilt on 7 Sep 2026 PT after the original was
 built on a superseded reading of the tiering rule. Straker moved from Tier 1 to
 Tier 2 and Gabe from Tier 2 to Tier 1; Tier 3 was unchanged. Weeks 4, 8 and 12
 differ from what owners saw before that date. If someone's memory of their

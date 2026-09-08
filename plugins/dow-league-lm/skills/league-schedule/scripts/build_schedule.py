@@ -233,7 +233,7 @@ def load_import_block(path):
     return dict(sched)
 
 
-def compare_problems(old, teams, prior_pf):
+def compare_problems(old, teams, prior_pf, nm):
     """Reasons a compared schedule cannot yield an honest delta. Empty == usable.
 
     Checked BEFORE any arithmetic: opponent_strength indexes prior_pf directly,
@@ -248,7 +248,11 @@ def compare_problems(old, teams, prior_pf):
     named = {t for ms in old.values() for m in ms for t in m}
     unknown = sorted(named - set(prior_pf))
     if unknown:
-        out.append("names franchises with no prior_pf: " + ", ".join(unknown))
+        # nm() resolves an id to an owner name; this file's rule is that ids stay
+        # inside the MFL import block. An id with no name is a corrupt row and the
+        # raw token is the only identifying thing left to print.
+        out.append("names franchises with no prior_pf: " +
+                   ", ".join(nm(t) for t in unknown))
     opps = Counter()
     for ms in old.values():
         for a, h in ms:
@@ -289,7 +293,7 @@ def print_opponent_strength(sched, prior_pf, teams, nm, compare_path=None):
         return
 
     old = load_import_block(compare_path)
-    problems = compare_problems(old, teams, prior_pf)
+    problems = compare_problems(old, teams, prior_pf, nm)
     if problems:
         # Refuse the delta rather than computing one from a partial opponent set.
         # A truncated file yields deltas of tens of points that are pure artifact

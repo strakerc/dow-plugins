@@ -13,8 +13,8 @@ Paul Gaffney has built this by hand since 2024 and it takes him hours. He knows
 this tool exists. Treat his judgement as the reference, not this file.
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
-8 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
-work — check MFL first.
+7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
+work — read the live schedule out of MFL first.
 
 ## Structure — the part the constitution does not spell out
 
@@ -100,6 +100,9 @@ the report needs; without it the report says so and skips rather than guessing.
    7-home orientation. Reach it by flipping directed augmenting paths from a
    home-deficit team to a home-surplus team.
 6. Validate. If anything fails, reshuffle and retry.
+7. **Compute the opponent-strength disclosure** — method below. It is part of the
+   output, not an optional extra, and this prose path is the one most likely to
+   skip it.
 
 ### The eight checks — all must pass
 
@@ -133,6 +136,19 @@ broken report. Each team plays the other eleven once and its three tier-mates
 twice, so the opponent set is fixed by the tiering alone — only a *tier* change
 can move these numbers. Which is exactly why a tier correction is the case that
 needs disclosing.
+
+**Computing it without the script.** List each team's fourteen opponents from the
+schedule you just built — the other eleven once, its three tier-mates twice.
+Average those opponents' prior-season **regular-season** points: `pf` minus weeks
+15 onward, the same figure the tiers were ranked on, not raw `pf`. Do the same for
+the schedule being replaced, using the same prior-season numbers, and subtract.
+Report by owner name, sorted by size of change, and name anyone moving about 25
+points a game or more.
+
+Two ways to get this wrong, both of which produce a confident wrong table: using
+raw `pf` instead of regular-season points, and averaging over an incomplete
+opponent list. If you cannot list fourteen opponents for every team on both
+schedules, say the delta cannot be computed rather than reporting a partial one.
 
 ## Correcting an existing schedule
 

@@ -214,6 +214,33 @@ only cheap way to catch confident-and-wrong.
 Free Agent, whose dead-money rate is 25% either way — it could not distinguish a bug
 from correct behaviour. Re-run on a Long-Term player, it passed.
 
+## Branching — one branch per task
+
+**Never work on `main`.** Two things make that expensive here. Several Claude sessions
+run against this clone at once, so two of them on `main` fight over the same working
+tree. And `main` is the publish channel: a commit that lands there reaches every
+installed owner on the next sync (see Publishing below), so a half-finished skill on
+`main` is a half-finished skill in twelve accounts.
+
+At the start of every new task, before the first edit:
+
+```bash
+git switch -c <topic> main             # branch first, then edit
+```
+
+- **Branch before editing, not before committing.** The collision is in the working
+  tree, not in the history — a branch created at commit time has already lost the race.
+- Name it for the task: `league-lineup-bye-weeks`, `fix-footer-drift`.
+- **A dirty tree at the start of a task is somebody else's work.** Stop and ask. Do not
+  commit it, do not stash it, do not carry it onto the new branch.
+- One task, one branch. A follow-up that revises the same work continues on the same
+  branch; a genuinely new request starts a new one off current `main`.
+- **Landing on `main` is the publishing act, so it stays a human decision.** Push the
+  branch and open a PR; do not merge or push to `main` without being asked to.
+- When two sessions really are running at the same time, the app's **worktree** toggle
+  is better than a branch alone — it gives each session its own checkout, so the
+  branches cannot share a working tree at all.
+
 ## Publishing
 
 **Committing IS publishing, measured 9 Sep 2026 PT.** An earlier version of this
@@ -250,7 +277,8 @@ Run it with no version first: it lists every commit touching `plugins/` since th
 `v*` tag, which is the mechanical answer to "is a release pending?". It refuses a
 re-release of the current version, a lower version and a non-semver string, and it
 writes files only — the commit, the annotated `v<version>` tag and the push stay a
-human act. A skill can be committed deliberately unreleased; `league-lineup` was.
+human act. What it cannot tell you is whether something is undelivered: pushing to
+`main` already delivered it, tag or no tag.
 
 Push to `main`. Installed owners pick it up on their next update. A plugin installed or
 updated **mid-session does not appear until a new session**, because skills resolve at

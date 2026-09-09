@@ -216,10 +216,27 @@ from correct behaviour. Re-run on a Long-Term player, it passed.
 
 ## Publishing
 
-**Committing is not publishing.** `version` in each `plugin.json` is the delivery
-gate — a client only fetches a plugin whose version string has changed, so a commit
-on `main` at an unchanged version reaches nobody. Both packages sat at 0.1.0 from
-creation to 8 Sep 2026 PT, which is months of commits that shipped to no one.
+**Committing IS publishing, measured 9 Sep 2026 PT.** An earlier version of this
+section said the opposite — that `version` in `plugin.json` gates delivery and a
+commit at an unchanged version reaches nobody. That was taken from the plugin docs
+and never observed. It is wrong, and it was wrong in this file for one morning.
+
+What was actually watched: the marketplace synced 62df110 → 03ae6e9; `dow-league`,
+whose files changed in between, showed **updated "now"**; `dow-league-lm`, whose
+files did not, stayed at 14h. A new claude.ai chat then loaded `league-lineup` —
+a skill added in that range with **no version bump on either manifest**.
+
+So delivery follows **file changes under `plugins/<name>/`**, on sync. Treat every
+push to `main` as reaching everyone who has installed, immediately.
+
+Two things follow. **A skill is live the moment it is pushed** — "committed
+deliberately unreleased" is not a state this marketplace has, and `league-lineup`
+was delivered while its work order still called it unreleased. And **deleting a
+skill file and pushing removes it from installs**, which is the only lever for
+pulling something back.
+
+What `version` does instead is unmeasured. Do not write another claim about it
+here without watching it.
 
 ```bash
 node scripts/release.mjs                 # report: versions, and what is unreleased

@@ -214,32 +214,26 @@ only cheap way to catch confident-and-wrong.
 Free Agent, whose dead-money rate is 25% either way — it could not distinguish a bug
 from correct behaviour. Re-run on a Long-Term player, it passed.
 
-## Branching — one branch per task
+## Branching
 
-**Never work on `main`.** Two things make that expensive here. Several Claude sessions
-run against this clone at once, so two of them on `main` fight over the same working
-tree. And `main` is the publish channel: a commit that lands there reaches every
-installed owner on the next sync (see Publishing below), so a half-finished skill on
-`main` is a half-finished skill in twelve accounts.
+**The branching workflow is not defined here.** Branch naming, when to branch, what
+to do with a dirty tree, and how a change lands are machine-wide defaults
+(`~/.claude/project-defaults.md`). Restating them in this file only overrides them
+with a staler copy — project instructions win on conflict, so a duplicate here wins
+by accident rather than on merit.
 
-At the start of every new task, before the first edit:
+What is specific to this repo is what a branch is protecting you from:
 
-```bash
-git switch -c <topic> main             # branch first, then edit
-```
-
-- **Branch before editing, not before committing.** The collision is in the working
-  tree, not in the history — a branch created at commit time has already lost the race.
-- Name it for the task: `league-lineup-bye-weeks`, `fix-footer-drift`.
-- **A dirty tree at the start of a task is somebody else's work.** Stop and ask. Do not
-  commit it, do not stash it, do not carry it onto the new branch.
-- One task, one branch. A follow-up that revises the same work continues on the same
-  branch; a genuinely new request starts a new one off current `main`.
-- **Landing on `main` is the publishing act, so it stays a human decision.** Push the
-  branch and open a PR; do not merge or push to `main` without being asked to.
-- When two sessions really are running at the same time, the app's **worktree** toggle
-  is better than a branch alone — it gives each session its own checkout, so the
-  branches cannot share a working tree at all.
+- **`main` is the publish channel.** A change to files under `plugins/<name>/` reaches
+  every installed owner on the next marketplace sync (see Publishing below), so
+  landing on `main` *is* the release. That makes the merge the deliberate act — not
+  the commit, and not the push of a task branch.
+- **There is no CI here**, and no second reviewer, so a PR on this repo runs no checks
+  and gates nothing. Prefer the local merge the global defaults describe unless a PR
+  is asked for.
+- Work that never touches `plugins/` — this file, `README.md`, `scripts/release.mjs` —
+  publishes nothing when it lands. Branch anyway; just don't treat the merge as a
+  release.
 
 ## Publishing
 

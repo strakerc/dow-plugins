@@ -1,6 +1,6 @@
 # Dynasty of Whiners — league tools
 
-Nine skills, all computing from live MyFantasyLeague data on every run. Nothing
+Ten skills, all computing from live MyFantasyLeague data on every run. Nothing
 here hardcodes last year's numbers, so any two owners asking the same question
 get the same answer and can compare working.
 
@@ -15,6 +15,7 @@ get the same answer and can compare working.
 | `league-trade-evaluator` | "is this trade fair", "who wins this deal" |
 | `league-player-values` | "what's X worth", "is he overpaid", "who's the better asset" |
 | `league-trade-history` | "how did that trade turn out", "who won the Worthy trade" |
+| `league-lineup` | "set my lineup", "who should I start", "start or sit week 6" |
 
 ## Setup — one paste, on a personal account
 

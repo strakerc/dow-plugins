@@ -17,8 +17,9 @@ fallback accurate whenever a script changes.
 anyone's Claude account are dead ends: no scripts, and they drift. Straker's own
 account copies were deleted 6 Sep 2026. Edit here, never there.
 
-There is no build, no dependency manifest, no test suite, and no runtime beyond
-`python3` for the scripts.
+There is no build, no dependency manifest and no test suite. The runtimes are
+`python3` for the four skill scripts and `node` for `scripts/release.mjs`, which is
+the release tool, not part of the deliverable.
 
 Owners read the output in a chat window, mid-trade. Not developers. That shapes the
 conventions below.
@@ -214,6 +215,25 @@ Free Agent, whose dead-money rate is 25% either way — it could not distinguish
 from correct behaviour. Re-run on a Long-Term player, it passed.
 
 ## Publishing
+
+**Committing is not publishing.** `version` in each `plugin.json` is the delivery
+gate — a client only fetches a plugin whose version string has changed, so a commit
+on `main` at an unchanged version reaches nobody. Both packages sat at 0.1.0 from
+creation to 8 Sep 2026 PT, which is months of commits that shipped to no one.
+
+```bash
+node scripts/release.mjs                 # report: versions, and what is unreleased
+```
+
+```bash
+node scripts/release.mjs 0.3.0 --commit  # bump both manifests and prepend a CHANGELOG entry
+```
+
+Run it with no version first: it lists every commit touching `plugins/` since the last
+`v*` tag, which is the mechanical answer to "is a release pending?". It refuses a
+re-release of the current version, a lower version and a non-semver string, and it
+writes files only — the commit, the annotated `v<version>` tag and the push stay a
+human act. A skill can be committed deliberately unreleased; `league-lineup` was.
 
 Push to `main`. Installed owners pick it up on their next update. A plugin installed or
 updated **mid-session does not appear until a new session**, because skills resolve at

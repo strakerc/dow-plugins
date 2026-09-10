@@ -264,7 +264,9 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    **every combination gates: a case passes only when it passes under all, a
    failure under one is a failure of the case, and the fix is verified under
    all** (a fix changes the fingerprint, so every entry reruns). Standing
-   rules, both Straker's, 10 Sep 2026 PT.
+   rules, both Straker's, 10 Sep 2026 PT. One carve-out, also his: `haiku`
+   runs and reports but does not gate (`--report-models`, a NOTE in the
+   summary instead of a FAIL) -- see "Where the matrix stands" for why.
 4. **A failure means fix, review, rerun the failures.** Read the transcript in
    `validation/evals/results/`, decide whether the skill or the grader is
    wrong, fix that one thing, run `/code-review` on the fix, then
@@ -305,15 +307,17 @@ estimates, not charges. `claude plugin eval` is still early access and closed fo
 this account; `regress.py --official` reports SKIP.
 
 **Where the matrix stands, 10 Sep 2026 PT.** `sonnet` and `opus` pass 22/22 at
-low and at high effort. `haiku` does not, and reruns do not converge: on five
-cases at low effort it never loaded the skill in four runs each (it answered
-picks, values, matchup and trade prompts straight from the MFL tools), and on
-three more it loaded the skill and misread the payload every time. Rewriting
-every description to open with "invoke before any league tool call" changed
-nothing for it. That is a property of the model in the CLI harness, not a prose
-regression, and under the every-combination rule it leaves the gate red. What
-`haiku` gates is Straker's decision; until it is made, `--models sonnet,opus` is
-the green path and `--models haiku` is a report.
+low and at high effort. `haiku` reached 17/22 at both, in two steps. It first
+never loaded the skill on five prompts (picks, values, matchups, trade history:
+it answered straight from the MFL tools, ids and all), and rewriting every skill
+description changed nothing -- the surface it reads before deciding is the
+connector's tool descriptions. Those now name the owning skill (`dowgateway`
+1.6.5; the eval mocks carry the same sentences word for word), and it loads the
+skill in 27 of 28 runs. What remains are capability misses on the same prose the
+other two pass: the extension's second year, naming the unprojected player, the
+no-write warning on a schedule import. So `haiku` is in `REPORT_MODELS`: it runs
+every time and its failures print as NOTE. Read them; do not chase them with
+prose that the other models do not need.
 
 **Research first, then write.** Every number in a skill came from a live MFL call or a
 back-test, not from memory.

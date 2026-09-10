@@ -136,7 +136,11 @@ needs to test low and high, always, not one or the other." Effort is a real
 variable: the same prose passed 22/22 on Sonnet at default effort and 17/22
 at low. Medium is not run: low and high bracket it. `claude-fable-5-1` joins
 the models when the weekly window allows. `--models ''` and `--efforts ''`
-run `--model` at `--effort` alone.
+run `--model` at `--effort` alone. `haiku` is a **report model**
+(`--report-models`, default `haiku`): it runs under the same matrix and its
+failures print as NOTE rather than FAIL, because after the connector's tool
+descriptions fixed its routing it still misses five cases per effort that the
+other two pass on the same prose. Read those notes; they are not the gate.
 The ledger also records the exact model id behind each alias; a run resolves
 each alias with one tiny call first, so when `sonnet` starts pointing at a
 newer model the old passes read as stale and rerun.
@@ -213,9 +217,13 @@ dollar).
    the MFL tools), and three more loaded the skill and misread the payload
    every time (tag floor, lineup pool, trade timestamps). Every description
    was rewritten to open with "invoke before any league tool call"; it moved
-   nothing for `haiku`. Under the every-combination rule the gate is red
-   until Straker decides what `haiku` gates. Grader calibration is done:
-   every remaining `haiku` failure is a real miss, read from its transcript.
+   nothing for `haiku`. What moved it was the connector's own tool
+   descriptions naming the owning skill (`dowgateway` 1.6.5, mirrored in the
+   mocks): the skill then loaded in 27 of 28 runs and `haiku` reached 17/22
+   at both efforts. The five misses per effort are capability, not routing,
+   so `haiku` reports without gating (`--report-models`), Straker's call the
+   same day. Grader calibration is done: every remaining `haiku` failure is
+   a real miss, read from its transcript.
    The CLI is logged in (claude.ai Max); if `claude auth status` ever says
    otherwise, the runner exits 2 and the push is refused.
 2. **`claude plugin eval` is early access and not enabled for this

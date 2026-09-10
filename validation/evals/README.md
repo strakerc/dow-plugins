@@ -49,7 +49,8 @@ python3 validation/evals/run_headless.py --regrade 20260909-213359 --case picks-
 
 `validation/regress.py --evals` covers each model in its `--models` (default
 `haiku,sonnet,opus`) under each effort in `--efforts` (default `low,high`),
-every combination gating, by calling this runner once per combination; run
+every combination gating except the `--report-models` (default `haiku`,
+whose failures print as NOTE), by calling this runner once per combination; run
 directly, this runner covers the one `--model` at the one `--effort` given. A run skips every case whose recorded pass is still valid: the skills it
 covers, every skill's name and description, its own files, the mock files for
 the tools its last run called, the mock server and the grading code all

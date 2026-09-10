@@ -1,0 +1,3 @@
+# Fixtures are raw MFL payloads. league.json alone carries every owner's
+# phone number, email and MFL username -- see README. Never commit them.
+*.json

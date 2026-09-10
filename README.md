@@ -39,6 +39,7 @@ SETUP.md                           owner-facing setup, the only copy of it
 .claude-plugin/marketplace.json    the marketplace manifest
 plugins/dow-league/                member package
 plugins/dow-league-lm/             LM package
+validation/                        the regression gate; ships to nobody
 ```
 
 Each plugin has `.claude-plugin/plugin.json` and a `skills/` directory; skills

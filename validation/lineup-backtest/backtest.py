@@ -121,3 +121,8 @@ for g in gate_fail:
     print("  FAIL", g)
 if not gate_fail and len(rows) == 36:
     print("\nALL HARD GATES PASS")
+else:
+    # Exit non-zero, so a runner that only reads the exit code sees the
+    # failure. Until 9 Sep 2026 PT this script exited 0 either way, and
+    # validation/regress.py read that as a pass.
+    sys.exit(1)

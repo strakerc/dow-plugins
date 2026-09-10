@@ -5,8 +5,13 @@ Two questions the clean run cannot answer:
   A. Is the "optimum" actually optimal, or just what my enumeration found?
   B. Do the gates fire at all, or are they decorative?
 """
-import json, os, random, itertools
+import json, os, random, itertools, sys
 from collections import Counter
+
+# Every check that can fail records itself here; the script exits 1 if any did.
+# Until 9 Sep 2026 PT it only printed, and exited 0 either way -- which a runner
+# reading the exit code took as a pass.
+failures = []
 
 D = os.path.dirname(os.path.abspath(__file__))
 def load(n):
@@ -76,6 +81,8 @@ for fr in ros:
     if best_rand > opt + 1e-9: beaten += 1
     print(f"    {fr['id']}  optimum {opt:7.2f}   best of random {best_rand:7.2f}{flag}")
 print(f"\n    franchises where random beat the enumeration: {beaten} (want 0)\n")
+if beaten:
+    failures.append(f"random beat the enumeration for {beaten} franchise(s)")
 
 print("=== B. do the gates fire? mutation tests ===")
 fr = ros[0]
@@ -83,22 +90,29 @@ pool = [p["id"] for p in fr["player"] if p.get("status") == "ROSTER"]
 ir = [p["id"] for p in fr["player"] if p.get("status") == "INJURED_RESERVE"]
 taxi = [p["id"] for p in fr["player"] if p.get("status") == "TAXI_SQUAD"]
 _, good = optimise(pool, pts)
-print(f"    baseline legal lineup            -> {is_legal(good, pool) or 'LEGAL (correct)'}")
-print(f"    drop one starter (9 players)     -> {is_legal(good[:-1], pool) or 'LEGAL -- GATE FAILED'}")
-dup = good[:-1] + [good[0]]
-print(f"    duplicate a player               -> {is_legal(dup, pool) or 'LEGAL -- GATE FAILED'}")
+
+def must_refuse(label, pick, pool):
+    why = is_legal(pick, pool)
+    print(f"    {label:<32} -> {why or 'LEGAL -- GATE FAILED'}")
+    if why is None:
+        failures.append(f"gate did not fire: {label}")
+
+why = is_legal(good, pool)
+print(f"    {'baseline legal lineup':<32} -> {why or 'LEGAL (correct)'}")
+if why is not None:
+    failures.append(f"baseline lineup refused: {why}")
+must_refuse("drop one starter (9 players)", good[:-1], pool)
+must_refuse("duplicate a player", good[:-1] + [good[0]], pool)
 if ir:
-    swapped = good[:-1] + [ir[0]]
-    print(f"    start an IR player               -> {is_legal(swapped, pool) or 'LEGAL -- GATE FAILED'}")
+    must_refuse("start an IR player", good[:-1] + [ir[0]], pool)
 if taxi:
-    swapped = good[:-1] + [taxi[0]]
-    print(f"    start a taxi-squad player        -> {is_legal(swapped, pool) or 'LEGAL -- GATE FAILED'}")
+    must_refuse("start a taxi-squad player", good[:-1] + [taxi[0]], pool)
 qbs = [i for i in pool if POS.get(i) == "QB"]
 if len(qbs) >= 3:
     nonqb = [i for i in good if POS.get(i) != "QB"]
     over = [i for i in good if POS.get(i) == "QB"] + qbs[:3]
     over = list(dict.fromkeys(over))[:3] + nonqb[:7]
-    print(f"    three QBs (max is 2)             -> {is_legal(over, pool) or 'LEGAL -- GATE FAILED'}")
+    must_refuse("three QBs (max is 2)", over, pool)
 else:
     print(f"    three QBs                        -> skipped, only {len(qbs)} QBs rostered")
 
@@ -108,4 +122,13 @@ r = optimise(starved, pts)
 if r is None:
     print("    zero TEs available -> optimise() returned None (correct: no legal lineup exists)")
 else:
-    print(f"    zero TEs available -> returned a lineup: {is_legal(r[1], starved) or 'LEGAL -- WRONG'}")
+    why = is_legal(r[1], starved) or "LEGAL -- WRONG"
+    print(f"    zero TEs available -> returned a lineup: {why}")
+    failures.append("a starved pool yielded a lineup")
+
+print()
+if failures:
+    for f in failures:
+        print("  FAIL", f)
+    sys.exit(1)
+print("ALL ADVERSARIAL CHECKS PASS")

@@ -165,7 +165,10 @@ shows how much headroom the number has, and it is where a gSheet disagreement us
 resolves.
 
 When asked about a specific player, give `MAX(floor, his salary + 5)`, say **which branch
-bound**, and state each eligibility gate with its evidence: his contract's final year
+bound**, list the five contracts behind the positional floor **with the owner of every
+one of them** (an owner filled in for the asked-about player and blank for the other
+four is the failure this line was written against), and state each eligibility gate
+with its evidence: his contract's final year
 from the current roster (a tag is for the season after it ends), and that no snapshot
 pulled shows a `Franchise` or `Franchise Tag` contract on him. If tag history further
 back was not checked, say so in one line rather than leaving the gate half-answered.

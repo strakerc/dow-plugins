@@ -82,7 +82,9 @@ not read the same way**:
   Round numbers here are real round numbers.
 - **`DP_{round}_{pick}`** — a pick in that year's own rookie draft, and **both
   numbers start at zero.** Add one to each before naming a slot:
-  `DP_0_0` = 1.01, `DP_1_3` = 2.04, `DP_3_11` = 4.12. `DP_1_3` is **not** 1.03. Confirm every
+  `DP_0_0` = 1.01, `DP_1_3` = 2.04, `DP_3_11` = 4.12. `DP_1_3` is **not** 1.03, and its year
+  is the season the transaction sits in: a `DP_` pick in a 2026 trade is a 2026
+  pick, never 2027 -- only `FP_` codes name a later year. Confirm every
   `DP_` against `get_draft_results` before naming a slot out loud: an off-by-one
   produces a completely plausible wrong pick with no error anywhere. This has
   already happened once, on 7 Sep 2026.

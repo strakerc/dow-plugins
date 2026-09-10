@@ -1,24 +1,22 @@
 # Dynasty of Whiners — Claude plugins
 
-Two Cowork plugins for a 12-team dynasty fantasy football league
+Two Claude plugins for a 12-team dynasty fantasy football league
 (MyFantasyLeague `29557`). This repository is the **marketplace**: add it in
 Claude and both plugins appear, with updates pulled from here.
 
 ## Install
 
-**Customize → Plugins → Add marketplace**, paste this repository's URL, then
-install:
+**Setup is one page: [SETUP.md](SETUP.md).** Read it before you start — there is
+a prerequisite that will otherwise waste your time, and a connector URL you have
+to get from Straker.
 
 | Plugin | Who | What |
 |---|---|---|
-| **`dow-league`** | everyone | Rules lookup, contract decisions, draft pick ownership, franchise tag pricing, schedule lookup |
+| **`dow-league`** | everyone | Rules lookup, contract decisions, draft pick ownership, franchise tag pricing, trade evaluation, weekly lineups, schedule lookup, member directory |
 | **`dow-league-lm`** | league managers only | Schedule generation, rookie draft grades, FA auction writeup. **Requires `dow-league`** |
 
-Then add your personal connector URL at **claude.ai → Customize → Connectors**.
-Ask Straker for yours.
-
-Use a **personal** Claude account. Team and Enterprise members cannot add their
-own connectors — the option simply will not appear.
+The steps live in `SETUP.md` and nowhere else, deliberately. Install instructions
+kept in two places drift, and the stale copy is always the one someone is reading.
 
 ## This repository is public, and contains no secrets
 
@@ -37,6 +35,7 @@ call. They will say so.
 ## Layout
 
 ```
+SETUP.md                           owner-facing setup, the only copy of it
 .claude-plugin/marketplace.json    the marketplace manifest
 plugins/dow-league/                member package
 plugins/dow-league-lm/             LM package

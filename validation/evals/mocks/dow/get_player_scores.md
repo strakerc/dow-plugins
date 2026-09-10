@@ -1,5 +1,5 @@
 ---
-description: Points actually scored under league scoring. week=YTD for totals, week=AVG for per-game. Synthetic.
+description: Points actually scored under league scoring. week=YTD for totals, week=AVG for per-game. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-lineup` or `league-trade-history` skill BEFORE calling this. Synthetic.
 ---
 {
  "season": "2026",

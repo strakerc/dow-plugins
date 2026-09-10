@@ -1,5 +1,5 @@
 ---
-description: Resolve player ids to names, positions and NFL teams. Pass players as a comma-separated id list. Synthetic.
+description: Resolve player ids to names, positions and NFL teams. Pass players as a comma-separated id list. Raw payload for the dow-league skills, not an answer for an owner. Every dow-league skill calls this to turn ids into names; an answer never shows the ids. Synthetic.
 ---
 {
  "players": {

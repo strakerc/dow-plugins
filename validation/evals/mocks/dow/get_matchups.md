@@ -1,5 +1,5 @@
 ---
-description: Regular-season pairings by week, no lineups or scores. Pass week for one week, omit for the season. Synthetic.
+description: Regular-season pairings by week, no lineups or scores. Pass week for one week, omit for the season. Raw payload for the dow-league skills, not an answer for an owner (franchise ids only). Invoke the `league-matchups` skill BEFORE calling this; it resolves owners, explains the tiers, and never generates a schedule. Synthetic.
 ---
 {
  "season": "2026",

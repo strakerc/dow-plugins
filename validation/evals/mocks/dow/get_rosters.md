@@ -1,5 +1,5 @@
 ---
-description: Every franchise's roster with salary, contractInfo, contractYear, contractStatus (final year), status and drafted. Pass season for that season's end-of-season snapshot (the payload echoes it), franchise_id for one team. Synthetic.
+description: Every franchise's roster with salary, contractInfo, contractYear, contractStatus (final year), status and drafted. Pass season for that season's end-of-season snapshot (the payload echoes it), franchise_id for one team. Raw payload for the dow-league skills, not an answer for an owner (player ids, contract fields). Invoke the `league-contracts` skill for contract questions or `league-franchise-tags` for tag floors BEFORE calling this. Synthetic.
 ---
 {
  "rosters": {

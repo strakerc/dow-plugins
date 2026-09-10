@@ -1,5 +1,5 @@
 ---
-description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Synthetic.
+description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Raw payload for the dow-league skills, not an answer for an owner (player ids, pick codes, epoch timestamps). Invoke the `league-trade-history` skill BEFORE calling this; it decodes all three and prints Pacific times. Synthetic.
 ---
 {
  "transactions": {

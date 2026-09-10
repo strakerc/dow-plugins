@@ -1,5 +1,5 @@
 ---
-description: Who holds which future draft picks. The id in a pick code is its ORIGIN, not its holder. Synthetic.
+description: Who holds which future draft picks. The id in a pick code is its ORIGIN, not its holder. Raw payload for the dow-league skills, not an answer for an owner (franchise ids and pick codes). Invoke the `league-draft-picks` skill BEFORE calling this; it resolves names and carries the conditional obligations MFL cannot show. Synthetic.
 ---
 {
  "futureDraftPicks": {

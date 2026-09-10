@@ -1,5 +1,5 @@
 ---
-description: Weekly results with full lineups for played weeks; a future week returns pairings only. Synthetic.
+description: Weekly results with full lineups for played weeks; a future week returns pairings only. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-schedule` (LM) or `league-matchups` skill BEFORE calling this. Synthetic.
 ---
 {
  "weeklyResults": {

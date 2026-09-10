@@ -1,5 +1,5 @@
 ---
-description: Standings for a season: h2h record and pf (all scoring weeks, not regular season only). Synthetic.
+description: Standings for a season: h2h record and pf (all scoring weeks, not regular season only). Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-matchups` skill (tiers, read-only) or `league-schedule` (LM, building a season) BEFORE calling this. Synthetic.
 ---
 {
  "leagueStandings": {

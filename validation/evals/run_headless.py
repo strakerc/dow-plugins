@@ -81,7 +81,11 @@ class JudgeUnreachable(Exception):
 
 # The CLI's own short replies when no model was reached. Deliberately narrow:
 # a real answer about a 401 says "authentication" and must be graded.
-LOGIN_RE = re.compile(r"not logged in|please run /login|invalid api key", re.I)
+# Every short reply the CLI gives instead of running the model. The OAuth
+# form arrived 10 Sep 2026 PT: an overnight session expiry turned 28 runs into
+# one-turn, zero-cost "failures" that the ledger then recorded as failed.
+LOGIN_RE = re.compile(r"not logged in|please run /login|invalid api key|failed to authenticate"
+                      r"|oauth session expired|could not be refreshed|authentication_error", re.I)
 
 
 def load_cases(only_suite=None):
@@ -882,6 +886,9 @@ def selftest():
     check("tool_order -", not grade_tool_order({"before": "get_projections", "after": "get_league"}, t)[0])
     check("unreachable detects login prompt", unreachable(parse_stream([
         json.dumps({"type": "result", "subtype": "success", "result": "Not logged in. Please run /login"})])))
+    check("unreachable detects an expired OAuth session", unreachable(parse_stream([
+        json.dumps({"type": "result", "subtype": "success", "is_error": True,
+                    "result": "Failed to authenticate: OAuth session expired and could not be refreshed"})])))
     check("unreachable false on a real answer", not unreachable(t))
     check("unreachable true when the launcher failed", unreachable(dict(t, rc=127, tools=[], last="")))
     check("timeout after a tool call is not unreachable",

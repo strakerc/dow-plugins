@@ -13,6 +13,11 @@ scripts are optional accelerators — each skill states what to do when its scri
 absent, because an account-saved copy of a skill ships without `scripts/`. Keep that
 fallback accurate whenever a script changes.
 
+**Owner-facing setup lives in `SETUP.md`, and only there.** `README.md` points at
+it and carries no steps of its own. The eleven people installing this are not
+developers and will read exactly one page; two pages means one of them is stale
+and it is always the one being read. Do not re-add install steps to `README.md`.
+
 **This repo is the source of truth for skill text and scripts.** Copies saved to
 anyone's Claude account are dead ends: no scripts, and they drift. Straker's own
 account copies were deleted 6 Sep 2026. Edit here, never there.

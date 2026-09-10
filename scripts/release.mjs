@@ -7,12 +7,19 @@
  *
  * WHY THIS EXISTS
  * ---------------
- * A plugin's `version` in plugin.json is the release mechanism, not decoration:
- *   "Setting this pins the plugin to that version string, so users only receive
- *    updates when you bump it."
- * Both dow-plugins packages sat at 0.1.0 from creation until 8 Sep 2026 PT, so
- * nothing shipped after that ever reached anyone. Committing is not publishing.
- * This script is the publish.
+ * WRITTEN on the belief that `version` in plugin.json gates delivery. It does not.
+ * Measured 9 Sep 2026 PT: a marketplace sync delivered a skill added under
+ * plugins/ with NO version bump on either manifest, into a live account.
+ * Delivery follows the FILE CHANGE. Pushing to main is the publish; this
+ * script is not.
+ *
+ * Two purposes survive the correction. It reports what has shipped since the
+ * last release tag, the only record of what owners actually received; and it
+ * moves both manifests and the CHANGELOG together, so the version string stays
+ * an honest label for a release even though it does not gate one.
+ *
+ * Do not restore the old claim. It is why league-lineup was believed to be held
+ * back while it was already live in an account.
  *
  *   node release.mjs                 # report: current versions + what is unreleased
  *   node release.mjs 0.2.0           # dry run for that version
@@ -85,10 +92,10 @@ if (u.commits === null) {
 } else if (u.commits.length === 0) {
   console.log(`\n  Nothing unreleased. No plugin change since ${u.tag}.`);
 } else {
-  console.log(`\n  UNRELEASED — ${u.commits.length} commit(s) touching plugins/ since ${u.tag}:\n`);
+  console.log(`\n  UNTAGGED — ${u.commits.length} commit(s) touching plugins/ since ${u.tag}:\n`);
   for (const c of u.commits.slice(0, 15)) console.log(`    ${c}`);
   if (u.commits.length > 15) console.log(`    … and ${u.commits.length - 15} more`);
-  console.log(`\n  These are committed and pushed. They have NOT reached anyone.`);
+  console.log(`\n  These are LIVE. Measured 9 Sep 2026 PT: a marketplace sync delivers a changed file under plugins/ to every installed owner, with no version bump required. UNTAGGED means no release tag records them -- not that they are unshipped.`);
 }
 
 const currents = [...new Set(state.map((s) => s.current))];
@@ -105,17 +112,18 @@ if (!versionArg) {
 }
 if (!SEMVER.test(versionArg)) fail(`"${versionArg}" is not x.y.z`);
 
-// Refuse to go backwards or sideways. A re-release of the same string is the
-// specific failure this whole script exists to prevent: it looks like a publish
-// and delivers nothing.
+// Refuse to go backwards or sideways. Neither guard is about delivery -- the push
+// already delivered. They protect the version string's job as a LABEL: if two
+// different sets of files ever ship as 0.2.0, no one can say afterwards which one
+// a given owner received.
 const cmp = (a, b) => {
   const [A, B] = [a, b].map((v) => v.split(".").map(Number));
   for (let i = 0; i < 3; i++) if (A[i] !== B[i]) return A[i] - B[i];
   return 0;
 };
 for (const s of state) {
-  if (cmp(versionArg, s.current) === 0) fail(`${s.plugin} is already ${versionArg}. A re-release of the same version ships nothing.`);
-  if (cmp(versionArg, s.current) < 0) fail(`${versionArg} is lower than ${s.plugin}'s ${s.current}. Clients would not update.`);
+  if (cmp(versionArg, s.current) === 0) fail(`${s.plugin} is already ${versionArg}. Reusing a version string makes it a dishonest label: two different sets of files ship under one name, and nothing can then say which one an owner has.`);
+  if (cmp(versionArg, s.current) < 0) fail(`${versionArg} is lower than ${s.plugin}'s ${s.current}. Going backwards makes the version string unreadable as history -- the files still ship either way.`);
 }
 
 // ---------------------------------------------------------------- plan edits

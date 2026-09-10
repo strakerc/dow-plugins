@@ -84,6 +84,13 @@ return a legal full lineup and say that it is legal.**
 Resolve every id through `get_players`. **An id you did not resolve is unexamined,
 not known.** Here that means starting somebody who was traded away.
 
+**The roster is the list of players; the projection payload is only numbers.**
+Build the pool from `get_rosters` and `get_players`, then attach projections to
+it — never the other way round. A run that starts from the projection rows never
+sees the player who has no row, which is exactly the player this section says to
+name. That is how Harlan Voss went missing in two of three eval runs on 9 Sep
+2026 PT, in answers that otherwise followed every rule.
+
 **Join projections to the roster on `mflid`, never on name.** Every projection row
 carries MyFantasyLeague's own player id; non-null values are unique. Name matching
 is the standard failure mode for this kind of join and this payload removes the
@@ -102,6 +109,11 @@ Two cases that look alike and are not:
 
 Fill the highest-projected legal ten. No judgement, no correlation, no filtering.
 **Its own labelled table**, with each player's projection shown.
+
+**Close the table with one line naming every startable player left out and why**
+— no projection row, projected zero, position full. That line is where a player
+with no projection gets named; without it he goes missing silently, which is
+exactly what happened in one of two eval runs on 9 Sep 2026 PT.
 
 ### 4. Predict the opponent
 
@@ -178,7 +190,14 @@ zone labelled.**
 - **No full recommended lineup for another franchise.** Predicting the opponent's
   starters is in scope; producing their lineup for them is not.
 - **Never surface a franchise id, player id, MFL username, email or phone number**
-  as a side effect. Owners go by first name.
+  as a side effect. Owners go by first name — including the line that says whose
+  lineup this is: the owner's name or the team name, never "franchise 0001". Four
+  of twenty-two answers on the first eval run (9 Sep 2026 PT) put the id right there.
+- **Do not narrate which franchise record you matched, or how.** The owner knows
+  who they are. Open with the answer itself; the team name may appear, the id
+  never does. Telling the rule as "never print the id" did not stop it (two more
+  answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
+  was showing its lookup, so do not show the lookup.
 - **Never present the correlation-adjusted lineup alone.** Both tables, labelled.
 - **Never explain the format back.** The audience knows what superflex is.
 - **One blended figure, never two separated by a slash**, where a projection has

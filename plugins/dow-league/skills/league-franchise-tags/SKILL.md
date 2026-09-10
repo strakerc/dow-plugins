@@ -181,6 +181,11 @@ evidence of a bug; trace it to the specific contracts that entered or left the t
   arithmetic (IR salaries count in full here) but do not let a stale flag leak into cap
   commentary alongside the tag price.
 - **Never quote a player ID from memory.** Resolve every ID through `get_players`.
+- **Never print an id in the answer** — no player ids, no franchise ids. Owners go
+  by first name and players by name; "Elliot Brandt (WR, DEN), salary $18" is the
+  whole identification. The first eval run of this skill (9 Sep 2026 PT) produced a
+  correct price with `id 10003` beside the name, because this rule was stated in
+  every other skill and not here.
 - **Salary adjustment rows are load-bearing.** They are the only surviving record of a
   mid-season drop's salary and an input to the next year's averages. If asked about
   clearing them during the annual cleanup, say so.

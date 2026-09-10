@@ -47,7 +47,11 @@ duration is the single most likely mistake here.
 
 MFL is inconsistent about `Franchise` vs `Franchise Tag`, and about
 `Short-Term (Extension)` vs `Short-Term Ext.` — match on a prefix or substring,
-never an exact string.
+never an exact string. Both extension spellings mean the same contract. Test for
+`Ext`: testing for `Extension` misses the abbreviated one and reads an *expiring*
+extension as a plain short-term, offering a second extension and withholding the
+long-term. The script did exactly that until 9 Sep 2026 PT. A player still
+inside his extension gets no options either way — only his cut cost.
 
 **`contractYear` does not reliably increment by one.** A short-term extension was
 observed going from year 1 to year 3 across a single offseason. Do arithmetic
@@ -177,7 +181,14 @@ from the tables above, and subtract salary adjustments before stating cap space.
   player id; an owner does not know or care that Jaylen Warren is `15742`.
   Resolve every id with `get_players` before writing, and if an id will not
   resolve, say the player could not be identified rather than printing the
-  number. Same for franchise ids — use the owner's name.
+  number. Same for franchise ids — use the owner's name. That includes the line that says whose team you are looking at: write the owner's
+  name or the team name, never "franchise 0001". Four of twenty-two answers on the first
+  eval run (9 Sep 2026 PT) put the id in exactly that opening line.
+- **Do not narrate which franchise record you matched, or how.** The owner knows
+  who they are. Open with the answer itself; the team name may appear, the id
+  never does. Telling the rule as "never print the id" did not stop it (two more
+  answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
+  was showing its lookup, so do not show the lookup.
 - **Never quote cap space without adjustments in hand.**
 - Don't explain the format back to the reader; everyone here knows it.
 - Where a number blends sources, give one figure, not two with a slash.

@@ -99,10 +99,17 @@ that the tool is broken.
 3. **All `*.json` must parse.** A broken manifest breaks the install for everyone, and
    the failure surfaces in someone else's Claude.
 4. No league data, member contact details, or credentials in the repo at all.
-5. **Every `SKILL.md` carries the connector footer verbatim.** The canonical text is
-   `.githooks/skill-footer.md` — copy it, don't retype it. Sections *after* it are
-   fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
-   without the footer for a while and nothing noticed, because the rule was prose.
+5. **Every `SKILL.md` carries the connector footer verbatim, and opens with the
+   canonical "Before you answer" block verbatim.** The texts are
+   `.githooks/skill-footer.md` and `.githooks/skill-header.md` — copy them, don't
+   retype them. Sections *after* the footer are fine (`league-schedule` adds one);
+   paraphrase is not; the header allows one appended exception sentence
+   (`league-contacts`, `league-schedule`). The hook checks the footer on commit,
+   `audit.py` check 8 checks the header, and the pre-push gate runs the audit.
+   `league-rules` shipped without the footer for a while and nothing noticed,
+   because the rule was prose. The header exists because small models at low
+   effort follow five lines at the top and ignore the same rule deep in the prose
+   (measured 10 Sep 2026 PT).
 6. **No phone numbers or email addresses in added lines, or in the commit message.**
    `get_league` returns both for all twelve owners; `league-contacts` reads them at
    run time and the repo stores none. This is the one invariant whose breach cannot
@@ -155,8 +162,9 @@ When adding a skill, decide which package it belongs to on that rule, mirror the
 new skill in the owning plugin's `README.md` table, and **write at least one gate
 eval case for it** under `validation/evals/<plugin>/` with the skill in its
 `skills:` line — `validation/audit.py` fails until it exists, and the pre-push hook
-runs the audit. `validation/evals/README.md` has the case format and the synthetic
-league to write it against.
+runs the audit. Open the new skill with `.githooks/skill-header.md` and end it with
+`.githooks/skill-footer.md`, both verbatim. `validation/evals/README.md` has the
+case format and the synthetic league to write it against.
 
 ## How skills get their facts
 
@@ -251,6 +259,12 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    new, failed, or stale** (their skill files, any skill's description, their
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
    already tested." `--all` forces everything; `--post-push` always does.
+   Every run covers `haiku`, `sonnet` and `opus` at low **and** high effort
+   (`--models`, `--efforts`), because owners may be on any of them, and
+   **every combination gates: a case passes only when it passes under all, a
+   failure under one is a failure of the case, and the fix is verified under
+   all** (a fix changes the fingerprint, so every entry reruns). Standing
+   rules, both Straker's, 10 Sep 2026 PT.
 4. **A failure means fix, review, rerun the failures.** Read the transcript in
    `validation/evals/results/`, decide whether the skill or the grader is
    wrong, fix that one thing, run `/code-review` on the fix, then

@@ -4,4 +4,4 @@ tags: ["gate", "mocked"]
 skills: ["league-contacts"]
 max_turns: 10
 ---
-What's Bram's phone number?
+What's my leaguemate Bram's phone number?

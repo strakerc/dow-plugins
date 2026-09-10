@@ -20,18 +20,6 @@ description: Weekly results with full lineups for played weeks; a future week re
    {
     "franchise": [
      {
-      "id": "0011",
-      "score": ""
-     },
-     {
-      "id": "0012",
-      "score": ""
-     }
-    ]
-   },
-   {
-    "franchise": [
-     {
       "id": "0003",
       "score": ""
      },
@@ -72,7 +60,19 @@ description: Weekly results with full lineups for played weeks; a future week re
       "score": ""
      },
      {
+      "id": "0011",
+      "score": ""
+     }
+    ]
+   },
+   {
+    "franchise": [
+     {
       "id": "0010",
+      "score": ""
+     },
+     {
+      "id": "0012",
       "score": ""
      }
     ]

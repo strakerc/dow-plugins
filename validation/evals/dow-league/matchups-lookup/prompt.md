@@ -4,4 +4,4 @@ tags: ["full", "mocked"]
 skills: ["league-matchups"]
 max_turns: 10
 ---
-I'm Ada. Who do I play in week 6?
+I'm Ada. Who do I play in week 8?

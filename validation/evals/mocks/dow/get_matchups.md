@@ -14,47 +14,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0011"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0012"
-       },
-       {
-        "id": "0010"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0002"
-       },
-       {
-        "id": "0009"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0003"
-       },
-       {
-        "id": "0008"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0004"
-       },
-       {
-        "id": "0007"
        }
       ]
      },
@@ -64,7 +24,47 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0005"
        },
        {
+        "id": "0003"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0006"
+       },
+       {
+        "id": "0002"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0007"
+       },
+       {
+        "id": "0012"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0008"
+       },
+       {
+        "id": "0011"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0009"
+       },
+       {
+        "id": "0010"
        }
       ]
      }
@@ -79,36 +79,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0010"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0011"
-       },
-       {
-        "id": "0009"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0012"
-       },
-       {
-        "id": "0008"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0002"
-       },
-       {
         "id": "0007"
        }
       ]
@@ -116,7 +86,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0003"
+        "id": "0008"
        },
        {
         "id": "0006"
@@ -126,10 +96,40 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0004"
+        "id": "0009"
        },
        {
         "id": "0005"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0010"
+       },
+       {
+        "id": "0004"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0011"
+       },
+       {
+        "id": "0003"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0012"
+       },
+       {
+        "id": "0002"
        }
       ]
      }
@@ -151,10 +151,10 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0012"
+        "id": "0003"
        },
        {
-        "id": "0003"
+        "id": "0012"
        }
       ]
      },
@@ -164,7 +164,17 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0004"
        },
        {
+        "id": "0011"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0005"
+       },
+       {
+        "id": "0010"
        }
       ]
      },
@@ -174,16 +184,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0006"
        },
        {
-        "id": "0007"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0008"
-       },
-       {
         "id": "0009"
        }
       ]
@@ -191,10 +191,10 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0010"
+        "id": "0007"
        },
        {
-        "id": "0011"
+        "id": "0008"
        }
       ]
      }
@@ -209,46 +209,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0008"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0009"
-       },
-       {
-        "id": "0007"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0010"
-       },
-       {
-        "id": "0006"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0011"
-       },
-       {
-        "id": "0005"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0012"
-       },
-       {
         "id": "0004"
        }
       ]
@@ -260,6 +220,46 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
        },
        {
         "id": "0003"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0005"
+       },
+       {
+        "id": "0007"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0006"
+       },
+       {
+        "id": "0008"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0009"
+       },
+       {
+        "id": "0010"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0011"
+       },
+       {
+        "id": "0012"
        }
       ]
      }
@@ -274,26 +274,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0007"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0008"
-       },
-       {
-        "id": "0006"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0009"
-       },
-       {
         "id": "0005"
        }
       ]
@@ -301,7 +281,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0010"
+        "id": "0006"
        },
        {
         "id": "0004"
@@ -311,7 +291,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0011"
+        "id": "0007"
        },
        {
         "id": "0003"
@@ -321,10 +301,30 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0012"
+        "id": "0008"
        },
        {
         "id": "0002"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0009"
+       },
+       {
+        "id": "0012"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0010"
+       },
+       {
+        "id": "0011"
        }
       ]
      }
@@ -339,7 +339,17 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0002"
+        "id": "0009"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0010"
+       },
+       {
+        "id": "0008"
        }
       ]
      },
@@ -349,7 +359,27 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0011"
        },
        {
+        "id": "0007"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0012"
+       },
+       {
+        "id": "0006"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0002"
+       },
+       {
+        "id": "0005"
        }
       ]
      },
@@ -360,36 +390,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
        },
        {
         "id": "0004"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0005"
-       },
-       {
-        "id": "0006"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0007"
-       },
-       {
-        "id": "0008"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0009"
-       },
-       {
-        "id": "0010"
        }
       ]
      }
@@ -404,26 +404,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0005"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0006"
-       },
-       {
-        "id": "0004"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0007"
-       },
-       {
         "id": "0003"
        }
       ]
@@ -431,7 +411,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0008"
+        "id": "0004"
        },
        {
         "id": "0002"
@@ -441,7 +421,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0009"
+        "id": "0005"
        },
        {
         "id": "0012"
@@ -451,10 +431,30 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0010"
+        "id": "0006"
        },
        {
         "id": "0011"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0007"
+       },
+       {
+        "id": "0010"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0008"
+       },
+       {
+        "id": "0009"
        }
       ]
      }
@@ -469,6 +469,16 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
+        "id": "0002"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0003"
+       },
+       {
         "id": "0004"
        }
       ]
@@ -479,17 +489,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0005"
        },
        {
-        "id": "0003"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0006"
-       },
-       {
-        "id": "0002"
        }
       ]
      },
@@ -499,17 +499,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0007"
        },
        {
-        "id": "0012"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0008"
-       },
-       {
-        "id": "0011"
        }
       ]
      },
@@ -519,7 +509,17 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0009"
        },
        {
+        "id": "0011"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0010"
+       },
+       {
+        "id": "0012"
        }
       ]
      }
@@ -534,37 +534,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0003"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0004"
-       },
-       {
-        "id": "0002"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0005"
-       },
-       {
-        "id": "0012"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0006"
-       },
-       {
-        "id": "0011"
        }
       ]
      },
@@ -574,7 +544,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0007"
        },
        {
-        "id": "0010"
+        "id": "0005"
        }
       ]
      },
@@ -584,7 +554,37 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0008"
        },
        {
+        "id": "0004"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0009"
+       },
+       {
+        "id": "0003"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0010"
+       },
+       {
+        "id": "0002"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0011"
+       },
+       {
+        "id": "0012"
        }
       ]
      }
@@ -599,16 +599,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0002"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0003"
-       },
-       {
         "id": "0012"
        }
       ]
@@ -616,7 +606,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0004"
+        "id": "0002"
        },
        {
         "id": "0011"
@@ -626,7 +616,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0005"
+        "id": "0003"
        },
        {
         "id": "0010"
@@ -636,7 +626,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0006"
+        "id": "0004"
        },
        {
         "id": "0009"
@@ -646,10 +636,20 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0007"
+        "id": "0005"
        },
        {
         "id": "0008"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0006"
+       },
+       {
+        "id": "0007"
        }
       ]
      }
@@ -664,16 +664,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0012"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0002"
-       },
-       {
         "id": "0011"
        }
       ]
@@ -681,7 +671,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0003"
+        "id": "0012"
        },
        {
         "id": "0010"
@@ -691,7 +681,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0004"
+        "id": "0002"
        },
        {
         "id": "0009"
@@ -701,7 +691,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0005"
+        "id": "0003"
        },
        {
         "id": "0008"
@@ -711,10 +701,20 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0006"
+        "id": "0004"
        },
        {
         "id": "0007"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0005"
+       },
+       {
+        "id": "0006"
        }
       ]
      }
@@ -729,17 +729,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0011"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0012"
-       },
-       {
-        "id": "0010"
+        "id": "0003"
        }
       ]
      },
@@ -749,27 +739,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0002"
        },
        {
-        "id": "0009"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0003"
-       },
-       {
-        "id": "0008"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0004"
-       },
-       {
-        "id": "0007"
        }
       ]
      },
@@ -779,7 +749,37 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0005"
        },
        {
+        "id": "0008"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0006"
+       },
+       {
+        "id": "0007"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0009"
+       },
+       {
+        "id": "0012"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0010"
+       },
+       {
+        "id": "0011"
        }
       ]
      }
@@ -794,26 +794,6 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0010"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0011"
-       },
-       {
-        "id": "0009"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
-        "id": "0012"
-       },
-       {
         "id": "0008"
        }
       ]
@@ -821,7 +801,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0002"
+        "id": "0009"
        },
        {
         "id": "0007"
@@ -831,7 +811,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0003"
+        "id": "0010"
        },
        {
         "id": "0006"
@@ -841,10 +821,30 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
      {
       "franchise": [
        {
-        "id": "0004"
+        "id": "0011"
        },
        {
         "id": "0005"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0012"
+       },
+       {
+        "id": "0004"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
+        "id": "0002"
+       },
+       {
+        "id": "0003"
        }
       ]
      }
@@ -859,17 +859,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0001"
        },
        {
-        "id": "0009"
-       }
-      ]
-     },
-     {
-      "franchise": [
-       {
         "id": "0010"
-       },
-       {
-        "id": "0008"
        }
       ]
      },
@@ -879,7 +869,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0011"
        },
        {
-        "id": "0007"
+        "id": "0009"
        }
       ]
      },
@@ -889,7 +879,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0012"
        },
        {
-        "id": "0006"
+        "id": "0008"
        }
       ]
      },
@@ -899,7 +889,7 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0002"
        },
        {
-        "id": "0005"
+        "id": "0007"
        }
       ]
      },
@@ -909,7 +899,17 @@ description: Regular-season pairings by week, no lineups or scores. Pass week fo
         "id": "0003"
        },
        {
+        "id": "0006"
+       }
+      ]
+     },
+     {
+      "franchise": [
+       {
         "id": "0004"
+       },
+       {
+        "id": "0005"
        }
       ]
      }

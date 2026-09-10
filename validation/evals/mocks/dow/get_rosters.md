@@ -1,12 +1,12 @@
 ---
-description: Every franchise's roster with salary, contractInfo, contractYear, contractStatus (final year), status and drafted. Pass season for a snapshot, franchise_id for one team. Synthetic.
+description: Every franchise's roster with salary, contractInfo, contractYear, contractStatus (final year), status and drafted. Pass season for that season's end-of-season snapshot (the payload echoes it), franchise_id for one team. Synthetic.
 ---
 {
  "rosters": {
+  "season": "{{input.season}}",
   "franchise": [
    {
     "id": "0001",
-    "week": "3",
     "player": [
      {
       "id": "10001",
@@ -140,7 +140,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0002",
-    "week": "3",
     "player": [
      {
       "id": "20001",
@@ -241,7 +240,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0003",
-    "week": "3",
     "player": [
      {
       "id": "30001",
@@ -271,7 +269,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0004",
-    "week": "3",
     "player": [
      {
       "id": "30004",
@@ -301,7 +298,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0005",
-    "week": "3",
     "player": [
      {
       "id": "30007",
@@ -331,7 +327,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0006",
-    "week": "3",
     "player": [
      {
       "id": "30010",
@@ -361,7 +356,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0007",
-    "week": "3",
     "player": [
      {
       "id": "30013",
@@ -391,7 +385,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0008",
-    "week": "3",
     "player": [
      {
       "id": "30016",
@@ -421,7 +414,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0009",
-    "week": "3",
     "player": [
      {
       "id": "30019",
@@ -451,7 +443,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0010",
-    "week": "3",
     "player": [
      {
       "id": "30022",
@@ -481,7 +472,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0011",
-    "week": "3",
     "player": [
      {
       "id": "30025",
@@ -511,7 +501,6 @@ description: Every franchise's roster with salary, contractInfo, contractYear, c
    },
    {
     "id": "0012",
-    "week": "3",
     "player": [
      {
       "id": "30028",

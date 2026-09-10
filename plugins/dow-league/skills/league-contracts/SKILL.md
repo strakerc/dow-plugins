@@ -1,9 +1,27 @@
 ---
 name: league-contracts
-description: "Work out contract decisions for the Dynasty of Whiners league (MFL 29557) — which players have a decision due, what each option costs, dead money on a cut, and whether a roster is cap- and roster-legal. Use for \"what are my options on X\", \"what does it cost to keep him\", or \"how much dead money if I cut\"."
+description: "Invoke before any league tool call for contract questions in the Dynasty of Whiners league (MFL 29557) — which players have a decision due, which contracts expire, what each option (short-term, long-term, extension, tag) costs, dead money on a cut, and whether a roster is cap- and roster-legal. Use for \"which of my contracts expire\", \"what are my options on X\", \"what does it cost to keep him\", \"my contract decisions\", \"what's my roster and which contracts are up\", or \"how much dead money if I cut\". The raw roster payload is ids, codes and unpriced options; this skill resolves the names and prices every option."
 ---
 
 # League Contracts
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 The costs side of contract decisions: what is legal, what it costs, and what the
 roster looks like afterwards. **Deterministic** — it reads the constitution's
@@ -43,7 +61,9 @@ salaries by position. Don't compute the positional floor here.
 | `status` | `ROSTER` · `TAXI_SQUAD` · `INJURED_RESERVE` |
 
 **`years remaining = contractStatus − season + 1`.** Reading `contractStatus` as a
-duration is the single most likely mistake here.
+duration is the single most likely mistake here. **A contract expires after season S
+exactly when `contractStatus` equals S.** Nothing else marks expiry — not
+`contractYear`, not the contract type, not the salary.
 
 MFL is inconsistent about `Franchise` vs `Franchise Tag`, and about
 `Short-Term (Extension)` vs `Short-Term Ext.` — match on a prefix or substring,
@@ -69,8 +89,12 @@ week-22 snapshot with everything intact.
 | Current contract | Legal next steps |
 |---|---|
 | **Rookie**, **Long-Term**, **Short-Term (Extension)**, **Free Agent** | Release · Short-term (+5) · Long-term (+10, flat 3 yrs) · Franchise tag |
-| **Short-Term**, after its first season | Release · **two-year extension** (+10, then +5 more) · Franchise tag. **A second short-term is not legal.** |
+| **Short-Term**, after its first season | Release · **two-year extension** (+10, then +5 more: a short-term at 22 extends at 32, then 37) · Franchise tag. **A second short-term is not legal.** |
 | **Franchise Tag** | Release · Long-term · Extension. Short-term only if he was *not* on a short-term before the tag. **Never tagged two years running.** |
+
+**The extension's first year is previous + 10, never + 5.** A short-term at 22
+extends at 32, then 37; writing 27 is the plain short-term price, which is the one
+option a short-term cannot take again.
 
 `[2026, effective 2028]` A short-term extension signed 2028+ has year 2 at +10
 rather than +5 — first actually paid in **2030**.

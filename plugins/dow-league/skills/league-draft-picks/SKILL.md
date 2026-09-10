@@ -1,12 +1,34 @@
 ---
 name: league-draft-picks
-description: "Track draft pick ownership for the Dynasty of Whiners league (MFL 29557) — who holds which future picks, where each is likely to slot, and outstanding conditional picks that MFL cannot represent. Use for \"who owns my 2028 1st\", \"what picks does X have\", or \"is anyone owed a pick\"."
+description: "Invoke before any league tool call for draft-pick questions in the Dynasty of Whiners league (MFL 29557) — who holds which future picks, where each is likely to slot, and the outstanding conditional picks that MFL cannot represent. Use for \"what draft picks does X have\", \"what picks does X have\", \"who owns my 2028 1st\", \"is anyone owed a pick\", or any count of picks. The raw picks payload is franchise ids and pick codes an owner cannot read; this skill resolves them to names and adds the conditional obligation MFL does not show. Not for what a pick pays on a rookie contract (league-rules)."
 ---
 
 # League Draft Picks
 
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
+
 Picks are currency here. This skill answers who holds what, roughly where each
 will land, and — the part no API can tell you — what is still **owed**.
+
+**What a pick pays on a rookie contract, and for how long, is `league-rules`** —
+the rookie scale lives there and nowhere else. Invoke it for that question; this
+skill holds no prices, and answering from NFL contract knowledge is wrong here.
 
 **Always re-derive from live MFL.** `future-draft-picks.md` is a dated snapshot
 and goes stale on the next trade. Checking it against live data on 4 Sep 2026
@@ -179,9 +201,13 @@ construction cannot see it.
 - **Never quote the script's raw output either.** `own gone: [4]` is a column
   name, not English — write "his own 2027 4th is gone". The ledger prints for a
   developer; you are writing for an owner.
-- **Raise an outstanding conditional whenever picks are being counted**, and
-  especially before any trade involving that year and round. Say which side owes
-  — an obligation recorded backwards is worse than none.
+- **Every pick count ends with one line that begins "Conditional obligations:"** —
+  the outstanding one from the section above with who owes whom, or "none affecting
+  <owner>" after checking the gSheet language and the one-sided trades. The line is
+  not optional and it is not a preamble: MFL cannot show these, so an answer
+  without it is silently incomplete. Raise it especially before any trade
+  involving that year and round; an obligation recorded backwards is worse than
+  none.
 - Don't explain the format back to the reader.
 
 ## Worth proposing to the league

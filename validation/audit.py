@@ -192,6 +192,52 @@ control = (len(ctl) == 3 and ctl[0].startswith("full-only") and ctl[1].startswit
            and ctl[2].endswith(": c") and ctl_cov.get("covered") == {"gate", "mocked"})
 report(f"every skill has a gate eval case ({len(cov)} skills covered)", bad, control)
 
+# --- 8. every SKILL.md opens with the canonical "Before you answer" block -------
+# The five house lines (names only, Pacific times, say what is missing, lead
+# with the answer, hand off a wrong-skill question) live at the top of every skill because small models at low
+# effort follow a short block near the top and ignore the same rule stated
+# deep in the prose (measured 10 Sep 2026 PT). Canonical text is
+# .githooks/skill-header.md; two skills append one sentence of exception to
+# line 1, which is allowed, so the match is line-by-line with that one
+# insertion tolerated.
+hdr_lines = io.open(".githooks/skill-header.md", encoding="utf-8").read().strip().splitlines()
+
+def header_ok(text):
+    """The block must be verbatim AND at the top: the first quoted line within
+    the first six non-blank lines after the front matter (an H1 may precede it).
+    A block that drifts to the bottom is the thing this check exists to stop."""
+    lines = [l.rstrip("\r") for l in text.splitlines()]
+    fm_end = 0
+    if lines and lines[0] == "---":
+        for i in range(1, len(lines)):
+            if lines[i] == "---":
+                fm_end = i + 1
+                break
+    body = [l for l in lines[fm_end:] if l.strip()]
+    first = next((i for i, l in enumerate(body) if l.startswith(">")), None)
+    if first is None or first > 5:
+        return False
+    got = body[first:first + len(hdr_lines)]
+    if len(got) != len(hdr_lines):
+        return False
+    for want, have in zip(hdr_lines, got):
+        if have == want:
+            continue
+        if want.rstrip().endswith("matched.") and have.startswith(want.rstrip()):
+            continue          # the one allowed exception sentence, appended
+        return False
+    return True
+
+bad = [f"{f} -- header missing, not verbatim, or not at the top" for f in skills
+       if not header_ok(io.open(f, encoding="utf-8").read())]
+_fm = "---\nname: x\n---\n# Title\n\n"
+_ok = _fm + "\n".join(hdr_lines) + "\n\nbody"
+_exc = _ok.replace("matched.", "matched. The one exception is X.")
+_para = _fm + "\n".join(hdr_lines).replace("Names only", "Use names") + "\n\nbody"   # same length, one word off
+_late = _fm + "body\n" * 8 + "\n".join(hdr_lines) + "\n"                             # verbatim, but buried
+control = header_ok(_ok) and header_ok(_exc) and not header_ok(_para) and not header_ok(_late)
+report(f"all {len(skills)} SKILL.md open with the canonical house block", bad, control)
+
 print()
 print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files")
 sys.exit(1 if fails else 0)

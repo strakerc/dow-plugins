@@ -88,6 +88,14 @@ directly, and this is the cleanest statement of the rule anywhere:
 > 2. Players that are currently under contract
 > 3. Players that have been franchised more than twice by the same owner
 
+**#2 means under contract for the season being tagged.** A tag is applied after a
+season ends, to a player whose contract ended with it, so a player in the final year
+of his deal is eligible for next season's tag and a player whose deal runs past this
+season is not. "Elliot Brandt, signed through 2026, asked in 2026 about a 2027 tag" is
+eligible on this gate; reading "currently under contract" as "has a contract right now"
+makes every player in the league ineligible, which is the mistake this line exists for
+(10 Sep 2026 PT).
+
 Note the exact wording on #3 — **"more than twice"**, so a second tag by the same owner is
 legal and a third is not. Plus, from the constitution:
 

@@ -38,8 +38,8 @@ Sibling: `rookie-draft-grades` / `claude/rookie-draft-grades-method.md`.
 > dollar") rather than written with a dollar sign and a single digit. A dollar
 > sign immediately followed by one digit is silently replaced, at invocation
 > time, with a word taken from the arguments the skill was called with. Two or
-> more digits are safe. Details: the repo README, "A convention that looks
-> like a typo and is not".
+> more digits are safe. This paragraph is for whoever edits this file, not an instruction for
+> answering an owner; the source repository documents the behaviour.
 
 ## ⛔ Two hard rules
 

@@ -44,6 +44,11 @@ need permissions your key does not carry, so installing it just adds clutter.
 In the same Plugins tab, open **Manage marketplaces**, then the **⋮** menu next
 to `dow-plugins`, and switch on **Sync automatically**.
 
+**You have to reach this from Customize in the left sidebar** — not from your
+account menu at the bottom left. Both routes look like the same page. Only the
+sidebar one shows the sync option, and on the other it is simply absent rather
+than greyed out, so there is nothing to tell you that you are in the wrong place.
+
 Skills get corrected fairly often. With sync off you keep whatever version you
 installed on the day you installed it, including its mistakes, and nothing tells
 you that you are behind.

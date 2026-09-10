@@ -276,6 +276,17 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
 6. `python3 validation/regress.py --post-push` — every case, forced, against
    what actually shipped.
 
+**When to halt instead of looping.** The fix-review-rerun loop in step 4 ends
+when the gate is green or when the evidence says it cannot get there: a case
+that has failed every run with nothing left to change in the prose (the model
+never loads the skill, or misreads a payload the others read fine), or a green
+that would need a standing rule bent to reach it. Then stop, leave the work
+committed and pushed on its branch with an open PR, write the per-case record
+and the options into the PR body and the memory, and hand Straker the decision.
+Do not spend more runs hoping, and do not override the rule to finish the task —
+he set this on 10 Sep 2026 PT after the haiku night: "good call to stop and not
+needlessly burn tokens."
+
 The plan and the per-skill coverage are in `validation/TEST-PLAN.md`. The evals
 are the only stage that reads the prose the way an owner's Claude does, so **a
 prose-only edit to a `SKILL.md` is exactly what they exist for** — the code-review

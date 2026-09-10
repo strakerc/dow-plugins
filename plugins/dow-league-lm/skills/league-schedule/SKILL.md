@@ -30,6 +30,13 @@ team-number assignment, and the "big ass random numbers" duplicate checksum.
 Paul Gaffney has built this by hand since 2024 and it takes him hours. He knows
 this tool exists. Treat his judgement as the reference, not this file.
 
+**If the request includes importing, saving or loading the schedule into MFL, say
+in the first reply that nothing here writes to MFL** -- saving overwrites the whole
+schedule with no undo, so a human saves the existing contents and pastes the
+block -- and say it whether or not the schedule can be built yet. Declining the
+build because the prior season is unfinished does not excuse the import half of
+the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT).
+
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
 work — read the live schedule out of MFL first.

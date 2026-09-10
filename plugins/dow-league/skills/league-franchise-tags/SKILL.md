@@ -116,6 +116,10 @@ All calls go to the MyFantasyLeague worker, league `29557`.
 3. **`get_players` with an explicit ID list** — resolve positions. Never omit `players`;
    the full export is megabytes.
 4. Group by position, sort by salary descending, take the top 5, average, ceil, add 5.
+   **Sort with a tool, not by eye**: save the roster payload and rank it with a
+   one-line script or the analysis tool, then paste the rows. Ranking two hundred
+   roster rows by reading them dropped a $16 contract in two runs out of three
+   (10 Sep 2026 PT), and a wrong top five is a wrong price with no error anywhere.
    The position is the one `get_players` returned for that id and nothing else — a
    name that sounds like a receiver is not a receiver, and a contract at the wrong
    position is out however high its salary. Carry the position into the table so a

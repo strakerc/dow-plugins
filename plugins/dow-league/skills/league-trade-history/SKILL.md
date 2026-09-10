@@ -84,7 +84,9 @@ not read the same way**:
   numbers start at zero.** Add one to each before naming a slot:
   `DP_0_0` = 1.01, `DP_1_3` = 2.04, `DP_3_11` = 4.12. `DP_1_3` is **not** 1.03, and its year
   is the season the transaction sits in: a `DP_` pick in a 2026 trade is a 2026
-  pick, never 2027 -- only `FP_` codes name a later year. Confirm every
+  pick, never 2027 -- only `FP_` codes name a later year. Print the decoded slot
+  alone: "pick 2.04", never "DP_1_3 (2.04)" -- the code in parentheses is the
+  exact thing the header forbids. Confirm every
   `DP_` against `get_draft_results` before naming a slot out loud: an off-by-one
   produces a completely plausible wrong pick with no error anywhere. This has
   already happened once, on 7 Sep 2026.
@@ -92,7 +94,11 @@ not read the same way**:
 ### Timestamps
 
 `timestamp` is Unix epoch. **Convert to Pacific and print the zone**, with UTC in
-parentheses: `29 Aug 2026, 07:37 PT (14:37 UTC)`. Late-evening trades fall on the
+parentheses: `29 Aug 2026, 07:37 PT (14:37 UTC)`. **Convert with a tool** -- a
+one-line script or the analysis tool, never arithmetic in your head: a head
+conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). **Convert with a tool** -- a
+one-line script or the analysis tool, never arithmetic in your head: a head
+conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). Late-evening trades fall on the
 previous day in Pacific, and four of seven in one sample did exactly that — a
 date quoted from the UTC conversion will disagree with what the owners remember.
 

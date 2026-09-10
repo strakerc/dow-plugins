@@ -201,6 +201,10 @@ draft pick.
 
 ### 7. Say when it locks
 
+**A kickoff time comes from a payload or it is not stated.** If no tool returned
+kickoff times, say the lock time could not be determined from the data and stop
+there; an estimated "~1:00 PM PT" is a fabricated deadline (10 Sep 2026 PT).
+
 MFL locks each player at their own kickoff, not at a single weekly deadline. Name
 the **earliest-starting recommended player and their kickoff, in Pacific with the
 zone labelled.**

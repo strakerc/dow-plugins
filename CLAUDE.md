@@ -210,6 +210,12 @@ reference instead, as they currently do.
 **Research first, then write.** Every number in a skill came from a live MFL call or a
 back-test, not from memory.
 
+The `league-lineup` back-test is committed and runnable at
+`validation/lineup-backtest/` — scripts only; its fixtures are raw MFL payloads
+and one of them carries every owner's phone and email, so `*.json` is blocked
+there. Only `plugins/` reaches an installed owner, so nothing under
+`validation/` ships.
+
 **Back-test against a decision that already happened.** A skill run on an open question
 produces a plausible answer nobody can check. `league-contracts` was validated by
 re-deriving all twelve 2025→2026 re-signings and matching price and term. That is the

@@ -196,29 +196,28 @@ claude.ai usage page: two full gate runs and a review left the weekly window at
 54% with the plan's usage credits at $0.00, and the console credit balance was
 not touched. The dollar figures here are the runner's API-equivalent estimates,
 useful for comparing cases, not charges. `haiku` under
-test was tried the same day: 6 cents a case, and it failed to invoke a skill
-that `sonnet` invoked on the same prompt, which reads as a skill regression
-that is not one. Owners use the stronger model, so the cheaper one is not a
-valid proxy. `--runs 2` doubles the cost and is worth it when a case looks
+test is 3 to 10 cents a case and sits in the default matrix at Straker's
+request; what it measures is under "What is unverified" below. `--runs 2` doubles the cost and is worth it when a case looks
 flaky. Every run has a per-run budget ceiling (`--max-budget`, default one
 dollar).
 
-## What is unverified as of 9 Sep 2026 PT — read before trusting a green
+## What is unverified as of 10 Sep 2026 PT — read before trusting a green
 
-1. **No eval case has been run through a model yet.** The `claude` CLI on
-   this machine is not logged in (`claude auth status` → `loggedIn: false`);
-   the desktop app authenticates its own sessions through a channel the CLI
-   does not share. Log in once from a real terminal:
-
-   ```bash
-   claude auth login
-   ```
-
-   The runner detects the not-logged-in reply and exits 2, and `regress.py`
-   reports the evals as FAIL rather than skipped. Until the first real run,
-   expect grader calibration: a strict regex or an over-specific rubric will
-   fail a correct answer. Read the transcript in `validation/evals/results/`,
-   and change the grader, not the skill, unless the skill is actually wrong.
+1. **The matrix is green on `sonnet` and `opus` and red on `haiku`.** First
+   full run 10 Sep 2026 PT, all 22 gate cases under three models at low and
+   high effort. After three fix rounds `sonnet` and `opus` pass 22/22 at both
+   efforts. `haiku` passed 14/22 at low and 16/22 at high on its best pass,
+   and its failures do not converge on rerun: five cases at low effort never
+   loaded the skill in four runs each (picks, values, matchups, the
+   contacts-no-leak picks question, trade history: it answered straight from
+   the MFL tools), and three more loaded the skill and misread the payload
+   every time (tag floor, lineup pool, trade timestamps). Every description
+   was rewritten to open with "invoke before any league tool call"; it moved
+   nothing for `haiku`. Under the every-combination rule the gate is red
+   until Straker decides what `haiku` gates. Grader calibration is done:
+   every remaining `haiku` failure is a real miss, read from its transcript.
+   The CLI is logged in (claude.ai Max); if `claude auth status` ever says
+   otherwise, the runner exits 2 and the push is refused.
 2. **`claude plugin eval` is early access and not enabled for this
    account.** The cases use its layout so `regress.py --official` can hand
    them over unchanged, but that path has never been watched succeeding, and

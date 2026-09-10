@@ -283,17 +283,26 @@ skip list for docs-only changes does not apply to them. `regress.py` exits 3 whe
 `plugins/` has changed and the evals were not run; that is "incomplete", not
 "passed".
 
-**Cost.** `sonnet` under test and `sonnet` judging, Straker's call: 15 to 50
-cents a case, so a full gate run is about six dollars and a rerun of two failures
-under a dollar. Usage comes off the claude.ai Max plan (his preference; no API
-key). Verified 9 Sep 2026 PT: two full gate runs plus a review left the weekly
-window at 54% and the plan's usage credits at $0.00; the console credit balance
-is not involved. The dollar figures are API-equivalent estimates, not charges. `haiku` under test was tried and rejected: it failed to invoke
-a skill that `sonnet` invoked on the same prompt. The first full run happened
-9 Sep 2026 PT (17 of 22; the five failures were two runner bugs, two over-strict
-graders, and one real prose gap in `league-franchise-tags`). `claude plugin eval`
-is still early access and closed for this account; `regress.py --official`
-reports SKIP.
+**Cost.** `sonnet` judges, Straker's call. A case is 3 to 50 cents depending on
+the model under test, so the first full matrix (22 cases, three models, two
+efforts) was about $28 API-equivalent in forty minutes, and a rerun of the stale
+and failed rows after a fix is $5 to $10. Usage comes off the claude.ai Max plan
+(his preference; no API key). Verified 9 Sep 2026 PT: two full gate runs plus a
+review left the weekly window at 54% and the plan's usage credits at $0.00; the
+console credit balance is not involved. The dollar figures are API-equivalent
+estimates, not charges. `claude plugin eval` is still early access and closed for
+this account; `regress.py --official` reports SKIP.
+
+**Where the matrix stands, 10 Sep 2026 PT.** `sonnet` and `opus` pass 22/22 at
+low and at high effort. `haiku` does not, and reruns do not converge: on five
+cases at low effort it never loaded the skill in four runs each (it answered
+picks, values, matchup and trade prompts straight from the MFL tools), and on
+three more it loaded the skill and misread the payload every time. Rewriting
+every description to open with "invoke before any league tool call" changed
+nothing for it. That is a property of the model in the CLI harness, not a prose
+regression, and under the every-combination rule it leaves the gate red. What
+`haiku` gates is Straker's decision; until it is made, `--models sonnet,opus` is
+the green path and `--models haiku` is a report.
 
 **Research first, then write.** Every number in a skill came from a live MFL call or a
 back-test, not from memory.

@@ -115,14 +115,30 @@ say which parts are not.
 
 ### 5. The correlation layer
 
-Four relationships, and they are not equally strong:
+Five relationships. They differ in strength **and in direction**, and direction is
+the half that gets dropped.
 
-| Relationship | Effect | Strength |
-|---|---|---|
-| **Your pass-catcher, their QB** | The same play pays both, and the receiver gains more per catch | **Strongest.** The canonical play |
-| **Your RB, their RB, same backfield** | Touches you take are touches they do not get | **Strong.** A direct block |
-| **Your pass-catcher, their pass-catcher, same team** | A shared, finite target pool — a hedge, not a gain | Moderate, and it scales with *their* player's target share. Do not overstate it for their third receiver |
-| **Same game, different teams** | A shootout lifts both; a defensive game sinks both | Weak. A variance note, nothing more |
+| Relationship | Effect | Margin | Strength |
+|---|---|---|---|
+| **Your pass-catcher, their QB** | The same play pays both, and the receiver gains more per catch | **Compresses** | **Strongest.** The canonical play |
+| **Your RB, their RB, same backfield** | Touches you take are touches they do not get | **Widens** | **Strong.** A direct block |
+| **Your pass-catcher, their pass-catcher, same team** | Two effects at once: a good team day lifts both, a finite target pool sets them against each other | **Widens** as their player's target share rises; near neutral for their third receiver | Moderate. Do not overstate it |
+| **Any other same-team pair** | A finite team scoring pool — your running back and their tight end, say | **Widens**, weakly | Weak. Name it; do not act on it alone |
+| **Same game, different teams** | A shootout lifts both; a defensive game sinks both | **Compresses** | Weak. A variance note, nothing more |
+
+**Read Margin against the favourite/underdog line below, never on its own.**
+Strength says how far a pairing moves the spread of outcomes. It does not say
+whether you want that. Compressing the margin is what a favourite wants and
+exactly what an underdog must avoid — and the strongest row in this table is a
+compressor, so reading only the Strength column gets the magnitude right and the
+sign backwards.
+
+The fourth row is a catch-all and it is load-bearing. The others name specific
+pairings; a real matchup does not. Your running back and their tight end on the
+same NFL team is not row 1, 2, 3 or 5 — row 5 is scoped to *different* teams —
+and an earlier version of this table said nothing whatever about that case while
+both players were near-certain starters. When a pair fits no row above it, the
+default is the fourth: weakly widening, worth naming, never decisive.
 
 **Correlation is a variance tool, not a points tool.** Compare the two projected
 totals first and **state which side of the line this matchup is on before

@@ -76,8 +76,9 @@ experiences.
 `validation/audit.py`: the seven invariants over the whole tracked tree — the
 canonical footer in every `SKILL.md`, no `$` + single digit, every `*.json`
 parses, no contact data anywhere, no build droppings, stated counts match
-reality, and every skill named by a `gate` eval case. Every check carries a
-control that must fail.
+reality, every skill named by a `gate` eval case, and every skill opening with
+the canonical "Before you answer" block. Every check carries a control that
+must fail.
 
 `claude plugin validate` on the marketplace manifest and both plugin
 manifests.
@@ -123,11 +124,22 @@ mechanics and the synthetic league.
 case for every skill, the footer, and every case where a wrong answer costs
 the league something. This is what the pre-push hook runs.
 **Full set** (`--full`, all 31): everything below.
-**Model matrix** (`--models haiku,sonnet,opus,claude-fable-5-1`): the same
-cases under each model, one ledger entry per model. Only `--model` (default
-`sonnet`) gates the push; the others are reported, so a routing miss on a
-cheaper model is seen without blocking. Owners on claude.ai may be on any of
-them. Straker asked for this on 9 Sep 2026 PT; the plan has the bandwidth.
+**The matrix: models × efforts.** Every run, including the push hook's,
+covers the models in `--models` (default `haiku,sonnet,opus`) under every
+effort in `--efforts` (default `low,high`), one ledger entry per case per
+combination. **Every combination gates.** A case passes only when it passes
+under all of them; a failure under one is a failure of the case, and the fix
+is verified under all, because a fix changes the case's fingerprint and makes
+every entry stale. Those are Straker's standing rules (10 Sep 2026 PT):
+"treat a failure in a single model as a failure in all" and "the matrix just
+needs to test low and high, always, not one or the other." Effort is a real
+variable: the same prose passed 22/22 on Sonnet at default effort and 17/22
+at low. Medium is not run: low and high bracket it. `claude-fable-5-1` joins
+the models when the weekly window allows. `--models ''` and `--efforts ''`
+run `--model` at `--effort` alone.
+The ledger also records the exact model id behind each alias; a run resolves
+each alias with one tiny call first, so when `sonnet` starts pointing at a
+newer model the old passes read as stale and rerun.
 
 ### Coverage by skill
 

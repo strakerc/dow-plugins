@@ -47,7 +47,10 @@ python3 validation/evals/run_headless.py --ledger --tag gate  # what has passed 
 python3 validation/evals/run_headless.py --regrade 20260909-213359 --case picks-holdings  # rescore a saved transcript
 ```
 
-A run skips every case whose recorded pass is still valid: the skills it
+`validation/regress.py --evals` covers each model in its `--models` (default
+`haiku,sonnet,opus`) under each effort in `--efforts` (default `low,high`),
+every combination gating, by calling this runner once per combination; run
+directly, this runner covers the one `--model` at the one `--effort` given. A run skips every case whose recorded pass is still valid: the skills it
 covers, every skill's name and description, its own files, the mock files for
 the tools its last run called, the mock server and the grading code all
 unchanged, and the same model.
@@ -83,7 +86,7 @@ Brandt), a Long-Term on IR (Silas Orr, projected well enough to tempt a start),
 a rookie on taxi (Rowan Pike), a rookie in year 2 (Cyrus Bell), a player with no
 projection row (Harlan Voss), one projected exactly zero (Luca Ferro), and one
 the value board cannot price (Wren Castillo). Bram holds Ada's 2028 1st; Ada
-holds Cleo's 2027 3rd. Ada plays Bram in weeks 3 and 6. Ada carries $16 of
+holds Cleo's 2027 3rd. Ada plays Bram in weeks 3 and 8 (a round-robin week and a rivalry week; the schedule is a legal 14-week build). Ada carries $16 of
 dead money in two rows. One trade on 31 Jul 2026 at 19:08 PT (1 Aug UTC) --
 Kai Mercer and Ada's 2028 1st for Ravi Dunn and a `DP_` pick, and the rosters
 reflect it -- plus one one-sided trade from Cleo. Ten-digit epochs read as phone

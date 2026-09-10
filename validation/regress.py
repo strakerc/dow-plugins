@@ -63,14 +63,28 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 PY = sys.executable
 CLAUDE = shutil.which("claude") or str(Path.home() / ".local" / "bin" / "claude")
 EARLY_ACCESS = re.compile(r"^`plugin eval` is currently in early access\s*$", re.M)
+# The matrix every eval run covers: models x efforts. Owners on claude.ai may
+# be on any model at any effort, so the cases run under each combination, and
+# EVERY combination gates: a case passes only when it passes under all of
+# them, a failure under one is a failure of the case, and the fix is verified
+# under all (the fingerprint makes every entry stale). Straker's standing
+# rules, 10 Sep 2026 PT: "treat a failure in a single model as a failure in
+# all" and "the matrix just needs to test low and high, always. not one or the
+# other." claude-fable-5-1 joins the models when the weekly window allows.
+# Measured the same day: sonnet passed 22/22 at default effort and 17/22 at
+# low with identical prose -- effort is a real variable, which is why both
+# ends are tested rather than one.
+DEFAULT_MODELS = "haiku,sonnet,opus"
+DEFAULT_EFFORTS = "low,high"
+GATE_MODEL = "sonnet"       # the default for a single-model run and for regrades
+DEFAULT_EFFORT = "low"      # the default for a single run (--efforts '')
 
 results = []   # (stage, status, detail)
 
 
 def say(stage, status, detail=""):
     results.append((stage, status, detail))
-    flag = {"PASS": "PASS", "FAIL": "FAIL", "SKIP": "SKIP  <-- did not run",
-            "WARN": "WARN  <-- reported, not gating"}[status]
+    flag = {"PASS": "PASS", "FAIL": "FAIL", "SKIP": "SKIP  <-- did not run"}[status]
     print(f"\n[{flag}] {stage}" + (f": {detail}" if detail else ""))
 
 
@@ -186,6 +200,8 @@ def stage_evals(args):
     cmd = [PY, "validation/evals/run_headless.py", "--model", args.model,
            "--judge-model", args.judge_model, "--runs", str(args.runs),
            "--parallel", str(args.parallel)]
+    if args.effort:
+        cmd += ["--effort", args.effort]   # always set: the ledger keys on it
     if not args.full:
         cmd += ["--tag", "gate"]
     if args.case:
@@ -196,10 +212,30 @@ def stage_evals(args):
     if p.returncode == 2:
         say("evals", "FAIL", "model unreachable -- `claude auth login` in a real terminal, then re-run")
         return 2
-    say(f"evals[{args.model}]" if args.models else "evals", "PASS" if p.returncode == 0 else "FAIL",
+    say(f"evals[{args.model}@{args.effort}]" if (args.models or args.efforts) else "evals",
+        "PASS" if p.returncode == 0 else "FAIL",
         "headless skill evals, " + ("all cases" if args.full else "gate tag")
         + (", forced" if args.all else ", stale and failed only"))
     return p.returncode
+
+
+def evals_matrix(args):
+    """Every model in args.models under every effort in args.efforts, one
+    ledger entry per case per combination, and every combination gates: the
+    worst exit code wins (2 = unreachable beats 1 = failed). Empty --models or
+    --efforts falls back to --model / --effort alone."""
+    models = [x.strip() for x in (args.models or "").split(",") if x.strip()] or [args.model]
+    efforts = [x.strip() for x in (args.efforts or "").split(",") if x.strip()] or [args.effort]
+    primary, primary_effort, worst = args.model, args.effort, 0
+    try:
+        for e in efforts:
+            for m in models:
+                args.model, args.effort = m, e
+                rc = stage_evals(args)
+                worst = max(worst, rc)
+    finally:
+        args.model, args.effort = primary, primary_effort
+    return worst
 
 
 def stage_official(args):
@@ -286,7 +322,7 @@ def pre_push(args, local_sha, base_sha):
         print("note: validation/evals has uncommitted changes; a recorded pass may rest on files "
               "that are in no commit:\n" + "\n".join("      " + l for l in dirty.splitlines()[:12]))
     args.full = False
-    return stage_evals(args)
+    return evals_matrix(args)
 
 
 def post_push_guard():
@@ -312,9 +348,15 @@ def main():
     ap.add_argument("--case", help="glob on eval case names")
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--parallel", type=int, default=6, help="eval cases run at once")
-    ap.add_argument("--model", default="sonnet", help="the model the push gate is judged on")
-    ap.add_argument("--models", help="comma list, e.g. haiku,sonnet,opus,claude-fable-5-1: run the selected cases "
-                                     "under each; only --model's result gates, the rest are reported")
+    ap.add_argument("--effort", default=DEFAULT_EFFORT,
+                    help=f"effort for a single run (--efforts ''); default {DEFAULT_EFFORT}; part of the ledger key")
+    ap.add_argument("--efforts", default=DEFAULT_EFFORTS,
+                    help=f"comma list of efforts every run covers (default {DEFAULT_EFFORTS}); every combination "
+                         "of model and effort gates")
+    ap.add_argument("--model", default=GATE_MODEL, help="the model for a single-model run (--models '')")
+    ap.add_argument("--models", default=DEFAULT_MODELS,
+                    help=f"comma list of models every run covers (default {DEFAULT_MODELS}); every model x effort "
+                         "combination gates -- a case passes only when it passes under all. --models '' runs --model alone")
     ap.add_argument("--judge-model", default="sonnet")
     ap.add_argument("--skip-backtest", action="store_true")
     ap.add_argument("--only", choices=["static", "scripts", "backtest", "evals-lint", "evals"])
@@ -341,28 +383,7 @@ def main():
     def run_evals():
         if args.official:
             return stage_official(args)
-        if not args.models:
-            return stage_evals(args)
-        # The matrix: every model in the list, one ledger entry per model. Only
-        # the gate model's result decides the exit code; the others are shown
-        # in the summary so a routing miss on a cheaper model is seen, not
-        # blocking. Straker, 9 Sep 2026 PT: the plan has the bandwidth.
-        gate_model, rc_gate = args.model, 0
-        try:
-            for m in [x.strip() for x in args.models.split(",") if x.strip()]:
-                args.model = m
-                rc = stage_evals(args)
-                if m == gate_model:
-                    rc_gate = rc
-                elif results:
-                    # WARN, never FAIL: the pass/fail decision below counts only
-                    # FAIL rows, so a cheaper model's miss is shown, not blocking
-                    # (review finding, 9 Sep 2026 PT).
-                    det = results[-1][2]
-                    results[-1] = (f"evals[{m}]", "PASS" if rc == 0 else "WARN", det + " (reported, not gating)")
-        finally:
-            args.model = gate_model
-        return rc_gate
+        return evals_matrix(args)
     rc_evals = None
     if args.only == "evals":
         rc_evals = run_evals()

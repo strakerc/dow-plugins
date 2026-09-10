@@ -1,5 +1,5 @@
 ---
-description: Unowned players. The only authority on whether someone is owned. Synthetic.
+description: Unowned players. The only authority on whether someone is owned. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` or `league-lineup` skill BEFORE calling this. Synthetic.
 ---
 {
  "freeAgents": {

@@ -1,9 +1,27 @@
 ---
 name: league-player-values
-description: "What a player is worth in the Dynasty of Whiners league (MFL 29557) — market value, what his contract costs against it, and whether that makes him an asset or a liability here. Use for \"what's X worth\", \"is he overpaid\", \"should I keep him at that price\", \"who's the better asset\", or sizing up someone else's roster."
+description: "Invoke before any league tool call when an owner asks what a player is worth, or which of two players is the better asset, in the Dynasty of Whiners league (MFL 29557) — market value, what his contract costs against it, and whether that makes him an asset or a liability here. Use for \"who's the better asset\", \"X or Y as an asset\", \"what's X worth\", \"is he overpaid\", \"should I keep him at that price\", or sizing up someone else's roster. A raw value lookup treats a missing price as a low one; this skill does not. Not for \"who should I start\" (league-lineup) or a proposed trade (league-trade-evaluator)."
 ---
 
 # League Player Values
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 **A player's price is public. What he is worth *here* is not.** Every external
 site prices the player; none of them knows he is signed through 2028 at $16, or

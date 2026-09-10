@@ -1,9 +1,27 @@
 ---
 name: league-schedule
-description: "Build or correct the annual regular-season schedule for the Dynasty of Whiners league (MFL 29557) — computes the three tiers from prior-season results, generates a validated 14-week schedule, and produces the MFL import block. Use for \"make the schedule\", \"schedule for next season\", rivalry weeks, or scheduling tiers."
+description: "Invoke before any league tool call when the league manager asks to make, build, rebuild or correct the regular-season schedule for the Dynasty of Whiners league (MFL 29557) — computes the three tiers from prior-season results, generates a validated 14-week schedule, and produces the MFL import block. Use for \"make the schedule\", \"make our 2026 schedule\", \"build the 2027 schedule\", \"schedule for next season\", \"rebuild the schedule\", \"import it into MFL\", rivalry weeks, or the MFL import block. The league's format is fixed and known here, so do not ask what kind of schedule first. Reading a schedule or the tiers back is league-matchups."
 ---
 
 # League Schedule
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched. The one exception is the MFL import block, which is machine input.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 Fourteen weeks, twelve teams. This replaces steps 4–10 of the constitution's LM
 procedure — the external Streamlit generator, the CSV export, the manual
@@ -11,6 +29,13 @@ team-number assignment, and the "big ass random numbers" duplicate checksum.
 
 Paul Gaffney has built this by hand since 2024 and it takes him hours. He knows
 this tool exists. Treat his judgement as the reference, not this file.
+
+**If the request includes importing, saving or loading the schedule into MFL, say
+in the first reply that nothing here writes to MFL** -- saving overwrites the whole
+schedule with no undo, so a human saves the existing contents and pastes the
+block -- and say it whether or not the schedule can be built yet. Declining the
+build because the prior season is unfinished does not excuse the import half of
+the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT).
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
@@ -172,6 +197,10 @@ or PDF with changed rows shaded works well; a spreadsheet with the schedule, the
 changes, the tiers and the import block on separate sheets lets him paste into a
 duplicated tab himself.
 
+**If you cannot produce a file, put the review sheet and the import block inline in
+the answer.** Never end on a promise to create something; an answer that stops at
+"let me create an artifact" delivers nothing (seen 10 Sep 2026 PT).
+
 **Ship exactly one import file.** Several near-identical candidates next to an
 irreversible paste-and-save button is how the wrong one gets used.
 
@@ -188,8 +217,9 @@ to see before the import rather than after.
 - **Writing to the league gSheet.** It also holds member phone numbers and email
   addresses. The LM procedure duplicates a proposal tab rather than overwriting;
   follow that, by hand.
-- Build before the NFL releases its regular-season schedule, to prevent bye-week
-  manipulation.
+- Build **before** the NFL releases its regular-season schedule, to prevent bye-week
+  manipulation. That is a reason to build early, never a reason to wait: nothing
+  in this procedure needs the NFL schedule.
 
 ## Open question for Paul
 

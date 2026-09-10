@@ -1,9 +1,27 @@
 ---
 name: league-rules
-description: "Answer rules questions for the Dynasty of Whiners dynasty league (MyFantasyLeague 29557) — salary cap, contracts, dead money, taxi and IR eligibility, trades, deadlines, penalties, playoffs and draft order. Use for \"can I do this\", \"what does that cost\", \"is he IR eligible\", \"what's the deadline\", or \"how much dead money\"."
+description: "Invoke for any question about how the Dynasty of Whiners dynasty league (MyFantasyLeague 29557) works — salary cap, contracts, dead money, taxi and IR eligibility, trades, deadlines, penalties, playoffs and draft order. Use for \"can I do this\", \"what does that cost\", \"what does pick 1.05 pay\", \"rookie contract\", \"rookie salary\", \"contract prices\", \"is he IR eligible\", \"what's the deadline\", \"how much dead money\", \"what happens to our league if\", or \"under our league rules\" — any question about the rules. Answers come from the digest here, not from memory of other leagues."
 ---
 
 # League Rules
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 A digest of Constitution 2.0 for the Dynasty of Whiners (MFL league `29557`).
 **The Google Doc is the source of truth; this is a working reference.** If a
@@ -26,8 +44,8 @@ and the wrong version shipped an entire season's schedule before anyone noticed.
 > digit picks which word. It reads as ordinary prose, which is why it went
 > unnoticed until 4 Sep 2026, by which point it had rewritten the rookie salary
 > scale and the payout table into nonsense. Two or more digits (`$25`, `$375`)
-> are safe and keep their sign. **All figures are US dollars.** Details: the
-> repo README, "A convention that looks like a typo and is not".
+> are safe and keep their sign. **All figures are US dollars.** This paragraph is for whoever edits this file, not an instruction for
+> answering an owner; the source repository documents the behaviour.
 
 ---
 
@@ -248,6 +266,11 @@ Leaving the auction with money is a position, not a failure.
 - Week 15: seeds 1–2 bye, 3v6, 4v5. Week 16: no reseeding (MFL limitation) —
   seed 1 vs winner of 4/5, seed 2 vs winner of 3/6. Week 17: championship and a
   3rd place game, which pays.
+
+**Scheduling tiers** — which four teams are Tier 1 and how Tiers 2 and 3 split —
+are not restated here. For "how are the tiers decided" or a team's tier, invoke
+`league-matchups`; to build a season, `league-schedule`. Never answer the tier
+rule from memory: the wrong version once shipped a whole season.
 
 **Next year's rookie draft order:** non-playoff teams in reverse regular-season
 standings (H2H record, then points for — lowest points picks first among equal

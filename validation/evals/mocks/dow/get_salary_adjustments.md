@@ -1,5 +1,5 @@
 ---
-description: Dead money rows per franchise: MFL's automatic 25% on a drop plus the LM's 75% row. Synthetic.
+description: Dead money rows per franchise: MFL's automatic 25% on a drop plus the LM's 75% row. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-contracts` or `league-franchise-tags` skill BEFORE calling this. Synthetic.
 ---
 {
  "salaryAdjustments": {

@@ -4,4 +4,4 @@ tags: ["gate", "mocked"]
 skills: ["league-schedule"]
 max_turns: 8
 ---
-How are the three scheduling tiers decided?
+How are the three scheduling tiers in our league decided?

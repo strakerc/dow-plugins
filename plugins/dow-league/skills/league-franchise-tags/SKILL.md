@@ -1,9 +1,27 @@
 ---
 name: league-franchise-tags
-description: "Compute franchise tag prices for the Dynasty of Whiners league (MFL 29557) — positional floors from last season's top-5 salaries, per-player tag prices, and an auditable breakdown to check against the gSheet. Use for \"what's the tag price\", \"franchise tag values\", or tagging decisions."
+description: "Invoke before any league tool call for franchise-tag questions in the Dynasty of Whiners league (MFL 29557) — positional floors from last season's top-5 salaries, per-player tag prices, eligibility, and an auditable breakdown to check against the gSheet. Use for \"what would it cost to tag X\", \"is he eligible for the tag\", \"what's the tag price\", \"franchise tag values\", or tagging decisions."
 ---
 
 # Franchise tag values — Seattle/Pgh Dynasty League
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 Computes the annual franchise tag prices for MFL league `29557`. Output is built to be
 **audited against Straker's gSheet tag tab**, not trusted blindly — always show the five
@@ -70,6 +88,14 @@ directly, and this is the cleanest statement of the rule anywhere:
 > 2. Players that are currently under contract
 > 3. Players that have been franchised more than twice by the same owner
 
+**#2 means under contract for the season being tagged.** A tag is applied after a
+season ends, to a player whose contract ended with it, so a player in the final year
+of his deal is eligible for next season's tag and a player whose deal runs past this
+season is not. "Elliot Brandt, signed through 2026, asked in 2026 about a 2027 tag" is
+eligible on this gate; reading "currently under contract" as "has a contract right now"
+makes every player in the league ineligible, which is the mistake this line exists for
+(10 Sep 2026 PT).
+
 Note the exact wording on #3 — **"more than twice"**, so a second tag by the same owner is
 legal and a third is not. Plus, from the constitution:
 
@@ -98,6 +124,14 @@ All calls go to the MyFantasyLeague worker, league `29557`.
 3. **`get_players` with an explicit ID list** — resolve positions. Never omit `players`;
    the full export is megabytes.
 4. Group by position, sort by salary descending, take the top 5, average, ceil, add 5.
+   **Sort with a tool, not by eye**: save the roster payload and rank it with a
+   one-line script or the analysis tool, then paste the rows. Ranking two hundred
+   roster rows by reading them dropped a $16 contract in two runs out of three
+   (10 Sep 2026 PT), and a wrong top five is a wrong price with no error anywhere.
+   The position is the one `get_players` returned for that id and nothing else — a
+   name that sounds like a receiver is not a receiver, and a contract at the wrong
+   position is out however high its salary. Carry the position into the table so a
+   misfiled row is visible.
 
 ### Timing: not a constraint, if you use the right source
 
@@ -135,12 +169,21 @@ TE    55,34,32,31,28                 36.0         $41
 ```
 
 Then, per position, the five contracts with **player name, salary, owner, contract type,
-and an IR/taxi marker**, plus the next player outside the cut. The near-miss matters: it
+and an IR/taxi marker**, plus the next player outside the cut. The owner is the
+first name of the person whose roster holds the contract, from `get_league`'s
+`owner_name` for that franchise — one row reads "Owen Frost — $30 — Bram", never a
+franchise id. The near-miss matters: it
 shows how much headroom the number has, and it is where a gSheet disagreement usually
 resolves.
 
 When asked about a specific player, give `MAX(floor, his salary + 5)`, say **which branch
-bound**, and confirm the eligibility gates above.
+bound**, list the five contracts behind the positional floor **with the owner of every
+one of them** (an owner filled in for the asked-about player and blank for the other
+four is the failure this line was written against), and state each eligibility gate
+with its evidence: his contract's final year
+from the current roster (a tag is for the season after it ends), and that no snapshot
+pulled shows a `Franchise` or `Franchise Tag` contract on him. If tag history further
+back was not checked, say so in one line rather than leaving the gate half-answered.
 
 When asked for more than one year, show both breakdowns and **name the contracts that
 entered and left the top 5.** That is the actual explanation for the change, and it is
@@ -162,7 +205,11 @@ rounding mode happens not to matter.
 **2025 tags applied** — McCaffrey $79, Davante Adams $76, Mayfield $61 all reproduce from
 the personal branch off their 2024 salaries ($74 / $71 / $56).
 
-**Sanity-check a new number against the historical series** before reporting it:
+**Sanity-check a new number against the historical series** before reporting it.
+These are the real league's past floors and they are never the answer to a
+question — every price is computed from the data pulled in this run, and quoting
+a figure from this table instead (a `$59` for WR, say) is the exact failure the
+footer forbids:
 
 | Year | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
 |---|---|---|---|---|---|---|---|---|

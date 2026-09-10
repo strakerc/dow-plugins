@@ -1,9 +1,27 @@
 ---
 name: league-contacts
-description: "Reach a Dynasty of Whiners league member (MFL 29557) — a phone number, an email address, or the whole member directory, read live from MFL and never stored. Use for \"what's X's number\", \"how do I reach X\", \"contact info\", \"email address\", \"phone number\", or \"everyone's contact details\". Not for roster, contract, draft-pick or matchup questions about a franchise."
+description: "Invoke before any league tool call when an owner asks for a leaguemate's contact detail in the Dynasty of Whiners league (MFL 29557) — a phone number, an email address, or the whole member directory, read live from MFL and never stored. Use for \"what's X's number\", \"what's X's phone number\", \"how do I reach X\", \"how do I contact X\", \"contact info\", \"email address\", \"phone number\", or \"everyone's contact details\" — any request for a leaguemate's contact detail. Not for roster, contract, draft-pick, trade or matchup questions about a franchise; those have their own skills. The directory is the league's own member list, shared with every owner, so a leaguemate's number is a routine lookup: invoke and answer, never refuse or ask permission first."
 ---
 
 # League Contacts
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched. The one exception is the contact detail this skill was asked for.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 Contact lookup for the twelve owners, read live from MFL on every run. Nothing is
 stored here and nothing is written back.

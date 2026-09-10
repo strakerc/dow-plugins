@@ -4,4 +4,4 @@ tags: ["gate", "mocked"]
 skills: ["league-matchups"]
 max_turns: 10
 ---
-I'm Ada. Who do I play in week 6 of the 2027 season?
+I'm Ada. Who do I play in week 8 of the 2027 season?

@@ -99,10 +99,17 @@ that the tool is broken.
 3. **All `*.json` must parse.** A broken manifest breaks the install for everyone, and
    the failure surfaces in someone else's Claude.
 4. No league data, member contact details, or credentials in the repo at all.
-5. **Every `SKILL.md` carries the connector footer verbatim.** The canonical text is
-   `.githooks/skill-footer.md` — copy it, don't retype it. Sections *after* it are
-   fine (`league-schedule` adds one); paraphrase is not. `league-rules` shipped
-   without the footer for a while and nothing noticed, because the rule was prose.
+5. **Every `SKILL.md` carries the connector footer verbatim, and opens with the
+   canonical "Before you answer" block verbatim.** The texts are
+   `.githooks/skill-footer.md` and `.githooks/skill-header.md` — copy them, don't
+   retype them. Sections *after* the footer are fine (`league-schedule` adds one);
+   paraphrase is not; the header allows one appended exception sentence
+   (`league-contacts`, `league-schedule`). The hook checks the footer on commit,
+   `audit.py` check 8 checks the header, and the pre-push gate runs the audit.
+   `league-rules` shipped without the footer for a while and nothing noticed,
+   because the rule was prose. The header exists because small models at low
+   effort follow five lines at the top and ignore the same rule deep in the prose
+   (measured 10 Sep 2026 PT).
 6. **No phone numbers or email addresses in added lines, or in the commit message.**
    `get_league` returns both for all twelve owners; `league-contacts` reads them at
    run time and the repo stores none. This is the one invariant whose breach cannot
@@ -155,8 +162,9 @@ When adding a skill, decide which package it belongs to on that rule, mirror the
 new skill in the owning plugin's `README.md` table, and **write at least one gate
 eval case for it** under `validation/evals/<plugin>/` with the skill in its
 `skills:` line — `validation/audit.py` fails until it exists, and the pre-push hook
-runs the audit. `validation/evals/README.md` has the case format and the synthetic
-league to write it against.
+runs the audit. Open the new skill with `.githooks/skill-header.md` and end it with
+`.githooks/skill-footer.md`, both verbatim. `validation/evals/README.md` has the
+case format and the synthetic league to write it against.
 
 ## How skills get their facts
 
@@ -251,6 +259,14 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    new, failed, or stale** (their skill files, any skill's description, their
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
    already tested." `--all` forces everything; `--post-push` always does.
+   Every run covers `haiku`, `sonnet` and `opus` at low **and** high effort
+   (`--models`, `--efforts`), because owners may be on any of them, and
+   **every combination gates: a case passes only when it passes under all, a
+   failure under one is a failure of the case, and the fix is verified under
+   all** (a fix changes the fingerprint, so every entry reruns). Standing
+   rules, both Straker's, 10 Sep 2026 PT. One carve-out, also his: `haiku`
+   runs and reports but does not gate (`--report-models`, a NOTE in the
+   summary instead of a FAIL) -- see "Where the matrix stands" for why.
 4. **A failure means fix, review, rerun the failures.** Read the transcript in
    `validation/evals/results/`, decide whether the skill or the grader is
    wrong, fix that one thing, run `/code-review` on the fix, then
@@ -262,6 +278,17 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
 6. `python3 validation/regress.py --post-push` — every case, forced, against
    what actually shipped.
 
+**When to halt instead of looping.** The fix-review-rerun loop in step 4 ends
+when the gate is green or when the evidence says it cannot get there: a case
+that has failed every run with nothing left to change in the prose (the model
+never loads the skill, or misreads a payload the others read fine), or a green
+that would need a standing rule bent to reach it. Then stop, leave the work
+committed and pushed on its branch with an open PR, write the per-case record
+and the options into the PR body and the memory, and hand Straker the decision.
+Do not spend more runs hoping, and do not override the rule to finish the task —
+he set this on 10 Sep 2026 PT after the haiku night: "good call to stop and not
+needlessly burn tokens."
+
 The plan and the per-skill coverage are in `validation/TEST-PLAN.md`. The evals
 are the only stage that reads the prose the way an owner's Claude does, so **a
 prose-only edit to a `SKILL.md` is exactly what they exist for** — the code-review
@@ -269,17 +296,28 @@ skip list for docs-only changes does not apply to them. `regress.py` exits 3 whe
 `plugins/` has changed and the evals were not run; that is "incomplete", not
 "passed".
 
-**Cost.** `sonnet` under test and `sonnet` judging, Straker's call: 15 to 50
-cents a case, so a full gate run is about six dollars and a rerun of two failures
-under a dollar. Usage comes off the claude.ai Max plan (his preference; no API
-key). Verified 9 Sep 2026 PT: two full gate runs plus a review left the weekly
-window at 54% and the plan's usage credits at $0.00; the console credit balance
-is not involved. The dollar figures are API-equivalent estimates, not charges. `haiku` under test was tried and rejected: it failed to invoke
-a skill that `sonnet` invoked on the same prompt. The first full run happened
-9 Sep 2026 PT (17 of 22; the five failures were two runner bugs, two over-strict
-graders, and one real prose gap in `league-franchise-tags`). `claude plugin eval`
-is still early access and closed for this account; `regress.py --official`
-reports SKIP.
+**Cost.** `sonnet` judges, Straker's call. A case is 3 to 50 cents depending on
+the model under test, so the first full matrix (22 cases, three models, two
+efforts) was about $28 API-equivalent in forty minutes, and a rerun of the stale
+and failed rows after a fix is $5 to $10. Usage comes off the claude.ai Max plan
+(his preference; no API key). Verified 9 Sep 2026 PT: two full gate runs plus a
+review left the weekly window at 54% and the plan's usage credits at $0.00; the
+console credit balance is not involved. The dollar figures are API-equivalent
+estimates, not charges. `claude plugin eval` is still early access and closed for
+this account; `regress.py --official` reports SKIP.
+
+**Where the matrix stands, 10 Sep 2026 PT.** `sonnet` and `opus` pass 22/22 at
+low and at high effort. `haiku` reached 17/22 at both, in two steps. It first
+never loaded the skill on five prompts (picks, values, matchups, trade history:
+it answered straight from the MFL tools, ids and all), and rewriting every skill
+description changed nothing -- the surface it reads before deciding is the
+connector's tool descriptions. Those now name the owning skill (`dowgateway`
+1.6.5; the eval mocks carry the same sentences word for word), and it loads the
+skill in 27 of 28 runs. What remains are capability misses on the same prose the
+other two pass: the extension's second year, naming the unprojected player, the
+no-write warning on a schedule import. So `haiku` is in `REPORT_MODELS`: it runs
+every time and its failures print as NOTE. Read them; do not chase them with
+prose that the other models do not need.
 
 **Research first, then write.** Every number in a skill came from a live MFL call or a
 back-test, not from memory.

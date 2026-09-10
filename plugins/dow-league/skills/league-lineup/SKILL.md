@@ -1,9 +1,27 @@
 ---
 name: league-lineup
-description: "Set a weekly lineup in the Dynasty of Whiners league (MFL 29557) — the highest-projected legal ten from a franchise's own roster, and separately what changes once the specific opponent that week is priced in. Use for \"set my lineup\", \"who should I start\", \"start or sit\", \"lineup for week N\", \"should I start X over Y\", or \"optimize my lineup\"."
+description: "Invoke before any league tool call to set a weekly lineup in the Dynasty of Whiners league (MFL 29557) — the highest-projected legal ten from a franchise's own roster, and separately what changes once the specific opponent that week is priced in. Use for \"set my lineup\", \"set my week N lineup\", \"who should I start\", \"start or sit\", \"lineup for week N\", \"should I start X over Y\", or \"optimize my lineup\". Never submits a lineup to MFL."
 ---
 
 # League Lineup
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 Two lineups, never merged: **the highest-projected legal ten**, and **what changes
 once you look at who you are playing**. The first is arithmetic. The second is a
@@ -83,6 +101,11 @@ return a legal full lineup and say that it is legal.**
 
 Resolve every id through `get_players`. **An id you did not resolve is unexamined,
 not known.** Here that means starting somebody who was traded away.
+
+**Build the pool as one line per roster player — name, status, projection or
+NONE — before writing anything.** That list is your working, not the answer: the
+answer shows the tables and the "left out and why" line, and every NONE appears
+there by name as having no projection.
 
 **The roster is the list of players; the projection payload is only numbers.**
 Build the pool from `get_rosters` and `get_players`, then attach projections to
@@ -177,6 +200,10 @@ up front with the flags ready — do not go looking mid-decision.
 draft pick.
 
 ### 7. Say when it locks
+
+**A kickoff time comes from a payload or it is not stated.** If no tool returned
+kickoff times, say the lock time could not be determined from the data and stop
+there; an estimated "~1:00 PM PT" is a fabricated deadline (10 Sep 2026 PT).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline. Name
 the **earliest-starting recommended player and their kickoff, in Pacific with the

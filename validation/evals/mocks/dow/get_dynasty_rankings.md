@@ -1,5 +1,5 @@
 ---
-description: Dynasty rankings, pinned to the superflex board. Synthetic.
+description: Dynasty rankings, pinned to the superflex board. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` skill BEFORE calling this. Synthetic.
 ---
 {
  "rankings": [

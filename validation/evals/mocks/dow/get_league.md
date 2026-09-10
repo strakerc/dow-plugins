@@ -1,5 +1,5 @@
 ---
-description: League settings, franchises with owner names and contact fields, and the starters block. Synthetic.
+description: League settings, franchises with owner names and contact fields, and the starters block. Raw payload for the dow-league skills, not an answer for an owner. Every skill calls this to turn franchise ids into owner first names; the contact fields are printed by the `league-contacts` skill only, and only when a contact detail was asked for. Synthetic.
 ---
 {
  "league": {

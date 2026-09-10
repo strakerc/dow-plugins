@@ -4,4 +4,4 @@ tags: ["gate", "mocked"]
 skills: ["league-schedule"]
 max_turns: 10
 ---
-Make the 2026 schedule.
+Make our league's 2026 schedule.

@@ -1,9 +1,27 @@
 ---
 name: league-trade-history
-description: "Look back at completed trades in the Dynasty of Whiners league (MFL 29557) — what moved, what those assets actually did afterwards, and who is ahead now. Use for \"how did that trade turn out\", \"who won the Worthy trade\", \"what trades has Zef made\", or \"has that deal aged well\"."
+description: "Invoke before any league tool call for questions about completed trades in the Dynasty of Whiners league (MFL 29557) — what trades an owner has made, what moved, what those assets actually did afterwards, and who is ahead now. Use for \"what trades has X made\", \"what trades has X made this season\", \"how did that trade turn out\", \"who won the Worthy trade\", \"has that deal aged well\", or \"was my trade of X for Y a good deal\". The raw transactions payload is ids, pick codes and epoch timestamps; this skill resolves all three."
 ---
 
 # League Trade History
+
+> **Before you answer — every skill in this league follows these five lines.**
+> 1. **Names only.** Owners by first name, players by name, teams by team name. Never a
+>    franchise id (`0001`), a pick code (`FP_…` / `DP_…`), a player id, an MFL username,
+>    an email or a phone number — not in a table, not in parentheses after a name, not
+>    to show which record you matched.
+> 2. **Every time is Pacific, with the zone written** (PT).
+> 3. **If the data has nothing for something the owner asked about, say so by name.**
+>    Never fill the gap from memory, and never treat a missing value as a low one.
+> 4. **Lead with the answer.** Do not narrate the lookups. The league tools are called
+>    directly, like any other tool, never through a shell, a script or a file search.
+> 5. **Wrong skill? Hand off, do not improvise.** If the question belongs to another
+>    skill in this league, invoke that one now: rules and prices → `league-rules`,
+>    contract options → `league-contracts`, picks → `league-draft-picks`, tag prices →
+>    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
+>    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
+>    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
+>    email → `league-contacts`.
 
 Judges trades that **already happened**, on what the assets actually did.
 
@@ -63,7 +81,12 @@ not read the same way**:
   **origin**, not its holder. `FP_0002_2027_2` is Pat's 2027 2nd wherever it sits.
   Round numbers here are real round numbers.
 - **`DP_{round}_{pick}`** — a pick in that year's own rookie draft, and **both
-  numbers start at zero.** `DP_1_3` is round 2 pick 4, not 1.03. Confirm every
+  numbers start at zero.** Add one to each before naming a slot:
+  `DP_0_0` = 1.01, `DP_1_3` = 2.04, `DP_3_11` = 4.12. `DP_1_3` is **not** 1.03, and its year
+  is the season the transaction sits in: a `DP_` pick in a 2026 trade is a 2026
+  pick, never 2027 -- only `FP_` codes name a later year. Print the decoded slot
+  alone: "pick 2.04", never "DP_1_3 (2.04)" -- the code in parentheses is the
+  exact thing the header forbids. Confirm every
   `DP_` against `get_draft_results` before naming a slot out loud: an off-by-one
   produces a completely plausible wrong pick with no error anywhere. This has
   already happened once, on 7 Sep 2026.
@@ -71,7 +94,11 @@ not read the same way**:
 ### Timestamps
 
 `timestamp` is Unix epoch. **Convert to Pacific and print the zone**, with UTC in
-parentheses: `29 Aug 2026, 07:37 PT (14:37 UTC)`. Late-evening trades fall on the
+parentheses: `29 Aug 2026, 07:37 PT (14:37 UTC)`. **Convert with a tool** -- a
+one-line script or the analysis tool, never arithmetic in your head: a head
+conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). **Convert with a tool** -- a
+one-line script or the analysis tool, never arithmetic in your head: a head
+conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). Late-evening trades fall on the
 previous day in Pacific, and four of seven in one sample did exactly that — a
 date quoted from the UTC conversion will disagree with what the owners remember.
 

@@ -37,6 +37,11 @@ Neither rule bends for time pressure. Nothing about this post is urgent.
 6. **Review gate** (rule 1)
 7. Post to `#draft` — split under 2000 characters at team boundaries, posted sequentially, order matters
 
+**No ids anywhere a person reads** — not in the writeup, not in the review file, not
+in a note about what was pulled. Players and owners go by name; an id that will not
+resolve through `get_players` is "could not be identified", never the number. The
+first eval run (9 Sep 2026 PT) listed twelve player ids in a status note.
+
 ## If the post fails
 
 **The post is the delivery mechanism, not the deliverable.** The writeup is the work; `#draft` is only where it lands.

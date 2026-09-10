@@ -140,6 +140,58 @@ for pkg, lst in (("dow-league", a), ("dow-league-lm", b)):
         bad.append(f"{pkg}/README.md does not mention: {', '.join(missing)}")
 report(f"counts and README rows match reality ({len(a)} + {len(b)} skills)", bad, True)
 
+# --- 7. every skill has an eval, and one in the gate set ----------------------
+# A skill with no eval is a skill nobody can watch failing. Each case's prompt.md
+# lists the skills it covers in a `skills:` line; every SKILL.md on disk must be
+# named by at least one case tagged `gate`, the set the pre-push hook runs.
+# The front matter is read by the same function the eval runner uses, so this
+# check and run_headless.py cannot disagree about what a case declares.
+sys.path.insert(0, os.path.join(ROOT, "validation", "evals"))
+from mock_mcp_server import frontmatter
+
+def cases_covering(prompt_texts):
+    """{skill: set(tags)} over prompt.md contents. A tags/skills value that is
+    not a list is reported under a sentinel key rather than dropped."""
+    cov = {}
+    for text in prompt_texts:
+        meta, _ = frontmatter(text)
+        tags, sk = meta.get("tags", []), meta.get("skills", [])
+        if not isinstance(tags, list) or not isinstance(sk, list):
+            cov.setdefault("<unparsed>", set()).add(meta.get("name", "?"))
+            continue
+        for s in sk:
+            cov.setdefault(s, set()).update(tags)
+    return cov
+
+def coverage_gaps(skill_names, cov):
+    out = []
+    for s in skill_names:
+        if s not in cov:
+            out.append(f"{s} -- no eval case lists it in `skills:`")
+        elif "gate" not in cov[s]:
+            out.append(f"{s} -- has a case, but none tagged `gate`")
+    if "<unparsed>" in cov:
+        out.append("cases with a tags:/skills: line that is not a list: " + ", ".join(sorted(cov["<unparsed>"])))
+    return out
+
+prompts = [io.open(f, encoding="utf-8").read() for f in FILES
+           if f.startswith("validation/evals/") and f.endswith("/prompt.md")]
+cov = cases_covering(prompts)
+bad = coverage_gaps(a + b, cov)
+# Control: synthetic prompt.md texts through the REAL path -- one gate case, one
+# full-only case, one written as a bare comma list, one with a list that does not
+# parse. A skill with no case, one with only a full case, and the unparsable
+# case must all be named; the covered skill must not be.
+ctl_cov = cases_covering([
+    '---\nname: "a"\ntags: ["gate", "mocked"]\nskills: ["covered"]\n---\np',
+    '---\nname: "b"\ntags: ["full"]\nskills: full-only\n---\np',
+    "---\nname: \"c\"\ntags: ['gate']\nskills: [\"covered\"]\n---\np",
+])
+ctl = coverage_gaps(["covered", "full-only", "absent"], ctl_cov)
+control = (len(ctl) == 3 and ctl[0].startswith("full-only") and ctl[1].startswith("absent")
+           and ctl[2].endswith(": c") and ctl_cov.get("covered") == {"gate", "mocked"})
+report(f"every skill has a gate eval case ({len(cov)} skills covered)", bad, control)
+
 print()
 print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files")
 sys.exit(1 if fails else 0)

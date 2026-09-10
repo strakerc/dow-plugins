@@ -14,6 +14,12 @@ found a pick had already moved since the 29 Aug snapshot.
 
 ---
 
+**Answers are written for owners: names only.** If a franchise id such as `0002`
+or a pick code such as `FP_0002_2027_2` appears anywhere in your reply — even in
+parentheses after a team name — you have made an error. Say "Bram" or "Bram's
+Whiners"; the id is how the payload is keyed, not part of the name. Three eval
+runs on 9 Sep 2026 PT put it after the team name anyway.
+
 ## Three things that trip people
 
 **1. The franchise id in a pick's name is its ORIGIN, not its holder.**
@@ -161,7 +167,14 @@ construction cannot see it.
   how the league talks. Resolve every one to a name before you write: "Blake has
   Zef's 2027 4th", never "Blake holds `FP_0012_2027_4`". **The notation section
   above exists so you read the data correctly — it is not vocabulary to hand back
-  to an owner.**
+  to an owner.** That includes the line that says whose team you are looking at: write the owner's
+  name or the team name, never "franchise 0001". Four of twenty-two answers on the first
+  eval run (9 Sep 2026 PT) put the id in exactly that opening line.
+- **Do not narrate which franchise record you matched, or how.** The owner knows
+  who they are. Open with the answer itself; the team name may appear, the id
+  never does. Telling the rule as "never print the id" did not stop it (two more
+  answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
+  was showing its lookup, so do not show the lookup.
 
 - **Never quote the script's raw output either.** `own gone: [4]` is a column
   name, not English — write "his own 2027 4th is gone". The ledger prints for a

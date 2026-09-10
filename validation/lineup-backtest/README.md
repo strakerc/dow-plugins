@@ -47,7 +47,10 @@ Runs the skill's stated method over 12 franchises × 3 weeks, using **actual 202
 points** as the ranking input. That is perfect foresight and deliberately so: it
 measures the chooser, not a forecast. It builds each optimum and asserts the hard
 gates — exactly ten starters, no duplicate, nobody from IR or the taxi squad, and
-every position inside its limit. Expect 36 lineups and zero gate failures.
+every position inside its limit. Expect 36 lineups, zero gate failures, the
+line `ALL HARD GATES PASS`, and exit code 0. Any failure exits 1 -- until
+9 Sep 2026 PT the script exited 0 either way, and `validation/regress.py` read
+that as a pass.
 
 ```bash
 python3 adversarial.py
@@ -63,7 +66,8 @@ enumerated answer. Want zero.
 drops a starter, duplicates a player, starts someone from IR, starts a taxi-squad
 player, plays three quarterbacks — and each must be refused. A gate never watched
 failing is not a gate. It also starves a pool of tight ends and requires that the
-optimiser return *nothing* rather than something illegal.
+optimiser return *nothing* rather than something illegal. A clean run ends with
+`ALL ADVERSARIAL CHECKS PASS` and exit code 0; any failure is listed and exits 1.
 
 ```bash
 python3 rules_check.py
@@ -80,5 +84,7 @@ nothing here checks that the output obeys the skill's own rules — two separate
 labelled tables never merged, the opponent stated as a prediction, no franchise
 ids, player ids, usernames, emails or phone numbers, and a lock time in Pacific.
 
-That needs a model executing the skill against a live week and a human reading
-what comes out. It has not been done.
+That needs a model executing the skill and someone reading what comes out. The
+eval case `validation/evals/dow-league/lineup-two-tables` now asserts exactly
+those rules against the synthetic league; as of 9 Sep 2026 PT it has not been run
+either — see "What is unverified" in `validation/TEST-PLAN.md`.

@@ -3,8 +3,9 @@
 # dow-plugins pre-commit hook
 # ---------------------------------------------------------------------------
 # This repository is PUBLIC and its contents load as instructions inside other
-# people's Claude accounts. It enforces the six invariants listed in CLAUDE.md.
-# Two of them are why it exists at all:
+# people's Claude accounts. It enforces invariants 1-6 of the seven listed in
+# CLAUDE.md; the seventh (every skill has an eval, and the gate passes) lives in
+# .githooks/pre-push. Two of them are why it exists at all:
 #
 #   1. Committing a credential. Public repo; a leaked key is leaked to everyone.
 #   2. Reintroducing `$` followed by a single digit in a SKILL.md. That gets

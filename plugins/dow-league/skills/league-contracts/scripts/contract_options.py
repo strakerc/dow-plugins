@@ -37,7 +37,11 @@ ROSTER_MINIMUMS = {"QB": 2, "RB": 3, "WR": 4, "TE": 2}
 
 def norm(ci):
     c = (ci or "").strip().lower()
-    if "extension" in c: return "short_ext"
+    # "ext", not "extension": MFL writes both "Short-Term (Extension)" and
+    # "Short-Term Ext.", and the second one used to fall through to the plain
+    # short-term branch -- whose menu is the dead end with no long-term option.
+    # Caught by validation/script_tests.py, 9 Sep 2026 PT.
+    if "ext" in c: return "short_ext"
     if c.startswith("short"): return "short"
     if c.startswith("long"): return "long"
     if c.startswith("rookie"): return "rookie"

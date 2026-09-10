@@ -22,9 +22,11 @@ and it is always the one being read. Do not re-add install steps to `README.md`.
 anyone's Claude account are dead ends: no scripts, and they drift. Straker's own
 account copies were deleted 6 Sep 2026. Edit here, never there.
 
-There is no build, no dependency manifest and no test suite. The runtimes are
-`python3` for the four skill scripts and `node` for `scripts/release.mjs`, which is
-the release tool, not part of the deliverable.
+There is no build and no dependency manifest. The test suite is `validation/`,
+described in `validation/TEST-PLAN.md`; nothing under it ships. The runtimes are
+`python3` for the four skill scripts and the tests, the `claude` CLI for the skill
+evals, and `node` for `scripts/release.mjs`, which is the release tool, not part
+of the deliverable.
 
 Owners read the output in a chat window, mid-trade. Not developers. That shapes the
 conventions below.
@@ -38,11 +40,23 @@ already.
 ## Commands
 
 ```bash
-git config core.hooksPath .githooks    # once per clone — covers both hooks, the only gate
+git config core.hooksPath .githooks    # once per clone — all three hooks: commit gate and push gate
 ```
 
 ```bash
 .githooks/pre-commit                   # run the staged-file gate by hand
+```
+
+```bash
+python3 validation/regress.py          # the regression gate: before /code-review, every change
+```
+
+```bash
+python3 validation/regress.py --evals  # required when anything under plugins/ changed; costs money
+```
+
+```bash
+python3 validation/regress.py --post-push   # after the push: every eval, against what shipped
 ```
 
 Scripts take **raw connector payloads saved to JSON files**. None of them touch the
@@ -72,7 +86,7 @@ generator, not a schedule to ship.
 reconcile to 144 picks. A failure means the data moved or the year window shifted, not
 that the tool is broken.
 
-## Hard invariants (the git hooks enforce all six)
+## Hard invariants (the git hooks enforce all seven)
 
 1. **Never add a `.mcp.json`.** A plugin *can* declare its own connector, and the
    connector URL carries a per-owner key. This repo is public. Also blocked: `.env*`,
@@ -103,8 +117,21 @@ that the tool is broken.
    `01XX` — and the `example.com`, `example.org`, `example.net` domains. Nothing else
    is safe, including in a comment. Describe the shape instead of writing one down.
 
-The hooks scan **added lines only** (and the message itself) — a rule that re-flags
-existing content trains everyone to use `--no-verify`.
+7. **Every skill has an eval, and the gate passes before a push.** Each case under
+   `validation/evals/` lists the skills it covers in a `skills:` line, and every
+   `SKILL.md` must be named by at least one case tagged `gate`
+   (`validation/audit.py`, check 7 — a new skill fails the audit until its eval
+   exists). `.githooks/pre-push` runs `validation/regress.py --pre-push`: the free
+   stages always, and the gate evals whenever `plugins/` differs from what the
+   remote has — only the cases the runner's ledger does not already hold a pass
+   for against the current files. **A push is refused when the gate fails or
+   cannot run** — a CLI that is not logged in blocks the push, because a suite
+   that never ran is not a suite that passed. `git push --no-verify` bypasses it;
+   say so when you use it.
+
+The commit hooks scan **added lines only** (and the message itself) — a rule that
+re-flags existing content trains everyone to use `--no-verify`. The pre-push hook is
+the exception, on purpose: it runs the whole gate, because the push is the release.
 
 **Invariant 3 needs an interpreter** (it is section 4 in the hook). The JSON check
 wants a working `python3`, `python` or `node`. When no candidate qualifies the check
@@ -124,8 +151,12 @@ it (the LM skills lean on `league-rules`). The line is deliberate:
 - **Anything that posts to Discord is LM-only**, partly so nine extra copies of those
   descriptions don't fire on ordinary draft questions.
 
-When adding a skill, decide which package it belongs to on that rule, and mirror the
-new skill in the owning plugin's `README.md` table.
+When adding a skill, decide which package it belongs to on that rule, mirror the
+new skill in the owning plugin's `README.md` table, and **write at least one gate
+eval case for it** under `validation/evals/<plugin>/` with the skill in its
+`skills:` line — `validation/audit.py` fails until it exists, and the pre-push hook
+runs the audit. `validation/evals/README.md` has the case format and the synthetic
+league to write it against.
 
 ## How skills get their facts
 
@@ -207,14 +238,59 @@ reference instead, as they currently do.
 
 ## Validating a change to a skill
 
+**The gate, in order, for every change.** Free checks first, review second, the
+model last — each step is cheaper than the one after it and catches what the next
+one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
+
+1. `python3 validation/regress.py` — free: the seven invariants, the script
+   tests, the lineup back-test, the eval lint. Seconds.
+2. `/code-review` — before any eval run, including a rerun. A review finding
+   fixed here is an eval failure that never has to be paid for.
+3. `python3 validation/regress.py --evals` if anything under `plugins/` changed.
+   The runner keeps a per-case ledger in `.git/` and **runs only cases that are
+   new, failed, or stale** (their skill files, any skill's description, their
+   case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
+   already tested." `--all` forces everything; `--post-push` always does.
+4. **A failure means fix, review, rerun the failures.** Read the transcript in
+   `validation/evals/results/`, decide whether the skill or the grader is
+   wrong, fix that one thing, run `/code-review` on the fix, then
+   `regress.py --evals` again — which by construction reruns only the cases the
+   fix touched. A grader-only fix needs no model run at all:
+   `run_headless.py --regrade <results dir>` rescores the saved transcript.
+5. Push. The pre-push hook (invariant 7) runs the same ledger check, so a push
+   straight after a green step 3 pays nothing.
+6. `python3 validation/regress.py --post-push` — every case, forced, against
+   what actually shipped.
+
+The plan and the per-skill coverage are in `validation/TEST-PLAN.md`. The evals
+are the only stage that reads the prose the way an owner's Claude does, so **a
+prose-only edit to a `SKILL.md` is exactly what they exist for** — the code-review
+skip list for docs-only changes does not apply to them. `regress.py` exits 3 when
+`plugins/` has changed and the evals were not run; that is "incomplete", not
+"passed".
+
+**Cost.** `sonnet` under test and `sonnet` judging, Straker's call: 15 to 50
+cents a case, so a full gate run is about six dollars and a rerun of two failures
+under a dollar. Usage comes off the claude.ai Max plan (his preference; no API
+key). Verified 9 Sep 2026 PT: two full gate runs plus a review left the weekly
+window at 54% and the plan's usage credits at $0.00; the console credit balance
+is not involved. The dollar figures are API-equivalent estimates, not charges. `haiku` under test was tried and rejected: it failed to invoke
+a skill that `sonnet` invoked on the same prompt. The first full run happened
+9 Sep 2026 PT (17 of 22; the five failures were two runner bugs, two over-strict
+graders, and one real prose gap in `league-franchise-tags`). `claude plugin eval`
+is still early access and closed for this account; `regress.py --official`
+reports SKIP.
+
 **Research first, then write.** Every number in a skill came from a live MFL call or a
 back-test, not from memory.
 
 The `league-lineup` back-test is committed and runnable at
 `validation/lineup-backtest/` — scripts only; its fixtures are raw MFL payloads
 and one of them carries every owner's phone and email, so `*.json` is blocked
-there. Only `plugins/` reaches an installed owner, so nothing under
-`validation/` ships.
+there. The skill evals under `validation/evals/` run against a **synthetic**
+league (owners Ada through Lior, reserved 555-01XX numbers, `example.com`); a real
+name, number or payload never belongs there either. Only `plugins/` reaches an
+installed owner, so nothing under `validation/` ships.
 
 **Back-test against a decision that already happened.** A skill run on an open question
 produces a plausible answer nobody can check. `league-contracts` was validated by

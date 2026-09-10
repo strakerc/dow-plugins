@@ -106,7 +106,14 @@ how good the player is, and a below-market one is worth more than the name.
 - **State the source and its age inline.** An unattributed number cannot be
   argued with later.
 - **Never print raw identifiers** — franchise ids, pick notation, player ids.
-  Say "Zef's 2027 4th", never the code.
+  Say "Zef's 2027 4th", never the code. That includes confirming whose roster a
+  player is on: the owner's name or the team name, never "franchise 0001". Four of
+  twenty-two answers on the first eval run (9 Sep 2026 PT) put the id in that line.
+- **Do not narrate which franchise record you matched, or how.** The owner knows
+  who they are. Open with the answer itself; the team name may appear, the id
+  never does. Telling the rule as "never print the id" did not stop it (two more
+  answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
+  was showing its lookup, so do not show the lookup.
 
 ## Where this stops
 

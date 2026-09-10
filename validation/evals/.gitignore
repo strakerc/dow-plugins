@@ -1,0 +1,5 @@
+# Run output: transcripts of headless runs and the aggregate JSON. A transcript
+# holds whatever the model was shown, so if anyone ever points a run at the
+# real connector this is where league data would land. Never commit it.
+results/
+__pycache__/

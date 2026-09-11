@@ -1,5 +1,5 @@
 ---
-description: Injury report, league-wide. Offseason IR flags on rosters are stale carryovers, not current medical status. Synthetic.
+description: Injury report, league-wide. Offseason IR flags on rosters are stale carryovers, not current medical status. It lags the news by days, so a player with no entry is not thereby healthy. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-status` skill for an injury question or `league-lineup` for a start decision BEFORE calling this. Synthetic.
 ---
 {
  "injuries": {

@@ -21,7 +21,8 @@ description: "Invoke before any league tool call when an owner asks for a league
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 Contact lookup for the twelve owners, read live from MFL on every run. Nothing is
 stored here and nothing is written back.

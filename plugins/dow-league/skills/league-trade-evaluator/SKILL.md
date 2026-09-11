@@ -21,7 +21,8 @@ description: "Invoke before any league tool call to score a proposed trade in th
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 Prices a **proposed** trade. One tool call does the work: `evaluate_trade`
 returns two verdicts that are deliberately never merged, and the gap between

@@ -21,7 +21,8 @@ description: "Invoke before any league tool call for questions about completed t
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 Judges trades that **already happened**, on what the assets actually did.
 

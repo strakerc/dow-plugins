@@ -19,7 +19,8 @@ description: "Invoke when asked to grade, recap, or write up the rookie draft fo
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 Annual writeup grading every team's rookie draft, posted to the league's Discord `#draft` channel. Funny, with real analysis underneath.
 

@@ -21,7 +21,8 @@ description: "Invoke before any league tool call when the league manager asks to
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 Fourteen weeks, twelve teams. This replaces steps 4–10 of the constitution's LM
 procedure — the external Streamlit generator, the CSV export, the manual

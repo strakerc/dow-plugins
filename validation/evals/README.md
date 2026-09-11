@@ -1,6 +1,6 @@
 # Skill evals
 
-Thirty-one cases that exercise the thirteen skills end to end — prompt in,
+Thirty-four cases that exercise the fourteen skills end to end — prompt in,
 tool calls out, answer graded — with no key, no network and no real league
 data. Every skill is named in the `skills:` line of at least one case tagged
 `gate`; `validation/audit.py` check 7 enforces that, so a new skill needs a
@@ -93,6 +93,11 @@ Kai Mercer and Ada's 2028 1st for Ravi Dunn and a `DP_` pick, and the rosters
 reflect it -- plus one one-sided trade from Cleo. Ten-digit epochs read as phone
 numbers to the contact check, so every timestamp here is an epoch in the
 reserved shape (digits 1XX 555 01XX).
+
+Mo Vale sits on Juno's roster, the tenth franchise, so a lookup that walks the
+league one team at a time has nine misses to narrate first. MFL's injury
+report lists Silas Orr (IR-R, knee, back 11 Oct) and has no entry for Owen
+Frost, which is how MFL looks the day after a player gets hurt.
 
 Everything above is invented. Real player names, real owner names beyond the
 first names already in the skills, real numbers, real payloads: none of it

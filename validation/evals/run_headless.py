@@ -884,6 +884,18 @@ def selftest():
     check("tool_used week arg +", grade_tool_used({"tool": "get_projections", "input_match": r'"week":\s*\d'}, t)[0])
     check("tool_order +", grade_tool_order({"before": "get_league", "after": "get_projections"}, t)[0])
     check("tool_order -", not grade_tool_order({"before": "get_projections", "after": "get_league"}, t)[0])
+    # target: all_text reads the lines written between tool calls, which the
+    # owner sees in the chat too; the default reads only the final answer.
+    narrated = parse_stream([
+        json.dumps({"type": "assistant", "message": {"content": [
+            {"type": "text", "text": "No Vale here (franchise 0004). Continuing."},
+            {"type": "tool_use", "name": "mcp__dow__get_rosters", "input": {"franchise_id": "0005"}}]}}),
+        json.dumps({"type": "result", "subtype": "success", "result": "Mo Vale is Juno's."}),
+    ])
+    fid = {"pattern": r"\b00(0[1-9]|1[0-2])\b", "match": "not_contains"}
+    check("regex default target is the final answer", grade_regex(fid, narrated)[0])
+    check("regex target all_text catches a between-call line",
+          not grade_regex(dict(fid, target="all_text"), narrated)[0])
     check("unreachable detects login prompt", unreachable(parse_stream([
         json.dumps({"type": "result", "subtype": "success", "result": "Not logged in. Please run /login"})])))
     check("unreachable detects an expired OAuth session", unreachable(parse_stream([

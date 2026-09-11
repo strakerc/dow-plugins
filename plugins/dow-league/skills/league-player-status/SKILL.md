@@ -43,12 +43,18 @@ single call, measured 11 Sep 2026 PT. Confirm the name you want is in the
 response before saying he is on no roster; a lookup that came back short is not
 an answer.
 
-- **Never walk the league one franchise at a time.** On 11 Sep 2026 PT an answer
-  to "who has Romeo Doubs?" called the tools once per team and wrote a line after
-  each one — "No Doubs here (franchise 0004). Continuing." — nine of them before
-  the answer. **Every line written between tool calls appears in the owner's
-  chat**, so a progress line is part of the answer and carries the same rules:
-  no ids, no narration. Make the calls, then write once.
+- **Write nothing until you have the answer.** Make the calls, then write once.
+  No "found him", no "checking the next team", no line naming the record you
+  matched. **Every line written between tool calls appears in the owner's chat**,
+  so those lines are part of the answer and carry every rule the answer carries.
+  Two measured leaks, both 11 Sep 2026 PT: "No Doubs here (franchise 0004).
+  Continuing." nine times over, from an answer that went on to name the id in
+  its final text as well, and "Found him: player id 30022 is Mo Vale (QB, PHI),
+  on franchise 0010's roster." — that one from a run whose final answer was
+  clean, so the whole leak was in the line nobody counts as the answer.
+- **Never walk the league one franchise at a time.** The first of those leaks was
+  an answer that called the tools once per team, which is where its nine progress
+  lines came from. One pass has nothing to narrate.
 - **MFL writes names "Last, First"**, with suffixes ("Walker III, Kenneth").
   Match on first and last name, ignoring punctuation and suffixes. If two players
   match, tell them apart by position and NFL team, and ask if that does not
@@ -65,6 +71,11 @@ an answer.
    Questionable, Doubtful, Out, IR, IR-R (designated to return), IR-PUP, IR-NFI,
    Suspended, Holdout or RETIRED; `details` is the body part; `exp_return` is MFL's
    expected return date.
+   **The report is league-wide and carries ids, not names.** Resolve the one
+   player asked about and say nothing about the rest: never list, count or quote
+   the other entries. An answer that said "the report only lists" and then three
+   raw ids leaked all three and answered a question nobody asked (measured
+   11 Sep 2026 PT).
 2. **Then search the news, every time**, for the newest dated reports on him.
    Put the injury and the current month and year in the query, not his name
    alone.

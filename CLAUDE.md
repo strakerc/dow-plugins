@@ -208,7 +208,7 @@ Key consequences that shape the prose:
 | What a player is worth here, and whether his contract is an asset or a drag | `league-player-values` |
 | How a completed trade has aged, and who is ahead now | `league-trade-history` |
 | Who to start this week, and what the opponent changes | `league-lineup` |
-| Who has a player, and how bad his injury is | `league-player-status` |
+| Who has a player, how bad his injury is, and which teammates step in | `league-player-status` |
 
 Duplicating a price table across skills is how the two skills drift apart. Cross-
 reference instead, as they currently do.

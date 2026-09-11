@@ -16,7 +16,7 @@ get the same answer and can compare working.
 | `league-player-values` | "what's X worth", "is he overpaid", "who's the better asset" |
 | `league-trade-history` | "how did that trade turn out", "who won the Worthy trade" |
 | `league-lineup` | "set my lineup", "who should I start", "start or sit week 6" |
-| `league-player-status` | "who has X", "is he available", "how serious is his injury" |
+| `league-player-status` | "who has X", "is he available", "how serious is his injury", "with X on IR, who should I target" |
 
 ## Setup — one paste, on a personal account
 

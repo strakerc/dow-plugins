@@ -113,7 +113,7 @@ and reports `Unknown tool` the way the real one does.
 
 ## Stage 5 — the skill evals (costs money)
 
-Thirty-four cases under `validation/evals/`, in the layout `claude plugin eval`
+Thirty-five cases under `validation/evals/`, in the layout `claude plugin eval`
 documents: `<case>/prompt.md`, `<case>/graders/*.md`, `mocks/dow/<tool>.md`.
 They are run today by `validation/evals/run_headless.py`, which drives
 `claude -p` with the plugin loaded from the working tree and a synthetic
@@ -158,7 +158,7 @@ newer model the old passes read as stale and rerun.
 | `league-matchups` | `matchups-lookup`, `matchups-no-schedule` ⚑ | Read from MFL; an empty season means "nothing loaded", no generation, no Bash |
 | `league-trade-evaluator` | `trade-no-percentage` ⚑, `trade-executed` | The league-adjusted percentage never appears; legality is a hard stop; a completed trade is refused and the refusal explained |
 | `league-lineup` | `lineup-two-tables` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; IR and taxi never started; no projection named by name; lock time in Pacific; nothing submitted |
-| `league-player-status` | `status-who-has` ⚑, `status-injury-unlisted` ⚑, `status-injury-listed` ⚑ | The owner found in one `get_rosters` pass, named, with no franchise id even in the lines written between tool calls; a player MFL's injury report does not list is never called healthy; one it does list is reported from the payload, not invented |
+| `league-player-status` | `status-who-has` ⚑, `status-injury-unlisted` ⚑, `status-injury-listed` ⚑, `status-injury-fallout` ⚑ | The owner found in one `get_rosters` pass, named, with no franchise id even in the lines written between tool calls; a player MFL's injury report does not list is never called healthy; one it does list is reported from the payload, not invented; an injury's fallout names every teammate's owner or "free agent" in the same answer, with his points from `get_player_scores`, and never offers ownership as a follow-up |
 | `league-player-values` | `values-unpriced` ⚑ | A missing price is reported as missing, never as low |
 | `league-trade-history` | `history-timestamps` ⚑ | Pacific dates with the zone; no codes; no winner declared off a few weeks; a one-sided trade flagged |
 | `league-schedule` | `schedule-2026-done` ⚑, `schedule-tier-rule` ⚑, `schedule-no-mfl-write` ⚑ | 2026 is settled; tiers by playoff finish and regular-season points; never writes to MFL |

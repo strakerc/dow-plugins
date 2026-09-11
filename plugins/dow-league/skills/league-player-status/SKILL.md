@@ -114,7 +114,9 @@ an answer.
   a report dated before that game cannot describe him now, however recent it
   looks. Measured 11 Sep 2026 PT: an answer doubted an owner's "he's on IR"
   because everything it found was dated the day of the game, written before
-  kickoff; MFL already had his week-1 score.
+  kickoff; MFL already had his week-1 score. **A blank score is not a zero**:
+  the same day, a receiver inactive for his team's game came back with an empty
+  score, and one who played and caught nothing came back 0.00.
 - **The owner's word is a report too.** When the owner says he is hurt and the
   news you find is older than his last game, the owner is the newer source.
   Say what you could and could not confirm, with dates, and answer the question

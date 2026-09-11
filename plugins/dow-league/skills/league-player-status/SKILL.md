@@ -1,6 +1,6 @@
 ---
 name: league-player-status
-description: "Invoke before any league tool call when an owner asks who has a player, whether a player is available, or how bad a player's injury is in the Dynasty of Whiners league (MFL 29557) — which owner rosters him and in what slot, and his injury status from MFL's report checked against dated news. Use for \"who has X\", \"who owns X\", \"who's got X\", \"is X available\", \"is X a free agent\", \"how serious is X's injury\", \"is X hurt\", \"how long is X out\", \"injury update on X\", or \"what's the latest on X\". Finds the owner in one pass, never one franchise at a time, and never calls a player healthy because a report is silent. Not for what he is worth (league-player-values) or whether to start him (league-lineup)."
+description: "Invoke before any league tool call when an owner asks who has a player, whether he is available, how bad his injury is, or which teammates to go after now that he is hurt, in the Dynasty of Whiners league (MFL 29557) — the owner and roster slot, the injury from MFL's report checked against dated news, and for an injury's fallout his teammates at that position with their points here and who owns each. Use for \"who has X\", \"who owns X\", \"is X available\", \"is X a free agent\", \"how serious is X's injury\", \"is X hurt\", \"how long is X out\", \"what's the latest on X\", \"with X on IR, who should I target\", \"who replaces X\", or \"who steps up with X out\". Finds the owner in one pass, never one franchise at a time, and never calls a player healthy because a report is silent. Not for what he is worth (league-player-values) or whether to start him (league-lineup)."
 ---
 
 # League Player Status
@@ -25,7 +25,8 @@ description: "Invoke before any league tool call when an owner asks who has a pl
 >    `league-player-status`.
 
 Two questions an owner asks in one breath, mid-trade: who has him, and how bad
-is it. Each has a short answer and one trap.
+is it. Each has a short answer and one trap. The third follows from the second:
+with him out, which teammate steps in, and can I get him.
 
 ---
 
@@ -33,10 +34,14 @@ is it. Each has a short answer and one trap.
 
 | Step | Call |
 |---|---|
-| 1 | `get_rosters` with **no** `franchise_id` — every franchise in one payload |
+| 1 | `get_rosters` with **no** `franchise_id` **and** `get_league`, both in the same turn — every roster and every owner's name before anything is matched |
 | 2 | `get_players` with **every** rostered id from step 1, in one comma-separated list |
-| 3 | Find his name, then `get_league` to turn that franchise into the owner's first name and team name |
+| 3 | Find his name and name his owner — both are already in hand, so write the answer now |
 | 4 | On no roster at all: `get_free_agents` for his position, the only authority on unowned players |
+
+`get_league` comes first, not last, on purpose. Measured 11 Sep 2026 PT: every
+id that leaked from this skill leaked in the gap between finding the player and
+calling `get_league`, as a line explaining which franchise to look up next.
 
 One `get_players` call covers the whole league: a 300-id list went through in a
 single call, measured 11 Sep 2026 PT. Confirm the name you want is in the
@@ -47,11 +52,13 @@ an answer.
   No "found him", no "checking the next team", no line naming the record you
   matched. **Every line written between tool calls appears in the owner's chat**,
   so those lines are part of the answer and carry every rule the answer carries.
-  Two measured leaks, both 11 Sep 2026 PT: "No Doubs here (franchise 0004).
-  Continuing." nine times over, from an answer that went on to name the id in
-  its final text as well, and "Found him: player id 30022 is Mo Vale (QB, PHI),
-  on franchise 0010's roster." — that one from a run whose final answer was
-  clean, so the whole leak was in the line nobody counts as the answer.
+  Two measured leaks, both 11 Sep 2026 PT: a "not on this team, continuing"
+  line nine times over, each naming the franchise by its id, from an answer
+  that went on to name the id in its final text as well; and a "found him"
+  line giving his player id and his franchise's id, from a run whose final
+  answer was clean, so the whole leak was in the line nobody counts as the
+  answer. The second came back later the same day nearly word for word, when
+  this file still quoted it with the ids in: a quoted leak is a template.
 - **Never walk the league one franchise at a time.** The first of those leaks was
   an answer that called the tools once per team, which is where its nine progress
   lines came from. One pass has nothing to narrate.
@@ -108,6 +115,55 @@ an answer.
 - **No web search this turn?** Then MFL's report is all there is. Say so, say it
   lags the news, and say no current news was checked. Do not fill the gap from
   memory.
+- **Take the owner's "he's hurt" as given.** Do not open by questioning it, and
+  never cite MFL against it. MFL cannot contradict it: the injury report lags by
+  days, his roster slot is his owner's choice rather than a diagnosis, and a score
+  this week says only that he played, not that he came out of the game healthy.
+  Answer the question asked first; one closing line may say what MFL has not
+  caught up on. Measured 11 Sep 2026 PT: an answer disputed an owner's "he's on
+  IR" with articles written before the game he was hurt in.
+- **Never read a score as a clean bill of health.** A player hurt in the second
+  half of a game still has a score for it. "He scored this week, so he is fine"
+  is the same mistake as "the report is silent, so he is fine".
+- **Date the news against his last game.** When you have news to weigh, pull
+  `get_player_scores` for the latest week with games in it. A score for him means
+  he played that week, so a report written before that game cannot describe him
+  now, however recent it looks. **A blank score is not a zero**: measured the
+  same day, a receiver inactive for his team's game came back with an empty
+  score, and one who played and caught nothing came back 0.00.
+
+---
+
+## Who steps in — his teammates, and whether you can get them
+
+"With X on IR, who should I target", "who replaces him", "which of his team's
+receivers are worth a look" — the injury, the depth chart, and the ownership
+of every name, all in one answer.
+
+| Step | Call |
+|---|---|
+| 1 | The injury, exactly as in the section above: `get_injuries`, `get_player_scores`, dated news |
+| 2 | `get_player_scores` with his `position` for the latest week with games in it, then `get_players` on every id returned; keep the rows on his NFL team. From week 3 on, add `week=AVG` |
+| 3 | `get_rosters` with no `franchise_id`, `get_free_agents` for the position, and `get_league` for the owners — the one pass from "Who has him", covering every teammate you will name |
+| 4 | The news, for the depth chart: who takes his snaps, and who the team signed or promoted. Put the month and year in the query |
+
+`get_player_scores` names other skills in its tool description. That line is
+about routing a first call; here, call it directly.
+
+- **Availability goes in this answer, never offered as a follow-up.** Every
+  teammate named carries his owner's first name and team name, or "free agent".
+  Measured 11 Sep 2026 PT: an answer led with a receiver who was already on
+  another owner's roster, listed a free agent third without saying he was
+  available, and closed by offering to check who owned them. The owner had
+  asked who to consider; which of them he can have was the answer.
+- **Scores come from this league, not from memory of last season.** Write each
+  teammate's points from step 2 next to his name. The same answer ranked the room
+  on last season's target counts while MFL already held this season's first
+  game, in which that free agent had outscored every teammate.
+- **Early in a week, only some teams have played.** At 11 Sep 2026 PT, week 1 had
+  scores for four NFL teams only. A teammate with no row may not have played
+  yet; say so, or step back a week once one exists. An empty row is not a zero.
+- **A teammate on a taxi squad or IR slot is still owned.** Say where he sits.
 
 ---
 
@@ -120,6 +176,10 @@ an answer.
 - **The injury:** what it is, how long he is expected out, then the source and its
   date, in that order. One sentence of what it means here only when it changes a
   decision — a lineup (`league-lineup`) or an IR move (`league-rules`).
+- **Who steps in:** the injury in one line with its source and date, then one row
+  per teammate — his points in the latest week, his owner's first name and team
+  name or "free agent", and his role now from the depth-chart news. End by
+  naming which of them can be claimed today.
 - **Name the source and date inline**, dates in Pacific. An undated injury claim
   cannot be checked against the next report.
 - **Never print raw identifiers** — franchise ids, player ids — in the answer or

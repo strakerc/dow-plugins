@@ -48,11 +48,13 @@ an answer.
   No "found him", no "checking the next team", no line naming the record you
   matched. **Every line written between tool calls appears in the owner's chat**,
   so those lines are part of the answer and carry every rule the answer carries.
-  Two measured leaks, both 11 Sep 2026 PT: "No Doubs here (franchise 0004).
-  Continuing." nine times over, from an answer that went on to name the id in
-  its final text as well, and "Found him: player id 30022 is Mo Vale (QB, PHI),
-  on franchise 0010's roster." — that one from a run whose final answer was
-  clean, so the whole leak was in the line nobody counts as the answer.
+  Two measured leaks, both 11 Sep 2026 PT: a "not on this team, continuing"
+  line nine times over, each naming the franchise by its id, from an answer
+  that went on to name the id in its final text as well; and a "found him"
+  line giving his player id and his franchise's id, from a run whose final
+  answer was clean, so the whole leak was in the line nobody counts as the
+  answer. The second came back later the same day nearly word for word, when
+  this file still quoted it with the ids in: a quoted leak is a template.
 - **Never walk the league one franchise at a time.** The first of those leaks was
   an answer that called the tools once per team, which is where its nine progress
   lines came from. One pass has nothing to narrate.

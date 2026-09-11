@@ -34,10 +34,14 @@ with him out, which teammate steps in, and can I get him.
 
 | Step | Call |
 |---|---|
-| 1 | `get_rosters` with **no** `franchise_id` — every franchise in one payload |
+| 1 | `get_rosters` with **no** `franchise_id` **and** `get_league`, both in the same turn — every roster and every owner's name before anything is matched |
 | 2 | `get_players` with **every** rostered id from step 1, in one comma-separated list |
-| 3 | Find his name, then `get_league` to turn that franchise into the owner's first name and team name |
+| 3 | Find his name and name his owner — both are already in hand, so write the answer now |
 | 4 | On no roster at all: `get_free_agents` for his position, the only authority on unowned players |
+
+`get_league` comes first, not last, on purpose. Measured 11 Sep 2026 PT: every
+id that leaked from this skill leaked in the gap between finding the player and
+calling `get_league`, as a line explaining which franchise to look up next.
 
 One `get_players` call covers the whole league: a 300-id list went through in a
 single call, measured 11 Sep 2026 PT. Confirm the name you want is in the
@@ -111,19 +115,22 @@ an answer.
 - **No web search this turn?** Then MFL's report is all there is. Say so, say it
   lags the news, and say no current news was checked. Do not fill the gap from
   memory.
-- **His points say whether he played.** Pull `get_player_scores` for the latest
-  week with games in it. A score for him means he was on the field that week, so
-  a report dated before that game cannot describe him now, however recent it
-  looks. Measured 11 Sep 2026 PT: an answer doubted an owner's "he's on IR"
-  because everything it found was dated the day of the game, written before
-  kickoff; MFL already had his week-1 score. **A blank score is not a zero**:
-  the same day, a receiver inactive for his team's game came back with an empty
+- **Take the owner's "he's hurt" as given.** Do not open by questioning it, and
+  never cite MFL against it. MFL cannot contradict it: the injury report lags by
+  days, his roster slot is his owner's choice rather than a diagnosis, and a score
+  this week says only that he played, not that he came out of the game healthy.
+  Answer the question asked first; one closing line may say what MFL has not
+  caught up on. Measured 11 Sep 2026 PT: an answer disputed an owner's "he's on
+  IR" with articles written before the game he was hurt in.
+- **Never read a score as a clean bill of health.** A player hurt in the second
+  half of a game still has a score for it. "He scored this week, so he is fine"
+  is the same mistake as "the report is silent, so he is fine".
+- **Date the news against his last game.** When you have news to weigh, pull
+  `get_player_scores` for the latest week with games in it. A score for him means
+  he played that week, so a report written before that game cannot describe him
+  now, however recent it looks. **A blank score is not a zero**: measured the
+  same day, a receiver inactive for his team's game came back with an empty
   score, and one who played and caught nothing came back 0.00.
-- **The owner's word is a report too.** When the owner says he is hurt and the
-  news you find is older than his last game, the owner is the newer source.
-  Say what you could and could not confirm, with dates, and answer the question
-  asked. Do not open by disputing the premise with a story written before the
-  game.
 
 ---
 

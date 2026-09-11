@@ -124,6 +124,12 @@ an answer.
   cannot be checked against the next report.
 - **Never print raw identifiers** — franchise ids, player ids — in the answer or
   in any line written between tool calls.
+- **Never describe a franchise you have not named.** Mentioning whose roster he
+  is on means `get_league` was called and the owner is named. A label wrapped
+  round the id is still the id: "owned by the franchise at team roster slot",
+  followed by the id, was a measured leak on an injury question (11 Sep 2026
+  PT), where the ownership line was volunteered and the lookup skipped. If the owner was not
+  resolved, leave ownership out of the answer.
 
 ## Where this stops
 

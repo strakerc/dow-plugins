@@ -21,7 +21,8 @@ description: "Invoke when asked to write or post the humorous post-auction FA mo
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 The annual humorous free-agent auction money report for Straker's dynasty league
 (MFL league 29557), posted to Discord `#draft`. Two lists — the funniest worst buys

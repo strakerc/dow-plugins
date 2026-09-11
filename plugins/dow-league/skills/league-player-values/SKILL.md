@@ -21,7 +21,8 @@ description: "Invoke before any league tool call when an owner asks what a playe
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 **A player's price is public. What he is worth *here* is not.** Every external
 site prices the player; none of them knows he is signed through 2028 at $16, or

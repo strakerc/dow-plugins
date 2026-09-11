@@ -8,7 +8,7 @@ A **Claude plugin marketplace**, not an application. `.claude-plugin/marketplace
 lists two plugins under `plugins/`; people add this repo's URL in Claude and install
 from it, so every commit here loads as instructions inside other owners' accounts.
 
-The deliverable is almost entirely **prose**: thirteen `SKILL.md` files. The four Python
+The deliverable is almost entirely **prose**: fourteen `SKILL.md` files. The four Python
 scripts are optional accelerators — each skill states what to do when its script is
 absent, because an account-saved copy of a skill ships without `scripts/`. Keep that
 fallback accurate whenever a script changes.
@@ -208,6 +208,7 @@ Key consequences that shape the prose:
 | What a player is worth here, and whether his contract is an asset or a drag | `league-player-values` |
 | How a completed trade has aged, and who is ahead now | `league-trade-history` |
 | Who to start this week, and what the opponent changes | `league-lineup` |
+| Who has a player, and how bad his injury is | `league-player-status` |
 
 Duplicating a price table across skills is how the two skills drift apart. Cross-
 reference instead, as they currently do.

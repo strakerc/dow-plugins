@@ -21,7 +21,8 @@ description: "Invoke for any question about how the Dynasty of Whiners dynasty l
 >    `league-franchise-tags`, who plays whom and the tiers → `league-matchups`, player
 >    worth → `league-player-values`, a proposed trade → `league-trade-evaluator`, a
 >    completed trade → `league-trade-history`, lineups → `league-lineup`, phone or
->    email → `league-contacts`.
+>    email → `league-contacts`, who has a player or how bad his injury is →
+>    `league-player-status`.
 
 A digest of Constitution 2.0 for the Dynasty of Whiners (MFL league `29557`).
 **The Google Doc is the source of truth; this is a working reference.** If a

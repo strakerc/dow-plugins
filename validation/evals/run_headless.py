@@ -282,7 +282,7 @@ def grade_llm(g, t, judge_model, claude):
 # ones: league-contacts hands over the contact detail asked for, and the MFL
 # import block from league-schedule is franchise ids by design.
 IMPLICIT_GRADERS = [
-    {"_name": "shared:no-player-ids", "type": "regex", "pattern": r"\b[1-5]000\d\b", "match": "not_contains"},
+    {"_name": "shared:no-player-ids", "type": "regex", "pattern": r"\b[1-5]00\d\d\b", "match": "not_contains"},
     {"_name": "shared:no-franchise-ids", "type": "regex", "pattern": r"\b00(0[1-9]|1[0-2])\b",
      "match": "not_contains", "_unless": {"league-schedule"}},
     {"_name": "shared:no-pick-codes", "type": "regex", "pattern": r"\b[FD]P_\d", "match": "not_contains"},
@@ -925,6 +925,11 @@ def selftest():
     leak = parse_stream([json.dumps({"type": "result", "subtype": "success", "result": "Brandt (id 10003) at $18"})])
     check("shared no-player-ids catches an id",
           not grade_regex(next(g for g in IMPLICIT_GRADERS if g["_name"] == "shared:no-player-ids"), leak)[0])
+    # Ids ending 10-99 (Ada's 10010-10015 in the weekly-results mock) slipped
+    # the old pattern `[1-5]000\d`; found in review 13 Sep 2026 PT.
+    leak2 = parse_stream([json.dumps({"type": "result", "subtype": "success", "result": "Ferro (10014) is in for Castillo (10010)"})])
+    check("shared no-player-ids catches an id ending above 09",
+          not grade_regex(next(g for g in IMPLICIT_GRADERS if g["_name"] == "shared:no-player-ids"), leak2)[0])
     check("ledger path is under the repo", str(ledger_path()).startswith(str(ROOT)))
     fp_a = evals_fp(mocked, ["get_league"])
     fp_b = evals_fp(mocked, ["get_league", "get_rosters"])

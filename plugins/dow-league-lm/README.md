@@ -32,5 +32,6 @@ It is not a formality and nothing about these posts is urgent.
 
 It reads `get_weekly_results` for the season before the one being scheduled —
 week 17 identifies the final two playoff games (which set Tier 1), and weeks 15+
-give the consolation points to subtract from MFL's `pf`. An `lm` key reaches
-those without restriction; a `scheduler` key reaches prior seasons only.
+give the consolation points to subtract from MFL's `pf`. Every key reaches it:
+lineups are visible league-wide in this league, so `get_weekly_results` is on
+the owner surface with no season restriction (dowgateway 1.6.8).

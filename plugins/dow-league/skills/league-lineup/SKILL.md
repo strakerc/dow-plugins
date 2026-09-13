@@ -129,7 +129,39 @@ Two cases that look alike and are not:
   not absence. Rows are not filtered server-side precisely so these stay
   distinguishable.
 
-### 3. The objective optimum
+### 3. The lineups already submitted
+
+`get_weekly_results` with the same `week` and no `season` returns every
+franchise's block for that week. Before the games it is the lineups as
+submitted: `starters` is a comma-separated list of player ids with a trailing
+comma, `nonstarters` the bench, and the scores are blank. Lineups are visible
+league-wide in this league, on the site and here, so the opponent's block is a
+page every owner can already see.
+
+- Find the owner's block: the entry whose `id` is the owner's franchise. **If
+  it has a `starters` field, the lineup is submitted. Write it out as its own
+  labelled list, by name, before the optimum.** Every id in it is already in
+  step 2's pool, so it needs no second `get_players` call. An id in `starters`
+  that is not on the roster is a player moved since the lineup was set: name
+  him and say the slot is empty until it is refilled.
+- **Only a block with no `starters` field, or an empty one, means not
+  submitted yet** — not an empty lineup, not an error. Check the field before
+  writing that sentence: one run (sonnet, low effort, 13 Sep 2026 PT) called a
+  submitted lineup "not entered" with all ten ids sitting in the payload, and
+  narrated the franchise id while doing it. The list above is how that answer
+  cannot happen — it exists, or the field is absent or empty.
+- A `comments` field is an owner's note to themselves. Any `optimal` or
+  `shouldStart` MFL adds once games score is hindsight from actual points. None
+  of that is data for any table; leave it out.
+- If the tool is not on the connector at all, the connector predates it. Say the
+  submitted lineup could not be read from MFL, and give the two tables from the
+  tools that did answer. Never guess what was submitted, and a plan the owner
+  then types into chat is their word, compared as such, not MFL's.
+
+The owner's `matchup` entry also names the opponent: the other franchise in it.
+Keep that block; step 5 reads it.
+
+### 4. The objective optimum
 
 Fill the highest-projected legal ten. No judgement, no correlation, no filtering.
 **Its own labelled table**, with each player's projection shown.
@@ -139,17 +171,30 @@ Fill the highest-projected legal ten. No judgement, no correlation, no filtering
 with no projection gets named; without it he goes missing silently, which is
 exactly what happened in one of two eval runs on 9 Sep 2026 PT.
 
-### 4. Predict the opponent
+**Then set it against what is submitted.** Name every difference player for
+player with the projection gap, in one line each: "Luca Ferro is in for Wren
+Castillo, 0.0 against 5.5". Say when the submitted lineup already is the optimum.
+When nothing is submitted, say so and give the ten as the lineup to enter.
 
-`get_matchups` gives the opposing franchise for that week. Run step 3's optimiser
-on their roster.
+### 5. The opponent: read, or predict
 
-**Say that it is a prediction.** The entire correlation layer is conditional on
-it. **Weight it by certainty:** a manager's only startable quarterback is
-near-certain; their fifth receiver is a coin flip. Lean on the confident parts and
-say which parts are not.
+The opponent is the other franchise in the owner's `matchup` entry from step 3.
+`get_matchups` is the fallback for when weekly results could not be read. Their
+roster is already in the `get_rosters` payload, which returns every franchise;
+resolve only the ids step 2 has not already seen, in one `get_players` call.
 
-### 5. The correlation layer
+**If their block in step 3 has `starters`, that is their lineup, not a
+prediction.** Use it, say it was read from MFL, and note that any player whose
+game has not kicked off can still be swapped. Do not run the optimiser on their
+roster and present that instead of what they submitted.
+
+**Only when they have not submitted, predict.** Run step 4's optimiser on their
+roster and **say that it is a prediction.** The entire correlation layer is
+conditional on it. **Weight it by certainty:** a manager's only startable
+quarterback is near-certain; their fifth receiver is a coin flip. Lean on the
+confident parts and say which parts are not.
+
+### 6. The correlation layer
 
 Five relationships. They differ in strength **and in direction**, and direction is
 the half that gets dropped.
@@ -187,7 +232,7 @@ recommending any swap**:
 more projected points behind is rationalising, not strategy — if you do it anyway,
 say plainly what is being given up.
 
-### 6. Risk flags — the shortlist, not the roster
+### 7. Risk flags — the shortlist, not the roster
 
 For the recommended ten plus close alternatives only: injury and practice reports,
 snap and touch share, depth-chart and quarterback changes, game total.
@@ -200,7 +245,7 @@ up front with the flags ready — do not go looking mid-decision.
 "go look into this", not "fade this". That misread has already cost this league a
 draft pick.
 
-### 7. Say when it locks
+### 8. Say when it locks
 
 **A kickoff time comes from a payload or it is not stated.** If no tool returned
 kickoff times, say the lock time could not be determined from the data and stop
@@ -215,8 +260,9 @@ zone labelled.**
 ## Must not
 
 - **No writes to MFL.** A human enters the lineup.
-- **No full recommended lineup for another franchise.** Predicting the opponent's
-  starters is in scope; producing their lineup for them is not.
+- **No full recommended lineup for another franchise.** Reading back what the
+  opponent has submitted is in scope, and so is predicting their starters;
+  producing their lineup for them is not.
 - **Never surface a franchise id, player id, MFL username, email or phone number**
   as a side effect. Owners go by first name — including the line that says whose
   lineup this is: the owner's name or the team name, never "franchise 0001". Four

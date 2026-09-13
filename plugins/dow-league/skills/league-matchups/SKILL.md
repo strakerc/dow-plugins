@@ -38,10 +38,13 @@ Read-only schedule lookup. **MFL is the schedule; this skill reports it.**
 one week, omit it for the season.
 
 That narrowness is deliberate. `get_weekly_results` also contains the schedule,
-but it carries every franchise's starting lineup, bench, per-player scores and
-computed optimal lineup, so it is not on the member surface. If `get_matchups`
-is unavailable, say the schedule tool is not reachable — do not reach for
-weekly results instead.
+but it carries every franchise's submitted lineup, bench and per-player scores —
+the `league-lineup` skill's data, and twelve lineups are not an answer to "who
+do I play". More to the point, **an empty `weeklySchedule` from `get_matchups`
+is the one measured signal that nothing is loaded**; what weekly results returns
+for an unloaded season has never been measured, so it cannot confirm or deny
+that. If `get_matchups` is unavailable, say the schedule tool is not reachable —
+do not reach for weekly results instead.
 
 ## The three tiers, and why anyone asks
 

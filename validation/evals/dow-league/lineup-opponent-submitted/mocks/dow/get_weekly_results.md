@@ -30,7 +30,22 @@ description: Head-to-head results for a week: every franchise's submitted lineup
      },
      {
       "id": "0002",
-      "score": ""
+      "score": "",
+      "starters": "20001,20007,20002,20006,20010,20003,10006,20004,20008,20011,",
+      "nonstarters": "20009,",
+      "player": [
+       {"id": "20001", "status": "starter"},
+       {"id": "20007", "status": "starter"},
+       {"id": "20002", "status": "starter"},
+       {"id": "20006", "status": "starter"},
+       {"id": "20010", "status": "starter"},
+       {"id": "20003", "status": "starter"},
+       {"id": "10006", "status": "starter"},
+       {"id": "20004", "status": "starter"},
+       {"id": "20008", "status": "starter"},
+       {"id": "20011", "status": "starter"},
+       {"id": "20009", "status": "nonstarter"}
+      ]
      }
     ]
    },

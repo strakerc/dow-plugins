@@ -178,9 +178,11 @@ schedules, say the delta cannot be computed rather than reporting a partial one.
 
 ## Correcting an existing schedule
 
-Read the live one back first: `get_weekly_results` on a **future** week returns
-scheduled matchups with no scores and no lineups — a few hundred bytes. Fourteen
-calls reconstruct the whole thing.
+Read the live one back first: one `get_matchups` call with no `week` returns
+every pairing for the season, and nothing else. (`get_weekly_results` on a
+future week carries the same pairings, plus a `starters` list for any franchise
+that has already submitted a lineup — fourteen calls and lineups you do not
+need.)
 
 If only the tiers were wrong, the fix is usually tiny. Tiers that differ by a
 swap of two teams change only the three rivalry weeks, and a four-team round

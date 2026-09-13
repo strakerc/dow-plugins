@@ -59,7 +59,8 @@ and the wrong version shipped an entire season's schedule before anyone noticed.
 - Minimum salary is **1**, so free cap space must always be ≥ open roster spots.
 - **Cap floor $300** `[2026]`, after the FA draft, held until the first game.
   For the floor, **IR counts 100%** and dead money counts too. Missing it
-  triggers tanking penalties.
+  triggers tanking penalties. Whether a team is above it — the owner's own or
+  anyone's in the league — is a roster check: invoke `league-contracts`.
 
 **The IR asymmetry catches people:** 25% against the cap, 100% against the floor.
 Cutting an IR player also costs 100% of the remaining contract, not 25% — the cap

@@ -1,6 +1,6 @@
 ---
 name: league-contracts
-description: "Invoke before any league tool call for contract questions in the Dynasty of Whiners league (MFL 29557) — which players have a decision due, which contracts expire, what each option (short-term, long-term, extension, tag) costs, dead money on a cut, and whether a roster is cap- and roster-legal. Use for \"which of my contracts expire\", \"what are my options on X\", \"what does it cost to keep him\", \"my contract decisions\", \"what's my roster and which contracts are up\", or \"how much dead money if I cut\". The raw roster payload is ids, codes and unpriced options; this skill resolves the names and prices every option."
+description: "Invoke before any league tool call for contract and cap questions in the Dynasty of Whiners league (MFL 29557) — which players have a decision due, which contracts expire, what each option (short-term, long-term, extension, tag) costs, dead money on a cut, whether a roster is cap- and roster-legal, and whether a team is above the $300 cap floor — one owner's team or every team in the league. Use for \"which of my contracts expire\", \"what are my options on X\", \"what does it cost to keep him\", \"my contract decisions\", \"what's my roster and which contracts are up\", \"how much dead money if I cut\", \"am I above the cap floor\", or \"is anyone under the cap floor\". The raw roster payload is ids, codes and unpriced options; this skill resolves the names and prices every option."
 ---
 
 # League Contracts
@@ -154,6 +154,66 @@ flag a lone 25% row as "LM entry still outstanding" rather than quoting it.
 **Deadlines bite.** Roster submission is `[2025]` **$25/day** late, and the
 owner-cuts deadline the following day stacks **another $25/day**. Do not cut
 early — it influences other owners' decisions.
+
+---
+
+## The cap floor — one team, or the whole league
+
+Owners ask it two ways and both get the same check: **"am I above the
+floor?"** (their own team) and **"is anyone under the floor?"** (all twelve).
+Answer the one that was asked. Never answer the league-wide question from one
+roster, and never answer either one by reciting the rule: the owner wants the
+numbers.
+
+**Say first whether the floor applies right now.** It applies `[2026]` from
+the end of the FA auction until the first game of the season, and at no other
+time.
+
+- If the owner says where the season is ("the auction just ended", "it's week
+  6"), take that as given.
+- Otherwise go by today's date. Once the first game of week 1 has kicked off
+  (the earliest `kickoff` in `get_nfl_schedule` for week 1), the floor is out
+  of force until next year's auction ends. Before the auction has finished, it
+  is not in force yet.
+- **Outside that window, still give the numbers, but as where teams stand —
+  never as a violation or a penalty.** A team below 300 in October has broken
+  nothing. "Everyone is compliant" said while the floor is not in force is a
+  check that never ran, and a weekly scheduled run must not read as one.
+
+**The floor charge.** Every rostered player's salary in full — active, taxi
+**and IR** — plus the team's dead money. At 300 or more the team clears. Two
+misreadings both make a legal team look short: charging IR at a quarter (that
+is the *cap* rule, not the floor's), and leaving dead money out (it counts
+toward the floor).
+
+**For the whole league, start from `get_league`.** Each franchise's
+`bbidAvailableBalance` is its cap space net of dead money, with IR charged at
+a quarter. So for each team:
+
+```
+floor charge = 375 − bbidAvailableBalance + ¾ × (salary of each of its IR players)
+```
+
+Only the IR rows from `get_rosters` need adding up. Checked 13 Sep 2026 PT
+against the full player-by-player sum for all twelve real franchises: identical.
+**375 minus the balance on its own is the IR-at-a-quarter figure**, and it
+understates every team carrying an IR player. The script's `floorCharge` and
+`floorHeadroom` are the same numbers from the full sum; negative headroom is
+short.
+
+**Answering it.**
+
+- **One team:** lead with the verdict and the margin — "You clear the floor at
+  318, 18 over." If IR or dead money is what carries the team over, say so in
+  one line; that is the part an owner loses track of.
+- **The league:** lead with who is short and by how much, or say that nobody
+  is and name the closest team and its margin. Then all twelve in one table,
+  least room first: owner, floor charge, margin.
+- A team short while the floor is in force faces the tanking penalty in
+  `league-rules`. Name it; do not restate the penalty ladder.
+- "Was anyone under at the first game?" cannot be re-derived afterwards: the
+  tools give today's rosters or a season's week-22 snapshot, and neither is the
+  roster at that kickoff. Say so rather than presenting either as the answer.
 
 ---
 

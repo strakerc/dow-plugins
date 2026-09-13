@@ -39,7 +39,10 @@ build because the prior season is unfinished does not excuse the import half of
 the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT). The
 sentence has two halves and the second is the one that gets dropped: *nothing
 here writes to MFL*, and *saving overwrites the whole schedule with no undo*.
-Say both (sonnet at low effort said only the first, 13 Sep 2026 PT).
+Say both (sonnet at low effort said only the first, 13 Sep 2026 PT, twice). The
+line to write, first, verbatim or near it: **Nothing here writes to MFL:
+saving a schedule there overwrites all 84 rows with no undo, so a human saves
+the existing contents and pastes the block.**
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled

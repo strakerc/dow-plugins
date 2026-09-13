@@ -133,7 +133,9 @@ All calls go to the MyFantasyLeague worker, league `29557`.
    The position is the one `get_players` returned for that id and nothing else — a
    name that sounds like a receiver is not a receiver, and a contract at the wrong
    position is out however high its salary. Carry the position into the table so a
-   misfiled row is visible.
+   misfiled row is visible, **and the owner's first name beside every salary**:
+   an unowned row cannot be checked against the gSheet, and five names with no
+   owners is the shape sonnet at low effort produced on 13 Sep 2026 PT.
 
 ### Timing: not a constraint, if you use the right source
 

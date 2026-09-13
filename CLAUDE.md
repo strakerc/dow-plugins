@@ -52,11 +52,11 @@ python3 validation/regress.py          # the regression gate: before /code-revie
 ```
 
 ```bash
-python3 validation/regress.py --evals  # required when anything under plugins/ changed; costs money
+python3 validation/regress.py --evals  # plugins/ changed and Straker chose Relevant or All; costs money
 ```
 
 ```bash
-python3 validation/regress.py --post-push   # after the push: every eval, against what shipped
+python3 validation/regress.py --post-push   # after the push, only if Straker chose All: every eval, forced
 ```
 
 Scripts take **raw connector payloads saved to JSON files**. None of them touch the
@@ -135,8 +135,9 @@ that the tool is broken.
    remote has — only the cases the runner's ledger does not already hold a pass
    for against the current files. **A push is refused when the gate fails or
    cannot run** — a CLI that is not logged in blocks the push, because a suite
-   that never ran is not a suite that passed. `git push --no-verify` bypasses it;
-   say so when you use it.
+   that never ran is not a suite that passed. `git push --no-verify` bypasses it,
+   and is used only when Straker picks **Bypass** at the push choice below —
+   disclosed in the commit message or PR body and in the chat.
 
 The commit hooks scan **added lines only** (and the message itself) — a rule that
 re-flags existing content trains everyone to use `--no-verify`. The pre-push hook is
@@ -257,7 +258,9 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    tests, the lineup back-test, the eval lint. Seconds.
 2. `/code-review` — before any eval run, including a rerun. A review finding
    fixed here is an eval failure that never has to be paid for.
-3. `python3 validation/regress.py --evals` if anything under `plugins/` changed.
+3. **If anything under `plugins/` changed, ask Straker which eval scope this push
+   gets** — see "The push choice" below — and on Relevant or All run
+   `python3 validation/regress.py --evals`.
    The runner keeps a per-case ledger in `.git/` and **runs only cases that are
    new, failed, or stale** (their skill files, any skill's description, their
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
@@ -289,8 +292,31 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    `run_headless.py --regrade <results dir>` rescores the saved transcript.
 5. Push. The pre-push hook (invariant 7) runs the same ledger check, so a push
    straight after a green step 3 pays nothing.
-6. `python3 validation/regress.py --post-push` — every case, forced, against
-   what actually shipped.
+6. Only on **All**: `python3 validation/regress.py --post-push` — every case,
+   forced, against what actually shipped.
+
+**The push choice — Straker's, surfaced every time.** Set 13 Sep 2026 PT: he
+batches changes and wants to spend usage deliberately, so the eval scope is not
+a fixed rule. When `plugins/` has changed, the free gate is green and review is
+done, ask him with the question tool before any paid run. **Recommend one option
+from the context**, and say why and what it roughly costs: how recently the
+affected cases passed and against which files, what he has said is coming next
+(more edits to the same skill argue for Relevant or Bypass now and All at the
+end), how much the batch has already spent and where the weekly window stands,
+and how much an owner could be hurt by what changed.
+
+| Option | What runs | Rough cost | When it fits |
+|---|---|---|---|
+| **Relevant** | `--evals`: only the new, failed or stale cases, under every model and effort; the pre-push hook then pays nothing | $2–10 | A normal push mid-batch |
+| **All** | Relevant, then `--post-push` after the push: every case, forced | adds ~$30, 40 min | The last push of a batch, or before a release tag |
+| **Bypass** | Free `regress.py` only, then `git push --no-verify` | nothing | He is certain, or the change is trivial and more are coming |
+
+Bypass skips the model, not the rules: always run the free `regress.py` first,
+because `--no-verify` also skips the pre-push whole-tree audit that backs
+invariant 6. Nothing is lost by it — the skipped cases stay stale in the ledger
+and run on the next Relevant or All. But the push still reaches every owner,
+so say plainly that it shipped without a model run. A push that does not
+touch `plugins/` has no evals to choose; do not ask.
 
 **When to halt instead of looping.** The fix-review-rerun loop in step 4 ends
 when the gate is green or when the evidence says it cannot get there: a case

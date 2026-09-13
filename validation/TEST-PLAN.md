@@ -17,13 +17,14 @@ python3 validation/regress.py --evals       # + the skill evals, gate set
 ```
 
 ```bash
-python3 validation/regress.py --post-push   # after the push: everything, against what shipped
+python3 validation/regress.py --post-push   # after the push, when Straker chooses All: everything
 ```
 
 The order of a change is: edit → `regress.py` (free) → `/code-review` →
-`regress.py --evals` if anything under `plugins/` changed → for each failure,
-fix one thing, review the fix, `--evals` again (only the affected cases rerun)
-→ push → `--post-push`. Review comes before the model on purpose: it is
+the push choice if anything under `plugins/` changed (Relevant, All or
+Bypass, Straker's call each time; see CLAUDE.md) → `regress.py --evals` unless
+Bypass → for each failure, fix one thing, review the fix, `--evals` again (only
+the affected cases rerun) → push → `--post-push` only on All. Review comes before the model on purpose: it is
 cheaper, and a finding fixed there is an eval failure never paid for.
 `regress.py` exits 3 and says so when `plugins/` has changed and the evals
 were not run, so "the gate passed" cannot be said about a run that never
@@ -157,7 +158,7 @@ newer model the old passes read as stale and rerun.
 | `league-contacts` | `contacts-no-leak` ⚑, `contacts-number` ⚑, `contacts-none` | A picks question prints no phone/email/username; a number question prints one normalised number and nothing else; no number means say so |
 | `league-matchups` | `matchups-lookup`, `matchups-no-schedule` ⚑ | Read from MFL; an empty season means "nothing loaded", no generation, no Bash |
 | `league-trade-evaluator` | `trade-no-percentage` ⚑, `trade-executed` | The league-adjusted percentage never appears; legality is a hard stop; a completed trade is refused and the refusal explained |
-| `league-lineup` | `lineup-two-tables` ⚑, `lineup-opponent-submitted` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; IR and taxi never started; no projection named by name; names read off the roster rows, no lookup required; the submitted lineup read from weekly results and its one wrong slot named; an opponent who has not submitted is predicted, one who has is read as submitted; the lock time read from the NFL schedule tool, the Thursday starters named first, in Pacific; never writes to MFL |
+| `league-lineup` | `lineup-two-tables` ⚑, `lineup-opponent-submitted` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; the objective ten is exactly the known optimum, name by name, with its total (103.6) printed -- the unconstrained top ten is three QBs and two WRs and scores higher, and a player on another roster is in the projection payload; IR and taxi never started; no projection named by name; names read off the roster rows, no lookup required; the submitted lineup read from weekly results and its one wrong slot named; an opponent who has not submitted is predicted, one who has is read as submitted; the lock time read from the NFL schedule tool, the Thursday starters named first, in Pacific; never writes to MFL |
 | `league-player-status` | `status-who-has` ⚑, `status-injury-unlisted` ⚑, `status-injury-listed` ⚑, `status-injury-fallout` ⚑ | The owner found in one `get_rosters` pass, named, with no franchise id even in the lines written between tool calls; a player MFL's injury report does not list is never called healthy; one it does list is reported from the payload, not invented; an injury's fallout names every teammate's owner or "free agent" in the same answer, with his points from `get_player_scores`, and never offers ownership as a follow-up |
 | `league-player-values` | `values-unpriced` ⚑ | A missing price is reported as missing, never as low |
 | `league-trade-history` | `history-timestamps` ⚑ | Pacific dates with the zone; no codes; no winner declared off a few weeks; a one-sided trade flagged |

@@ -1,6 +1,6 @@
 ---
 name: "Schedule: tiers by playoff finish, regular-season points only"
-tags: ["gate", "mocked"]
+tags: ["gate", "mocked", "connector-optional"]
 skills: ["league-schedule"]
 max_turns: 8
 ---

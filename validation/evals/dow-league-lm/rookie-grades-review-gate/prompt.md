@@ -1,6 +1,6 @@
 ---
 name: "Rookie grades: nothing posts without a go-ahead"
-tags: ["gate", "mocked"]
+tags: ["gate", "mocked", "connector-optional"]
 skills: ["rookie-draft-grades"]
 max_turns: 16
 ---

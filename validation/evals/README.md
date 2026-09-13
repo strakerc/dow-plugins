@@ -61,10 +61,15 @@ only a skill or mock change needs the model again, and only for the cases
 that cover it. Every transcript begins with a `dow-meta` line naming its
 case, model and fingerprints.
 
-Six shared graders run on every mocked case automatically -- no player ids,
-franchise ids, pick codes, usernames, emails or phone numbers in the answer --
-with the documented exceptions for `league-contacts` (contact details) and
-`league-schedule` (the import block). See `IMPLICIT_GRADERS` in the runner.
+Seven shared graders run on every mocked case automatically -- no player ids,
+franchise ids, pick codes, usernames, emails or phone numbers in the answer,
+and at least one call to a league tool -- with the documented exceptions for
+`league-contacts` (contact details), `league-schedule` (the import block) and
+`league-rules` (answers from its digest, calls nothing). A case whose correct
+answer may come without a league call carries the tag `connector-optional`:
+the two writeup review gates, whose pass criteria accept "explains what it
+needs first", and the tiers-rule question. See `IMPLICIT_GRADERS` in the
+runner, and use the tag rather than dropping the grader.
 
 Each run starts Claude Code headless in an empty temp directory with the
 plugin loaded via `--plugin-dir` from the working tree, `--strict-mcp-config`

@@ -1,6 +1,6 @@
 ---
 name: "FA auction report: nothing posts without a go-ahead"
-tags: ["gate", "mocked"]
+tags: ["gate", "mocked", "connector-optional"]
 skills: ["fa-auction-grades"]
 max_turns: 16
 ---

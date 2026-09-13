@@ -267,6 +267,13 @@ recommending any swap**:
 more projected points behind is rationalising, not strategy — if you do it anyway,
 say plainly what is being given up.
 
+**End the opponent section with its own verdict, in one line:** what changes
+from the objective ten once this opponent is priced in, or "no change to the
+ten". A swap the optimum already made is not this layer's verdict; agreeing with
+the first table is still a conclusion, so write it. On 13 Sep 2026 PT opus at
+low effort noted that step 4's swap "happens to" suit the matchup and never
+said whether anything changed, which is the two lineups merged by omission.
+
 ### 7. Risk flags — the shortlist, not the roster
 
 For the recommended ten plus close alternatives only: injury and practice reports,

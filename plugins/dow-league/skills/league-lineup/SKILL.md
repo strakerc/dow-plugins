@@ -100,8 +100,11 @@ return a legal full lineup and say that it is legal.**
 `get_rosters`, then **filter on `status`** — only `ROSTER` is startable. Never
 `INJURED_RESERVE`, never `TAXI_SQUAD`.
 
-Resolve every id through `get_players`. **An id you did not resolve is unexamined,
-not known.** Here that means starting somebody who was traded away.
+Every roster row carries the player's name, position and NFL team. **A row
+that arrives without a name is unexamined, not known**: look that id up with
+`get_players`, and if it returns nothing, say a roster slot could not be
+identified rather than starting it. Here that means starting somebody who was
+traded away.
 
 **Build the pool as one line per roster player — name, status, projection or
 NONE — before writing anything.** That list is your working, not the answer: the
@@ -109,8 +112,8 @@ answer shows the tables and the "left out and why" line, and every NONE appears
 there by name as having no projection.
 
 **The roster is the list of players; the projection payload is only numbers.**
-Build the pool from `get_rosters` and `get_players`, then attach projections to
-it — never the other way round. A run that starts from the projection rows never
+Build the pool from `get_rosters`, then attach projections to it — never the
+other way round. A run that starts from the projection rows never
 sees the player who has no row, which is exactly the player this section says to
 name. That is how Harlan Voss went missing in two of three eval runs on 9 Sep
 2026 PT, in answers that otherwise followed every rule.
@@ -141,7 +144,7 @@ page every owner can already see.
 - Find the owner's block: the entry whose `id` is the owner's franchise. **If
   it has a `starters` field, the lineup is submitted. Write it out as its own
   labelled list, by name, before the optimum.** Every id in it is already in
-  step 2's pool, so it needs no second `get_players` call. An id in `starters`
+  step 2's pool, named there, so nothing needs a lookup. An id in `starters`
   that is not on the roster is a player moved since the lineup was set: name
   him and say the slot is empty until it is refilled.
 - **Only a block with no `starters` field, or an empty one, means not
@@ -180,8 +183,8 @@ When nothing is submitted, say so and give the ten as the lineup to enter.
 
 The opponent is the other franchise in the owner's `matchup` entry from step 3.
 `get_matchups` is the fallback for when weekly results could not be read. Their
-roster is already in the `get_rosters` payload, which returns every franchise;
-resolve only the ids step 2 has not already seen, in one `get_players` call.
+roster is already in the `get_rosters` payload, which returns every franchise
+with names on the rows, so nothing needs a lookup.
 
 **If their block in step 3 has `starters`, that is their lineup, not a
 prediction.** Use it, say it was read from MFL, and note that any player whose

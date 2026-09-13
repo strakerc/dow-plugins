@@ -93,7 +93,8 @@ league has changed its lineup shape before.
 
 `partialLineupAllowed` matters as much as the counts: when it is `NO`, an
 under-filled lineup is a rules problem and not merely a scoring one. **Always
-return a legal full lineup and say that it is legal.**
+return a legal full lineup and say that it is legal** — or, when the roster
+cannot field one, say that instead (step 4).
 
 ### 2. The pool
 
@@ -168,6 +169,37 @@ Keep that block; step 5 reads it.
 
 Fill the highest-projected legal ten. No judgement, no correlation, no filtering.
 **Its own labelled table**, with each player's projection shown.
+
+How: within a position the best choice is always its top projections, so try
+every way of splitting the ten across positions that the limits allow, fill
+each split from the top down, and keep the highest total. That is exhaustive,
+not a heuristic — it rebuilt all 36 real 2025 lineups (twelve teams, weeks 3, 8
+and 13), and a million random legal lineups per team never beat it
+(`validation/lineup-backtest/`).
+
+**Check the ten before you show it**, against the payloads you already hold:
+
+1. **Exactly the `count`** from step 1's `starters` block. Not nine, not eleven.
+2. **Every position inside its `limit`.** The ten biggest projections ignore
+   the limits, so they always total at least as much as the legal answer. A
+   higher total than the method gives is a warning, not a better lineup.
+3. **Every player is in step 2's pool** — this owner's roster, status `ROSTER`.
+   The projection payload lists the whole league; a name in it is not a player
+   on this roster.
+4. **Nobody twice.**
+5. **Add the total again from the table's own numbers** and print it under the
+   table.
+
+If a line fails, fix the ten and check again; never show a table that failed
+one. Then say it is legal, as step 1 requires.
+
+**If no split meets every limit from the pool** — the only tight end on injured
+reserve, say — there is no legal ten. Say so, name the position that is short
+and anyone at it on injured reserve or the taxi squad, and show no optimum table.
+
+The back-test proves the method, not the model carrying it out: on 13 Sep 2026
+PT haiku started a player off another team's roster in one run, and added a
+correct ten up 5.6 points wrong in another.
 
 **Close the table with one line naming every startable player left out and why**
 — no projection row, projected zero, position full. That line is where a player

@@ -175,6 +175,11 @@ time.
   (the earliest `kickoff` in `get_nfl_schedule` for week 1), the floor is out
   of force until next year's auction ends. Before the auction has finished, it
   is not in force yet.
+- **Before the first kickoff, when you cannot tell whether the auction has
+  finished, check as if the floor is in force**: name every team short and by
+  how much, and say the floor binds once the auction is over. Never settle the
+  doubt by calling it "not in force yet" — that silences the one stretch of
+  the year the check exists for.
 - **Outside that window, still give the numbers, but as where teams stand —
   never as a violation or a penalty.** A team below 300 in October has broken
   nothing. "Everyone is compliant" said while the floor is not in force is a

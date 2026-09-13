@@ -36,11 +36,20 @@ in the first reply that nothing here writes to MFL** -- saving overwrites the wh
 schedule with no undo, so a human saves the existing contents and pastes the
 block -- and say it whether or not the schedule can be built yet. Declining the
 build because the prior season is unfinished does not excuse the import half of
-the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT).
+the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT). The
+sentence has two halves and the second is the one that gets dropped: *nothing
+here writes to MFL*, and *saving overwrites the whole schedule with no undo*.
+Say both (sonnet at low effort said only the first, 13 Sep 2026 PT).
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
-work — read the live schedule out of MFL first.
+work — read the live schedule out of MFL first, and **that read-back is the
+answer**: show it week by week (one `get_matchups` call, no `week`), say it was
+imported 7 Sep 2026 PT, and stop (the no-write sentence above still applies if
+the request mentions importing). Do not compute tiers, the opponent-strength
+report or a new schedule for a season that is already loaded unless asked to
+correct a named error. An opus run on 13 Sep 2026 PT read the schedule back and
+then spent every remaining turn rebuilding it, and answered nothing.
 
 ## Structure — the part the constitution does not spell out
 

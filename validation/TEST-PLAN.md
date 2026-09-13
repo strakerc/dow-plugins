@@ -17,13 +17,14 @@ python3 validation/regress.py --evals       # + the skill evals, gate set
 ```
 
 ```bash
-python3 validation/regress.py --post-push   # after the push: everything, against what shipped
+python3 validation/regress.py --post-push   # after the push, when Straker chooses All: everything
 ```
 
 The order of a change is: edit → `regress.py` (free) → `/code-review` →
-`regress.py --evals` if anything under `plugins/` changed → for each failure,
-fix one thing, review the fix, `--evals` again (only the affected cases rerun)
-→ push → `--post-push`. Review comes before the model on purpose: it is
+the push choice if anything under `plugins/` changed (Relevant, All or
+Bypass, Straker's call each time; see CLAUDE.md) → `regress.py --evals` unless
+Bypass → for each failure, fix one thing, review the fix, `--evals` again (only
+the affected cases rerun) → push → `--post-push` only on All. Review comes before the model on purpose: it is
 cheaper, and a finding fixed there is an eval failure never paid for.
 `regress.py` exits 3 and says so when `plugins/` has changed and the evals
 were not run, so "the gate passed" cannot be said about a run that never

@@ -138,16 +138,22 @@ comma, `nonstarters` the bench, and the scores are blank. Lineups are visible
 league-wide in this league, on the site and here, so the opponent's block is a
 page every owner can already see.
 
-- Find the owner's block and resolve every id through `get_players`, the same
-  rule as the pool: an id you did not resolve is unexamined.
+- Find the owner's block. Every id in it is already in step 2's pool, so it
+  needs no second `get_players` call. An id in `starters` that is not on the
+  roster is a player moved since the lineup was set: name him and say the slot
+  is empty until it is refilled.
 - **A franchise with no `starters`, or an empty one, has not submitted a lineup
-  yet.** Say so in those words. It is not an empty lineup and not an error.
-- A `comments` field is an owner's note to themselves. It is not data for any
-  table; leave it out.
-- If the tool is not on the connector at all, say the submitted lineup could not
-  be read and ask the owner to paste it. Do not guess what was submitted.
+  yet** — not an empty lineup, not an error.
+- A `comments` field is an owner's note to themselves. Any `optimal` or
+  `shouldStart` MFL adds once games score is hindsight from actual points. None
+  of that is data for any table; leave it out.
+- If the tool is not on the connector at all, the connector predates it. Say the
+  submitted lineup could not be read from MFL, and give the two tables from the
+  tools that did answer. Never guess what was submitted, and a plan the owner
+  then types into chat is their word, compared as such, not MFL's.
 
-Keep the opponent's block too; step 5 reads it.
+The owner's `matchup` entry also names the opponent: the other franchise in it.
+Keep that block; step 5 reads it.
 
 ### 4. The objective optimum
 
@@ -166,7 +172,10 @@ When nothing is submitted, say so and give the ten as the lineup to enter.
 
 ### 5. The opponent: read, or predict
 
-`get_matchups` gives the opposing franchise for that week.
+The opponent is the other franchise in the owner's `matchup` entry from step 3.
+`get_matchups` is the fallback for when weekly results could not be read. Their
+roster is already in the `get_rosters` payload, which returns every franchise;
+resolve only the ids step 2 has not already seen, in one `get_players` call.
 
 **If their block in step 3 has `starters`, that is their lineup, not a
 prediction.** Use it, say it was read from MFL, and note that any player whose
@@ -245,8 +254,9 @@ zone labelled.**
 ## Must not
 
 - **No writes to MFL.** A human enters the lineup.
-- **No full recommended lineup for another franchise.** Predicting the opponent's
-  starters is in scope; producing their lineup for them is not.
+- **No full recommended lineup for another franchise.** Reading back what the
+  opponent has submitted is in scope, and so is predicting their starters;
+  producing their lineup for them is not.
 - **Never surface a franchise id, player id, MFL username, email or phone number**
   as a side effect. Owners go by first name — including the line that says whose
   lineup this is: the owner's name or the team name, never "franchise 0001". Four

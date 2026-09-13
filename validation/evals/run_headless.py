@@ -121,8 +121,45 @@ def load_cases(only_suite=None):
                 "runs": int(meta.get("runs", 1)),
                 "model": meta.get("model"),
                 "mocks": "no-connector" not in tags,
+                "requires": meta.get("requires") or {},
             })
     return cases
+
+
+# --- per-case model floor ---------------------------------------------------
+# A case may declare `requires: {"min_model": "opus"}` (optionally "effort")
+# in its front matter. Straker, 13 Sep 2026 PT, after sonnet at low effort
+# failed the schedule no-write case three times on three wordings of one rule:
+# "building the schedule on low-effort sonnet isn't something that will
+# happen." His call: reject by model, Opus or better. The floor is a minimum,
+# not a list, so Fable and whatever follows keep working: a model MODEL_RANK
+# does not know counts as above it.
+#
+# The matrix honours the floor by SKIPPING the combinations below it -- not
+# run, not recorded, printed as SKIP. It does not grade a refusal, because a
+# refusal cannot be relied on: the skill states its floor in its first
+# paragraph and asks a smaller model to refuse in one line, and sonnet at low
+# effort went ahead on all three schedule cases anyway (measured the same
+# afternoon), haiku on two of three. The enforceable half is the human
+# choosing the model; the skill's line is best effort. Every other case still
+# gates under every combination: a documented per-case exception, not a
+# loosening of the rule.
+EFFORT_RANK = {"low": 0, "medium": 1, "high": 2}
+MODEL_RANK = {"haiku": 0, "sonnet": 1, "opus": 2, "fable": 3}
+
+
+def floor_status(case, model, effort):
+    """'ok' (run and grade normally) or 'skip' (below the case's floor)."""
+    req = case.get("requires") or {}
+    if not req:
+        return "ok"
+    floor = req.get("min_model")
+    if floor and model in MODEL_RANK and MODEL_RANK[model] < MODEL_RANK.get(floor, 0):
+        return "skip"
+    want = req.get("effort")
+    if want and effort and EFFORT_RANK.get(effort, 99) < EFFORT_RANK.get(want, 0):
+        return "skip"
+    return "ok"
 
 
 # --------------------------------------------------------------- transcript
@@ -763,6 +800,18 @@ def main_run(args):
     if not cases:
         print("no cases selected", file=sys.stderr)
         return 1
+    skipped = []
+    kept = []
+    for c in cases:
+        if floor_status(c, c["model"] or args.model, args.effort) == "skip":
+            skipped.append(c["name"])
+            print(f"  SKIP     {c['name']}  (requires {c['requires']}; this run is {c['model'] or args.model} at {args.effort})")
+        else:
+            kept.append(c)
+    cases = kept
+    if not cases:
+        print("\nnothing to run: every selected case is below its model x effort floor at this combination")
+        return 0
     led = read_ledger()
     if not args.all:
         ids = {}
@@ -858,7 +907,7 @@ def main_run(args):
                "judge": args.judge_model, "cases": report,
                "aggregates": {"passed": n_pass, "total": len(report),
                               "totalCostUsd": round(total_cost, 4),
-                              "unreachable": dead}}
+                              "unreachable": dead, "skippedBelowFloor": skipped}}
     (results_dir / "aggregate-result.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\n{n_pass}/{len(report)} cases passed, ${total_cost:.2f}, results in {results_dir.relative_to(ROOT)}")
     if dead:
@@ -963,6 +1012,18 @@ def selftest():
           not grade_tool_used(cu, dict(t, tools=[("Bash", {"command": "ls"}), ("Skill", {"skill": "x"})]))[0])
     check("shared connector-used passes one league tool call",
           grade_tool_used(cu, dict(t, tools=[("mcp__dow__get_league", {})]))[0])
+    # the model x effort floor (13 Sep 2026 PT): skipped below the effort,
+    # refusal-only below the model, untouched otherwise
+    floored = dict(mocked, requires={"min_model": "opus", "effort": "high"})
+    check("a floored case is skipped below its effort", floor_status(floored, "opus", "low") == "skip")
+    check("a floored case runs at its effort", floor_status(floored, "opus", "high") == "ok")
+    check("a floored case is skipped below its model", floor_status(floored, "haiku", "high") == "skip")
+    check("sonnet is below an opus floor", floor_status(floored, "sonnet", "high") == "skip")
+    check("fable is above an opus floor", floor_status(floored, "fable", "high") == "ok")
+    check("a model the rank does not know counts as above the floor", floor_status(floored, "mythos-9", "high") == "ok")
+    check("a case with no floor is untouched", floor_status(mocked, "haiku", "low") == "ok")
+    check("a floored case at its floor keeps its ordinary graders",
+          "shared:connector-used" in {g["_name"] for g in graders_for(floored)})
     check("ledger path is under the repo", str(ledger_path()).startswith(str(ROOT)))
     fp_a = evals_fp(mocked, ["get_league"])
     fp_b = evals_fp(mocked, ["get_league", "get_rosters"])
@@ -1019,6 +1080,17 @@ def selftest():
                     probs.append(f"{g['_name']}: names unknown skill {s}")
         if "gate" not in c["tags"] and "full" not in c["tags"]:
             probs.append("tagged neither gate nor full")
+        req = c.get("requires") or {}
+        if req:
+            if not isinstance(req, dict):
+                probs.append("`requires:` is not a mapping")
+            else:
+                if req.get("min_model") not in (None, *MODEL_RANK):
+                    probs.append(f"`requires.min_model` {req.get('min_model')!r} is not one of {sorted(MODEL_RANK)}")
+                if "models" in req:
+                    probs.append("`requires.models` is not a thing; use `min_model` (a floor, not a list)")
+                if req.get("effort") not in (None, *EFFORT_RANK):
+                    probs.append(f"`requires.effort` {req.get('effort')!r} is not low/medium/high")
         if c["skills"] is None:
             probs.append("no `skills:` line in prompt.md (list the skills this case covers; [] for a footer-only case)")
         if "<unparsed>" in c["tags"] or "<unparsed>" in (c["skills"] or []):

@@ -172,6 +172,17 @@ back-test against real history, by hand.
 
 ### Graders
 
+**A case may declare a model floor** (`requires:` in its front matter).
+Combinations below it are skipped, not graded: the skill asks a smaller model
+to refuse in one line, but sonnet at low effort went ahead three times out of
+three with that line in its first paragraph, so the refusal is best effort and
+the floor is enforced by the person choosing the model. Straker set this on
+13 Sep 2026 PT for `league-schedule` after sonnet at low effort dropped the
+overwrite warning three times on three wordings: "building the schedule on
+low-effort sonnet isn't something that will happen." The three schedule cases
+require Opus or better; haiku and sonnet are skipped on them, and a model the
+rank does not know counts as above the floor. No other case has a floor.
+
 **Shared graders run on every mocked case** without being written into it:
 no player ids, no franchise ids, no pick codes, no MFL usernames, no email
 addresses, no phone numbers, and **at least one league-tool call**. Nine

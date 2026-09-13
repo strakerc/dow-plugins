@@ -267,9 +267,15 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    **every combination gates: a case passes only when it passes under all, a
    failure under one is a failure of the case, and the fix is verified under
    all** (a fix changes the fingerprint, so every entry reruns). Standing
-   rules, both Straker's, 10 Sep 2026 PT. One carve-out, also his: `haiku`
+   rules, both Straker's, 10 Sep 2026 PT. Two carve-outs, also his: `haiku`
    runs and reports but does not gate (`--report-models`, a NOTE in the
-   summary instead of a FAIL) -- see "Where the matrix stands" for why.
+   summary instead of a FAIL) -- see "Where the matrix stands" for why; and a
+   case may declare a model floor in its front matter (`requires:`), below
+   which the combination is skipped, not graded -- the skill asks a smaller
+   model to refuse, but sonnet at low effort went ahead 3 of 3 with the floor
+   in its first paragraph, so that line is best effort and the human's model
+   choice is the enforcement. Set 13 Sep 2026 PT for `league-schedule` only:
+   Opus or better; a model the rank does not know counts as above the floor.
 4. **A failure means fix, review, rerun the failures.** Read the transcript in
    `validation/evals/results/`, decide whether the skill or the grader is
    wrong, fix that one thing, run `/code-review` on the fix, then

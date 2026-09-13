@@ -24,6 +24,14 @@ description: "Invoke before any league tool call when the league manager asks to
 >    email → `league-contacts`, who has a player or how bad his injury is →
 >    `league-player-status`.
 
+**This skill needs Opus or better.** It produces the artifact of record, and a
+smaller model was measured dropping load-bearing sentences three runs in a row
+(13 Sep 2026 PT). If you are Haiku or Sonnet — any model below Opus — reply
+with this and nothing else, no partial build, no tiers: *This skill requires a
+higher model and effort combination: run it on Opus or better. Switch and ask
+again.* Opus, Fable and anything newer: carry on. (The LM chooses the model;
+this line is the backstop, and a smaller model has been measured ignoring it.)
+
 Fourteen weeks, twelve teams. This replaces steps 4–10 of the constitution's LM
 procedure — the external Streamlit generator, the CSV export, the manual
 team-number assignment, and the "big ass random numbers" duplicate checksum.

@@ -129,7 +129,27 @@ Two cases that look alike and are not:
   not absence. Rows are not filtered server-side precisely so these stay
   distinguishable.
 
-### 3. The objective optimum
+### 3. The lineups already submitted
+
+`get_weekly_results` with the same `week` and no `season` returns every
+franchise's block for that week. Before the games it is the lineups as
+submitted: `starters` is a comma-separated list of player ids with a trailing
+comma, `nonstarters` the bench, and the scores are blank. Lineups are visible
+league-wide in this league, on the site and here, so the opponent's block is a
+page every owner can already see.
+
+- Find the owner's block and resolve every id through `get_players`, the same
+  rule as the pool: an id you did not resolve is unexamined.
+- **A franchise with no `starters`, or an empty one, has not submitted a lineup
+  yet.** Say so in those words. It is not an empty lineup and not an error.
+- A `comments` field is an owner's note to themselves. It is not data for any
+  table; leave it out.
+- If the tool is not on the connector at all, say the submitted lineup could not
+  be read and ask the owner to paste it. Do not guess what was submitted.
+
+Keep the opponent's block too; step 5 reads it.
+
+### 4. The objective optimum
 
 Fill the highest-projected legal ten. No judgement, no correlation, no filtering.
 **Its own labelled table**, with each player's projection shown.
@@ -139,17 +159,27 @@ Fill the highest-projected legal ten. No judgement, no correlation, no filtering
 with no projection gets named; without it he goes missing silently, which is
 exactly what happened in one of two eval runs on 9 Sep 2026 PT.
 
-### 4. Predict the opponent
+**Then set it against what is submitted.** Name every difference player for
+player with the projection gap, in one line each: "Luca Ferro is in for Wren
+Castillo, 0.0 against 5.5". Say when the submitted lineup already is the optimum.
+When nothing is submitted, say so and give the ten as the lineup to enter.
 
-`get_matchups` gives the opposing franchise for that week. Run step 3's optimiser
-on their roster.
+### 5. The opponent: read, or predict
 
-**Say that it is a prediction.** The entire correlation layer is conditional on
-it. **Weight it by certainty:** a manager's only startable quarterback is
-near-certain; their fifth receiver is a coin flip. Lean on the confident parts and
-say which parts are not.
+`get_matchups` gives the opposing franchise for that week.
 
-### 5. The correlation layer
+**If their block in step 3 has `starters`, that is their lineup, not a
+prediction.** Use it, say it was read from MFL, and note that any player whose
+game has not kicked off can still be swapped. Do not run the optimiser on their
+roster and present that instead of what they submitted.
+
+**Only when they have not submitted, predict.** Run step 4's optimiser on their
+roster and **say that it is a prediction.** The entire correlation layer is
+conditional on it. **Weight it by certainty:** a manager's only startable
+quarterback is near-certain; their fifth receiver is a coin flip. Lean on the
+confident parts and say which parts are not.
+
+### 6. The correlation layer
 
 Five relationships. They differ in strength **and in direction**, and direction is
 the half that gets dropped.
@@ -187,7 +217,7 @@ recommending any swap**:
 more projected points behind is rationalising, not strategy — if you do it anyway,
 say plainly what is being given up.
 
-### 6. Risk flags — the shortlist, not the roster
+### 7. Risk flags — the shortlist, not the roster
 
 For the recommended ten plus close alternatives only: injury and practice reports,
 snap and touch share, depth-chart and quarterback changes, game total.
@@ -200,7 +230,7 @@ up front with the flags ready — do not go looking mid-decision.
 "go look into this", not "fade this". That misread has already cost this league a
 draft pick.
 
-### 7. Say when it locks
+### 8. Say when it locks
 
 **A kickoff time comes from a payload or it is not stated.** If no tool returned
 kickoff times, say the lock time could not be determined from the data and stop

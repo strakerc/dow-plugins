@@ -250,13 +250,22 @@ draft pick.
 
 ### 8. Say when it locks
 
-**A kickoff time comes from a payload or it is not stated.** If no tool returned
-kickoff times, say the lock time could not be determined from the data and stop
-there; an estimated "~1:00 PM PT" is a fabricated deadline (10 Sep 2026 PT).
+`get_nfl_schedule` with the same `week` is the kickoff source. Each game carries
+`kickoff` in Unix seconds and `gameSecondsRemaining` (3600 before kickoff, 0 at
+final); each side's `id` is the same code as `team` on a roster row, which is
+the join. Convert every kickoff to Pacific and write the zone.
 
-MFL locks each player at their own kickoff, not at a single weekly deadline. Name
-the **earliest-starting recommended player and their kickoff, in Pacific with the
-zone labelled.**
+MFL locks each player at their own kickoff, not at a single weekly deadline.
+Name the **earliest-starting recommended players and their kickoff, in Pacific
+with the zone labelled** — a Thursday game locks two starters days before the
+rest. A player whose game has already started is locked; say so instead of
+recommending a swap that cannot be made.
+
+**A kickoff time comes from that payload or it is not stated.** If the tool is
+not on the connector, say the lock time could not be determined from the data
+and stop there; an estimated "~1:00 PM PT" is a fabricated deadline (10 Sep
+2026 PT), and haiku wrote one against this very sentence on 13 Sep 2026 PT
+because nothing gave it a real time. Now something does.
 
 ---
 

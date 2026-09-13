@@ -117,7 +117,9 @@ that the tool is broken.
    is public, so a number is published the moment it lands, and `git revert` does not
    unpublish it. The check covers ten-digit North American numbers in any of the
    formats owners actually typed into MFL, bare or separated by spaces, dots,
-   hyphens or parentheses, plus standard email addresses.
+   hyphens or parentheses, plus standard email addresses. A ten-digit run whose
+   area code or exchange starts with 0 or 1 is not a number (the plan assigns
+   neither), which is what lets a Unix epoch such as a kickoff through.
 
    **Examples must use exempt values, and the exemption is by value, not by file.**
    Safe: the reserved fictional range — any area code, exchange `555`, line number
@@ -175,7 +177,7 @@ gateway began *enforcing* that on 5 Sep 2026; the workers ran open before then, 
 anything written earlier described the intent rather than the behaviour.
 
 Common tools: `get_rosters`, `get_future_draft_picks`, `get_salary_adjustments`,
-`get_standings`, `get_weekly_results`, `get_transactions`, `get_players`,
+`get_standings`, `get_weekly_results`, `get_nfl_schedule`, `get_transactions`, `get_players`,
 `get_matchups`, `get_league`, `get_assets`, `get_draft_results`.
 
 Key consequences that shape the prose:

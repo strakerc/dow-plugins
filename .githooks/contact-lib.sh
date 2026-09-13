@@ -11,6 +11,13 @@
 #   emails  - example.com, example.org, example.net
 # Callers may filter further; commit-msg additionally exempts noreply identities.
 
+# A run whose area code or exchange begins with 0 or 1 is not a number: the
+# North American plan assigns neither, so no real number can start that way,
+# and every Unix epoch until 2033 does (the `kickoff` field in the NFL schedule
+# mock tripped the older, digit-blind pattern on 13 Sep 2026 PT). Both forms
+# below require [2-9] in those two positions. This is a fact about phone
+# numbers, not an exemption; the reserved-range exemption is unchanged.
+#
 # Boundaries must NOT be consumed. Under the ERE fallback a match eats the
 # character separating it from the next number, so a single -o pass sees only the
 # first of two adjacent numbers -- and if that one is an exempt placeholder, the
@@ -20,11 +27,11 @@
 # formats here and the hook blocked its own source.
 if echo 'x12 34' | grep -qoP '(?<![0-9])12' 2>/dev/null; then
   PHONE_GREP="-oP"
-  PHONE_RE='(?<![0-9])\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}(?![0-9])'
+  PHONE_RE='(?<![0-9])\(?[2-9]\d{2}\)?[-. ]?[2-9]\d{2}[-. ]?\d{4}(?![0-9])'
   PHONE_FILTER="-P"
 else
   PHONE_GREP="-oE"
-  PHONE_RE='(^|[^0-9])\(?[0-9]{3}\)?[-. ]?[0-9]{3}[-. ]?[0-9]{4}([^0-9]|$)'
+  PHONE_RE='(^|[^0-9])\(?[2-9][0-9]{2}\)?[-. ]?[2-9][0-9]{2}[-. ]?[0-9]{4}([^0-9]|$)'
   PHONE_FILTER="-E"
 fi
 EMAIL_RE='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'

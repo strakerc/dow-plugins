@@ -74,7 +74,11 @@ report(f"all {len(jsons)} tracked *.json parse", bad, control)
 # --- 4. no phone numbers or email addresses anywhere in the tree ------------
 # Same shapes the hook uses. Exemptions are BY VALUE: the reserved fictional
 # range (any area code, exchange 555, line 01XX) and the example.* domains.
-PHONE = re.compile(r"(?<!\d)(\(?\d{3}\)?[\s.\-]?)\d{3}[\s.\-]?\d{4}(?!\d)")
+# Area code and exchange start with 2-9 in the North American plan, so a run
+# beginning with 0 or 1 is not a number -- and every Unix epoch until 2033
+# begins with 1 (the NFL schedule mock's `kickoff`, 13 Sep 2026 PT). Same
+# narrowing as .githooks/contact-lib.sh; the reserved-range exemption stands.
+PHONE = re.compile(r"(?<!\d)(\(?[2-9]\d{2}\)?[\s.\-]?)[2-9]\d{2}[\s.\-]?\d{4}(?!\d)")
 EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 RESERVED = re.compile(r"^\d{3}55501\d{2}$")
 EXEMPT_DOM = ("example.com", "example.org", "example.net")
@@ -101,10 +105,12 @@ for f in FILES:
 # is exactly how a real number ends up in a public repo: not by intent, but as
 # test data in a file about protecting against it. Constructing the strings
 # means no contact-shaped literal exists here to leak or to trip the gate.
-ctl_num = "1" * 10                      # ten digits, phone-shaped, nobody's
+ctl_num = "2" * 10                      # ten digits, phone-shaped, nobody's
+ctl_epoch = "1" + "7" * 9               # ten digits starting with 1: a timestamp, never a number
 ctl_reserved = "412" + "555" + "0100"   # the reserved range, must be EXEMPT
 ctl_addr = "a" + "@" + "b.co"           # address-shaped, not an exempt domain
-ctl_phone = bool(PHONE.search(ctl_num)) and RESERVED.match(ctl_reserved) is not None
+ctl_phone = (bool(PHONE.search(ctl_num)) and RESERVED.match(ctl_reserved) is not None
+             and not PHONE.search(ctl_epoch))
 ctl_email = bool(EMAIL.search(ctl_addr)) and ("x" + "@" + EXEMPT_DOM[0]).endswith(EXEMPT_DOM)
 report("no phone numbers or emails in any tracked file", bad, ctl_phone and ctl_email)
 

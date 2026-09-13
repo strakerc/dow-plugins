@@ -263,7 +263,12 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
    already tested." `--all` forces everything; `--post-push` always does.
    Every run covers `haiku`, `sonnet` and `opus` at low **and** high effort
-   (`--models`, `--efforts`), because owners may be on any of them, and
+   (`--models`, `--efforts`), **cheapest gating combination first and the
+   report models last, stopping at the first red gating stage** (Straker,
+   13 Sep 2026 PT; `--no-fail-fast` runs on, and `--post-push` always runs
+   every stage). The stages that did not run are not passes: the ledger
+   holds only passes, so they run on the next `--evals` once the failure is
+   fixed. Owners may be on any of them, and
    **every combination gates: a case passes only when it passes under all, a
    failure under one is a failure of the case, and the fix is verified under
    all** (a fix changes the fingerprint, so every entry reruns). Standing

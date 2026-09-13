@@ -86,6 +86,20 @@ EARLY_ACCESS = re.compile(r"^`plugin eval` is currently in early access\s*$", re
 DEFAULT_MODELS = "haiku,sonnet,opus"
 REPORT_MODELS = "haiku"
 DEFAULT_EFFORTS = "low,high"
+# ORDER AND FAIL-FAST. Straker, 13 Sep 2026 PT, after a day in which every red
+# matrix kept running its remaining stages on combinations that were going to
+# be rerun after the fix anyway: gating combinations run cheapest first,
+# report models last, and the matrix STOPS at the first gating stage that
+# fails. Nothing is lost by stopping -- the ledger holds only passes, so the
+# combinations that did not run stay unverified and run on the next --evals
+# once the failure is fixed; what is saved is the rest of a matrix spent on
+# rows a fix would stale. --post-push turns fail-fast off, because the point
+# of that run is the record under every combination. --no-fail-fast does the
+# same by hand. The cost table is relative, from per-case costs measured that
+# day (sonnet low ~0.2, sonnet high ~0.35, opus low ~0.5, opus high ~0.7,
+# haiku ~0.1); a model it does not know sorts last among the gating stages.
+MODEL_COST = {"haiku": 1, "sonnet": 3, "opus": 6, "fable": 12}
+EFFORT_COST = {"low": 1.0, "medium": 1.4, "high": 1.7}
 GATE_MODEL = "sonnet"       # the default for a single-model run and for regrades
 DEFAULT_EFFORT = "low"      # the default for a single run (--efforts '')
 
@@ -246,16 +260,36 @@ def evals_matrix(args):
     models = [x.strip() for x in (args.models or "").split(",") if x.strip()] or [args.model]
     efforts = [x.strip() for x in (args.efforts or "").split(",") if x.strip()] or [args.effort]
     report = {x.strip() for x in (args.report_models or "").split(",") if x.strip()}
+    combos = sorted(((m, e) for m in models for e in efforts), key=matrix_cost)
+    gating = [c for c in combos if c[0] not in report]
+    reporting = [c for c in combos if c[0] in report]
+    fail_fast = not getattr(args, "no_fail_fast", False) and not getattr(args, "post_push", False)
+    print("  matrix order: " + ", ".join(f"{m}@{e}" for m, e in gating + reporting)
+          + ("  (fail-fast: stops at the first red gating stage)" if fail_fast else "  (every stage runs)"))
     primary, primary_effort, worst = args.model, args.effort, 0
+    ran = 0
     try:
-        for e in efforts:
-            for m in models:
-                args.model, args.effort = m, e
-                rc = stage_evals(args, gates=m not in report)
-                worst = max(worst, rc)
+        for m, e in gating + reporting:
+            args.model, args.effort = m, e
+            rc = stage_evals(args, gates=m not in report)
+            ran += 1
+            worst = max(worst, rc)
+            if rc != 0 and m not in report and fail_fast:
+                left = (gating + reporting)[ran:]
+                if left:
+                    say("evals", "SKIP", f"fail-fast after {m}@{e}: "
+                        + ", ".join(f"{a}@{b}" for a, b in left)
+                        + " not run; they run on the next --evals once this is fixed (--no-fail-fast to run them now)")
+                break
     finally:
         args.model, args.effort = primary, primary_effort
     return worst
+
+
+def matrix_cost(combo):
+    """Sort key: cheapest combination first. Unknown models sort last."""
+    m, e = combo
+    return (MODEL_COST.get(m, max(MODEL_COST.values()) + 1) * EFFORT_COST.get(e, 1.5), m, e)
 
 
 def stage_official(args):
@@ -380,6 +414,9 @@ def main():
     ap.add_argument("--report-models", default=REPORT_MODELS,
                     help=f"models that run and report but never gate (default {REPORT_MODELS}); '' makes every model gate")
     ap.add_argument("--judge-model", default="sonnet")
+    ap.add_argument("--no-fail-fast", action="store_true",
+                    help="run every model x effort stage even after a gating stage fails "
+                         "(the default stops at the first red gating stage; --post-push always runs every stage)")
     ap.add_argument("--skip-backtest", action="store_true")
     ap.add_argument("--only", choices=["static", "scripts", "backtest", "evals-lint", "evals"])
     ap.add_argument("--post-push", action="store_true",

@@ -117,7 +117,9 @@ that the tool is broken.
    is public, so a number is published the moment it lands, and `git revert` does not
    unpublish it. The check covers ten-digit North American numbers in any of the
    formats owners actually typed into MFL, bare or separated by spaces, dots,
-   hyphens or parentheses, plus standard email addresses.
+   hyphens or parentheses, plus standard email addresses. A ten-digit run whose
+   area code or exchange starts with 0 or 1 is not a number (the plan assigns
+   neither), which is what lets a Unix epoch such as a kickoff through.
 
    **Examples must use exempt values, and the exemption is by value, not by file.**
    Safe: the reserved fictional range — any area code, exchange `555`, line number
@@ -175,7 +177,7 @@ gateway began *enforcing* that on 5 Sep 2026; the workers ran open before then, 
 anything written earlier described the intent rather than the behaviour.
 
 Common tools: `get_rosters`, `get_future_draft_picks`, `get_salary_adjustments`,
-`get_standings`, `get_weekly_results`, `get_transactions`, `get_players`,
+`get_standings`, `get_weekly_results`, `get_nfl_schedule`, `get_transactions`, `get_players`,
 `get_matchups`, `get_league`, `get_assets`, `get_draft_results`.
 
 Key consequences that shape the prose:
@@ -261,13 +263,24 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
    already tested." `--all` forces everything; `--post-push` always does.
    Every run covers `haiku`, `sonnet` and `opus` at low **and** high effort
-   (`--models`, `--efforts`), because owners may be on any of them, and
+   (`--models`, `--efforts`), **cheapest gating combination first and the
+   report models last, stopping at the first red gating stage** (Straker,
+   13 Sep 2026 PT; `--no-fail-fast` runs on, and `--post-push` always runs
+   every stage). The stages that did not run are not passes: the ledger
+   holds only passes, so they run on the next `--evals` once the failure is
+   fixed. Owners may be on any of them, and
    **every combination gates: a case passes only when it passes under all, a
    failure under one is a failure of the case, and the fix is verified under
    all** (a fix changes the fingerprint, so every entry reruns). Standing
-   rules, both Straker's, 10 Sep 2026 PT. One carve-out, also his: `haiku`
+   rules, both Straker's, 10 Sep 2026 PT. Two carve-outs, also his: `haiku`
    runs and reports but does not gate (`--report-models`, a NOTE in the
-   summary instead of a FAIL) -- see "Where the matrix stands" for why.
+   summary instead of a FAIL) -- see "Where the matrix stands" for why; and a
+   case may declare a model floor in its front matter (`requires:`), below
+   which the combination is skipped, not graded -- the skill asks a smaller
+   model to refuse, but sonnet at low effort went ahead 3 of 3 with the floor
+   in its first paragraph, so that line is best effort and the human's model
+   choice is the enforcement. Set 13 Sep 2026 PT for `league-schedule` only:
+   Opus or better; a model the rank does not know counts as above the floor.
 4. **A failure means fix, review, rerun the failures.** Read the transcript in
    `validation/evals/results/`, decide whether the skill or the grader is
    wrong, fix that one thing, run `/code-review` on the fix, then

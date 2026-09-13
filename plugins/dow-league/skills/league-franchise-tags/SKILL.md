@@ -62,6 +62,7 @@ flag that explicitly rather than quoting it as routine.
 | Do **IR** players count toward the top 5? | **Yes.** Salary is salary regardless of slot. In 2026 this moved QB $48→$54 and WR $54→$59 |
 | Do **taxi** players count? | **Yes**, same reasoning. Has never bound — taxi salaries are far too low |
 | Do **franchise-tagged** contracts count? | **Yes.** This matters enormously — see the ratchet below |
+| Does the **player being tagged** count toward his own position's top 5? | **Yes.** The pool is every contract at the position; the eligibility gates below decide who can be tagged, not what counts in the average. Leaving him out turned a binding positional floor into a tie (opus, 13 Sep 2026 PT) |
 | Which snapshot is "last season"? | End-of-season (week 22) rosters, **union** players dropped mid-season |
 | Rounding | **Ceiling the average, then add 5 dollars.** `ceil(48.2) = 49`, then 49 + 5 = $54 — not 48 + 5 = $53 |
 
@@ -132,7 +133,9 @@ All calls go to the MyFantasyLeague worker, league `29557`.
    The position is the one `get_players` returned for that id and nothing else — a
    name that sounds like a receiver is not a receiver, and a contract at the wrong
    position is out however high its salary. Carry the position into the table so a
-   misfiled row is visible.
+   misfiled row is visible, **and the owner's first name beside every salary**:
+   an unowned row cannot be checked against the gSheet, and five names with no
+   owners is the shape sonnet at low effort produced on 13 Sep 2026 PT.
 
 ### Timing: not a constraint, if you use the right source
 

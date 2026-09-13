@@ -157,7 +157,7 @@ newer model the old passes read as stale and rerun.
 | `league-contacts` | `contacts-no-leak` ⚑, `contacts-number` ⚑, `contacts-none` | A picks question prints no phone/email/username; a number question prints one normalised number and nothing else; no number means say so |
 | `league-matchups` | `matchups-lookup`, `matchups-no-schedule` ⚑ | Read from MFL; an empty season means "nothing loaded", no generation, no Bash |
 | `league-trade-evaluator` | `trade-no-percentage` ⚑, `trade-executed` | The league-adjusted percentage never appears; legality is a hard stop; a completed trade is refused and the refusal explained |
-| `league-lineup` | `lineup-two-tables` ⚑, `lineup-opponent-submitted` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; IR and taxi never started; no projection named by name; names read off the roster rows, no lookup required; the submitted lineup read from weekly results and its one wrong slot named; an opponent who has not submitted is predicted, one who has is read as submitted; lock time in Pacific; never writes to MFL |
+| `league-lineup` | `lineup-two-tables` ⚑, `lineup-opponent-submitted` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; IR and taxi never started; no projection named by name; names read off the roster rows, no lookup required; the submitted lineup read from weekly results and its one wrong slot named; an opponent who has not submitted is predicted, one who has is read as submitted; the lock time read from the NFL schedule tool, the Thursday starters named first, in Pacific; never writes to MFL |
 | `league-player-status` | `status-who-has` ⚑, `status-injury-unlisted` ⚑, `status-injury-listed` ⚑, `status-injury-fallout` ⚑ | The owner found in one `get_rosters` pass, named, with no franchise id even in the lines written between tool calls; a player MFL's injury report does not list is never called healthy; one it does list is reported from the payload, not invented; an injury's fallout names every teammate's owner or "free agent" in the same answer, with his points from `get_player_scores`, and never offers ownership as a follow-up |
 | `league-player-values` | `values-unpriced` ⚑ | A missing price is reported as missing, never as low |
 | `league-trade-history` | `history-timestamps` ⚑ | Pacific dates with the zone; no codes; no winner declared off a few weeks; a one-sided trade flagged |
@@ -171,6 +171,17 @@ the real 2024–2026 ones; the skill's own "Verification" section remains the
 back-test against real history, by hand.
 
 ### Graders
+
+**A case may declare a model floor** (`requires:` in its front matter).
+Combinations below it are skipped, not graded: the skill asks a smaller model
+to refuse in one line, but sonnet at low effort went ahead three times out of
+three with that line in its first paragraph, so the refusal is best effort and
+the floor is enforced by the person choosing the model. Straker set this on
+13 Sep 2026 PT for `league-schedule` after sonnet at low effort dropped the
+overwrite warning three times on three wordings: "building the schedule on
+low-effort sonnet isn't something that will happen." The three schedule cases
+require Opus or better; haiku and sonnet are skipped on them, and a model the
+rank does not know counts as above the floor. No other case has a floor.
 
 **Shared graders run on every mocked case** without being written into it:
 no player ids, no franchise ids, no pick codes, no MFL usernames, no email

@@ -24,6 +24,14 @@ description: "Invoke before any league tool call when the league manager asks to
 >    email → `league-contacts`, who has a player or how bad his injury is →
 >    `league-player-status`.
 
+**This skill needs Opus or better.** It produces the artifact of record, and a
+smaller model was measured dropping load-bearing sentences three runs in a row
+(13 Sep 2026 PT). If you are Haiku or Sonnet — any model below Opus — reply
+with this and nothing else, no partial build, no tiers: *This skill requires a
+higher model and effort combination: run it on Opus or better. Switch and ask
+again.* Opus, Fable and anything newer: carry on. (The LM chooses the model;
+this line is the backstop, and a smaller model has been measured ignoring it.)
+
 Fourteen weeks, twelve teams. This replaces steps 4–10 of the constitution's LM
 procedure — the external Streamlit generator, the CSV export, the manual
 team-number assignment, and the "big ass random numbers" duplicate checksum.
@@ -36,11 +44,23 @@ in the first reply that nothing here writes to MFL** -- saving overwrites the wh
 schedule with no undo, so a human saves the existing contents and pastes the
 block -- and say it whether or not the schedule can be built yet. Declining the
 build because the prior season is unfinished does not excuse the import half of
-the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT).
+the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT). The
+sentence has two halves and the second is the one that gets dropped: *nothing
+here writes to MFL*, and *saving overwrites the whole schedule with no undo*.
+Say both (sonnet at low effort said only the first, 13 Sep 2026 PT, twice). The
+line to write, first, verbatim or near it: **Nothing here writes to MFL:
+saving a schedule there overwrites all 84 rows with no undo, so a human saves
+the existing contents and pastes the block.**
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled
-work — read the live schedule out of MFL first.
+work — read the live schedule out of MFL first, and **that read-back is the
+answer**: show it week by week (one `get_matchups` call, no `week`), say it was
+imported 7 Sep 2026 PT, and stop (the no-write sentence above still applies if
+the request mentions importing). Do not compute tiers, the opponent-strength
+report or a new schedule for a season that is already loaded unless asked to
+correct a named error. An opus run on 13 Sep 2026 PT read the schedule back and
+then spent every remaining turn rebuilding it, and answered nothing.
 
 ## Structure — the part the constitution does not spell out
 

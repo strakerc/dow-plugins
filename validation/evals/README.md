@@ -118,6 +118,18 @@ description: shown to the model as the tool's description
 {"json": "returned verbatim as the tool result"}
 ```
 
+A case may declare a floor: `requires: {"min_model": "opus"}` (optionally
+`"effort"`). Combinations below it are skipped: not run, not recorded, printed
+as SKIP. It is a minimum, not a list: a model the runner's rank does not know
+(Fable and whatever follows) counts as above the floor and is graded normally.
+The runner does not grade a refusal, because one cannot be relied on: the
+skill states its floor and asks a smaller model to refuse in one line, and
+sonnet at low effort went ahead on all three schedule cases anyway (13 Sep
+2026 PT). The floor is enforced by the person choosing the model.
+Straker's call, 13 Sep 2026 PT, for `league-schedule`: Opus or better, the
+models he builds schedules on; the three schedule cases carry it. Every other
+case gates under every combination.
+
 `{{input.week}}` in a body is replaced with that argument from the call. A
 tool with no file answers `Unknown tool`, as the real gateway does for a tool
 the key cannot reach. Later directories override earlier ones file by file,

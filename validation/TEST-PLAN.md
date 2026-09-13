@@ -174,11 +174,16 @@ back-test against real history, by hand.
 
 **Shared graders run on every mocked case** without being written into it:
 no player ids, no franchise ids, no pick codes, no MFL usernames, no email
-addresses, no phone numbers. Nine skills state that rule in their own words
-and four do not, so the runner tests the behaviour for all of them. The two
-documented exceptions are honoured: a case covering `league-contacts` may
-print the contact detail asked for, and one covering `league-schedule` may
-print franchise ids in the MFL import block.
+addresses, no phone numbers, and **at least one league-tool call**. Nine
+skills state the no-ids rule in their own words and four do not, so the runner
+tests the behaviour for all of them. The call requirement was added 13 Sep
+2026 PT after two passes that never touched the connector: haiku answered the
+no-write lineup case from Bash and file reads, and sonnet at low effort
+refused it in three turns. The documented exceptions are honoured: a case
+covering `league-contacts` may print the contact detail asked for, one
+covering `league-schedule` may print franchise ids in the MFL import block,
+`league-rules` cases call nothing, and a case tagged `connector-optional` (the
+two writeup review gates, the tiers-rule question) may pass without a call.
 
 Free graders do the high-stakes work: `regex` (`contains`, `not_contains`,
 `count:N`) for identifiers, phone shapes, forbidden percentages and required

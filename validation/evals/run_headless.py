@@ -291,6 +291,20 @@ IMPLICIT_GRADERS = [
      "match": "not_contains", "_unless": {"league-contacts"}},
     {"_name": "shared:no-phone", "type": "regex", "pattern": r"\(?\d{3}\)?[\s.-]?555[\s.-]?01\d\d",
      "match": "not_contains", "_unless": {"league-contacts"}},
+    # A mocked case is a question the league data answers, so an answer that
+    # never touched the connector is not an answer -- it is memory, or a
+    # refusal dressed as one. Measured 13 Sep 2026 PT across every saved
+    # transcript: haiku at low effort answered lineup-no-write with a dozen
+    # Bash/Glob/Read calls and no league tool and PASSED, and sonnet at low
+    # effort passed the same case in three turns by refusing before it read
+    # anything. Every other shared grader checks what the answer contains;
+    # this one checks that it was earned. Two exemptions, both by design:
+    # league-rules answers from its digest and calls nothing, and a case
+    # tagged `connector-optional` (the two writeup review gates, whose pass
+    # criteria accept "explains what it needs first"; the tiers-rule question,
+    # which is prose) may pass without a call.
+    {"_name": "shared:connector-used", "type": "tool_used", "tool": "mcp__*", "min": 1,
+     "_unless": {"league-rules"}, "_unless_tags": {"connector-optional"}},
 ]
 
 
@@ -300,9 +314,13 @@ def graders_for(case):
     if not case["mocks"]:
         return out                     # no data was ever shown, nothing to leak
     covered = set(case["skills"] or [])
+    tags = set(case.get("tags") or [])
     for g in IMPLICIT_GRADERS:
-        if not (g.get("_unless", set()) & covered):
-            out.append(dict(g, _body=""))
+        if g.get("_unless", set()) & covered:
+            continue
+        if g.get("_unless_tags", set()) & tags:
+            continue
+        out.append(dict(g, _body=""))
     return out
 
 
@@ -930,6 +948,21 @@ def selftest():
     leak2 = parse_stream([json.dumps({"type": "result", "subtype": "success", "result": "Ferro (10014) is in for Castillo (10010)"})])
     check("shared no-player-ids catches an id ending above 09",
           not grade_regex(next(g for g in IMPLICIT_GRADERS if g["_name"] == "shared:no-player-ids"), leak2)[0])
+    # shared:connector-used (13 Sep 2026 PT): a mocked case must call the
+    # connector at least once; league-rules and `connector-optional` cases
+    # are the documented exemptions. Seen failing on an empty tool list.
+    cu = next(g for g in IMPLICIT_GRADERS if g["_name"] == "shared:connector-used")
+    check("shared connector-used attaches to a mocked case", "shared:connector-used" in names)
+    rules = next(c for c in all_cases if "league-rules" in (c["skills"] or []))
+    check("shared connector-used waived for a league-rules case",
+          "shared:connector-used" not in {g["_name"] for g in graders_for(rules)})
+    optional = dict(mocked, tags=list(mocked["tags"]) + ["connector-optional"])
+    check("shared connector-used waived for a connector-optional case",
+          "shared:connector-used" not in {g["_name"] for g in graders_for(optional)})
+    check("shared connector-used fails a transcript with no league tool call",
+          not grade_tool_used(cu, dict(t, tools=[("Bash", {"command": "ls"}), ("Skill", {"skill": "x"})]))[0])
+    check("shared connector-used passes one league tool call",
+          grade_tool_used(cu, dict(t, tools=[("mcp__dow__get_league", {})]))[0])
     check("ledger path is under the repo", str(ledger_path()).startswith(str(ROOT)))
     fp_a = evals_fp(mocked, ["get_league"])
     fp_b = evals_fp(mocked, ["get_league", "get_rosters"])

@@ -262,7 +262,10 @@ zone labelled.**
 
 ## Must not
 
-- **No writes to MFL.** A human enters the lineup.
+- **No writes to MFL.** A human enters the lineup. A request to submit is
+  still a request for the lineup: read the data, give both tables, then say
+  the entry is theirs to make. Declining before reading anything answers
+  nothing (sonnet at low effort did exactly that, 13 Sep 2026 PT).
 - **No full recommended lineup for another franchise.** Reading back what the
   opponent has submitted is in scope, and so is predicting their starters;
   producing their lineup for them is not.

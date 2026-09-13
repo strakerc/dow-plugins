@@ -49,13 +49,20 @@ def norm(ci):
     if c.startswith("franchise"): return "tag"
     return "unknown"
 
+def salary(p):
+    # MFL sends whole numbers ("40"), but a salary written with cents ("40.00")
+    # is valid JSON for the same field and int() raised on it, killing the
+    # whole run. Found 13 Sep 2026 PT on the eval mocks.
+    v = float(p.get("salary") or 0)
+    return int(v) if v.is_integer() else v
+
 def years_remaining(p, season):
     through = int(p.get("contractStatus") or 0)
     return max(0, through - season + 1) if through else 0
 
 def options_for(p, season):
     """Legal options once this contract has completed, with prices."""
-    kind, sal = norm(p.get("contractInfo")), int(p.get("salary") or 0)
+    kind, sal = norm(p.get("contractInfo")), salary(p)
     opts = [{"option": "Release", "cost": 0,
              "note": "dead money depends on contract type -- see cut_cost"}]
 
@@ -109,7 +116,7 @@ def options_for(p, season):
     return opts
 
 def cut_cost(p, season):
-    kind, sal = norm(p.get("contractInfo")), int(p.get("salary") or 0)
+    kind, sal = norm(p.get("contractInfo")), salary(p)
     yrs = years_remaining(p, season)
     if kind == "rookie":
         yr = int(p.get("contractYear") or 1)
@@ -122,16 +129,16 @@ def cut_cost(p, season):
                        f"year{'s' if yrs != 1 else ''} as dead money. Cannot be traded.")
 
 def cap_hit(p):
-    return int(p.get("salary") or 0) * (0.25 if p.get("status") == "INJURED_RESERVE" else 1)
+    return salary(p) * (0.25 if p.get("status") == "INJURED_RESERVE" else 1)
 
 def analyse(players, season, names=None, adjustments=0.0, adjustments_supplied=False):
     names = names or {}
     nm = lambda p: names.get(p["id"], p["id"])
     committed = sum(cap_hit(p) for p in players)
-    floor_charge = sum(int(p.get("salary") or 0) for p in players)
+    floor_charge = sum(salary(p) for p in players)
     expiring, under = [], []
     for p in players:
-        row = {"id": p["id"], "name": nm(p), "salary": int(p.get("salary") or 0),
+        row = {"id": p["id"], "name": nm(p), "salary": salary(p),
                "contract": p.get("contractInfo"), "through": p.get("contractStatus"),
                "status": p.get("status"), "capHit": cap_hit(p),
                "yearsRemaining": years_remaining(p, season)}

@@ -245,6 +245,34 @@ class ContractOptions(Fixture):
         self.assertNotEqual(rc, 0)
         self.assertIn("no franchise matched", err)
 
+    # league-contracts, "The cap floor": the whole league in one run, every
+    # salary in full (IR too) plus dead money, and negative headroom is short.
+    # Salaries arrive with cents in the eval mocks ("40.00"), which int()
+    # refused until 13 Sep 2026 PT.
+    def test_floor_across_the_league(self):
+        league = {"rosters": {"franchise": [
+            {"id": "0001", "player": [player(1, "270.00", "Long-Term", 2028),
+                                      player(2, "40.00", "Long-Term", 2028,
+                                             status="INJURED_RESERVE")]},
+            {"id": "0002", "player": [player(3, "280.00", "Long-Term", 2028)]},
+            {"id": "0003", "player": [player(4, "295.50", "Long-Term", 2028)]}]}}
+        roster = self.write("league.json", league)
+        adj = self.write("adj.json", {"salaryAdjustments": {"salaryAdjustment": [
+            {"franchise_id": "0003", "amount": "9.00"}]}})
+        _, out, _ = run(CONTRACTS, "--roster", roster, "--season", 2027,
+                        "--adjustments", adj)
+        r = json.loads(out)
+        self.assertEqual(sorted(r), ["0001", "0002", "0003"])
+        # Clears only because IR counts in full: 270 + 40 = 310, where the cap
+        # charge (IR at a quarter) is 280.
+        self.assertEqual(r["0001"]["floorCharge"], 310)
+        self.assertEqual(r["0001"]["floorHeadroom"], 10)
+        self.assertEqual(r["0001"]["committed"], 280)
+        self.assertEqual(r["0002"]["floorHeadroom"], -20)
+        # Clears only because dead money counts: 295.5 + 9.
+        self.assertEqual(r["0003"]["floorCharge"], 304.5)
+        self.assertEqual(r["0003"]["floorHeadroom"], 4.5)
+
 
 # ----------------------------------------------------------------- ledger
 def full_slate(years=(2027, 2028, 2029)):

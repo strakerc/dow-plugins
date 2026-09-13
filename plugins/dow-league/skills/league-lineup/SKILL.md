@@ -138,12 +138,18 @@ comma, `nonstarters` the bench, and the scores are blank. Lineups are visible
 league-wide in this league, on the site and here, so the opponent's block is a
 page every owner can already see.
 
-- Find the owner's block. Every id in it is already in step 2's pool, so it
-  needs no second `get_players` call. An id in `starters` that is not on the
-  roster is a player moved since the lineup was set: name him and say the slot
-  is empty until it is refilled.
-- **A franchise with no `starters`, or an empty one, has not submitted a lineup
-  yet** — not an empty lineup, not an error.
+- Find the owner's block: the entry whose `id` is the owner's franchise. **If
+  it has a `starters` field, the lineup is submitted. Write it out as its own
+  labelled list, by name, before the optimum.** Every id in it is already in
+  step 2's pool, so it needs no second `get_players` call. An id in `starters`
+  that is not on the roster is a player moved since the lineup was set: name
+  him and say the slot is empty until it is refilled.
+- **Only a block with no `starters` field, or an empty one, means not
+  submitted yet** — not an empty lineup, not an error. Check the field before
+  writing that sentence: one run (sonnet, low effort, 13 Sep 2026 PT) called a
+  submitted lineup "not entered" with all ten ids sitting in the payload, and
+  narrated the franchise id while doing it. The list above is how that answer
+  cannot happen — it exists, or the field is absent or empty.
 - A `comments` field is an owner's note to themselves. Any `optimal` or
   `shouldStart` MFL adds once games score is hindsight from actual points. None
   of that is data for any table; leave it out.

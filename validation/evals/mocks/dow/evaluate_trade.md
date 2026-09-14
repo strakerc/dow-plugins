@@ -44,5 +44,7 @@ description: Score a proposed trade: market verdict and league-adjusted verdict,
   "sampleSize": 180,
   "basis": "league-wide rosters"
  },
- "notes": []
+ "notes": [
+  "FantasyPros returned only 426 players — expected at least 500. A player missing from its board is priced on FantasyCalc alone, so the blend is thinner than usual."
+ ]
 }

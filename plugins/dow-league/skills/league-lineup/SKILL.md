@@ -262,6 +262,9 @@ recommending any swap**:
 
 - **A clear favourite should reduce variance** and take known usage.
 - **A clear underdog should take ceiling and leverage.**
+- **A close projection is still a side.** Name the marginal favourite by the
+  number, then use the table as the tiebreaker below — “coin flip” alone names
+  no side (sonnet at high effort, 14 Sep 2026 PT).
 
 **It breaks ties. It does not overturn material gaps.** Moving a player two or
 more projected points behind is rationalising, not strategy — if you do it anyway,

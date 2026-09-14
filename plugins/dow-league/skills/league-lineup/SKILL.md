@@ -326,8 +326,12 @@ because nothing gave it a real time. Now something does.
   producing their lineup for them is not.
 - **Never surface a franchise id, player id, MFL username, email or phone number**
   as a side effect. Owners go by first name — including the line that says whose
-  lineup this is: the owner's name or the team name, never "franchise 0001". Four
-  of twenty-two answers on the first eval run (9 Sep 2026 PT) put the id right there.
+  lineup this is, and the line that says a lineup is on file: the owner's name or
+  the team name, and **not the word "franchise" at all**, because the word
+  invites the number after it. Four of twenty-two answers on the first eval run
+  (9 Sep 2026 PT) put the id right there, and on 14 Sep 2026 PT it came back in
+  parentheses after a correctly named owner, twice in one answer, both times
+  straight after that word.
 - **Do not narrate which franchise record you matched, or how.** The owner knows
   who they are. Open with the answer itself; the team name may appear, the id
   never does. Telling the rule as "never print the id" did not stop it (two more

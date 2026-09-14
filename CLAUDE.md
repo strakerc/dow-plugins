@@ -213,7 +213,7 @@ Key consequences that shape the prose:
 | Generating the schedule | `league-schedule` (LM-only) |
 | Contact details — phone, email, the member directory | `league-contacts` (read-only) |
 | Scoring a proposed trade, market vs league-adjusted | `league-trade-evaluator` |
-| What a player is worth here, and whether his contract is an asset or a drag | `league-player-values` |
+| What a player is worth here, whether his contract is an asset or a drag, and whether he fits the roster asking | `league-player-values` |
 | How a completed trade has aged, and who is ahead now | `league-trade-history` |
 | Who to start this week, and what the opponent changes | `league-lineup` |
 | Who has a player, how bad his injury is, and which teammates step in | `league-player-status` |

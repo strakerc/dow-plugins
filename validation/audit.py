@@ -353,6 +353,43 @@ control = (len(_moved) == 2 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
            and native_path("/c/x/y") in ("C:/x/y", "/c/x/y"))
 report(f"all {len(mock_names)} shared mocks pinned to a current worker version", bad, control, note=note)
 
+# --- 9b. every shared mock's role matches the gateway route it mirrors -------
+# `roles: lm` in a mock's front matter is hand-set, and roles have moved before
+# (get_injuries went LM_ONLY -> OWNER on 9 Sep 2026 PT). Read dowgateway's
+# ROUTES out of the same sibling clone and compare. Same override as check 9.
+from mock_mcp_server import visible
+ROUTE_RE = re.compile(r'name:\s*"(\w+)",\s*roles:\s*(\w+)')
+
+def route_roles(workers_root):
+    path = os.path.join(workers_root, "workers", "dowgateway", "src", "worker.js")
+    if not os.path.isfile(path):
+        return None
+    return dict(ROUTE_RE.findall(io.open(path, encoding="utf-8").read()))
+
+def check_roles(routes, mocks):
+    bad = []
+    for name, (meta, _) in sorted(mocks.items()):
+        if name not in routes:
+            continue
+        lm_only_mock = visible(meta, "lm") and not visible(meta, "owner")
+        lm_only_route = routes[name] == "LM_ONLY"
+        if lm_only_mock != lm_only_route:
+            bad.append(f"{name}: mock is {'LM-only' if lm_only_mock else 'every role'}, the gateway route is {routes[name]}")
+    return bad
+
+mocks = load_tools(MOCK_SERVER, [MOCKS_ROOT])
+routes = route_roles(workers_root)
+if routes is None:
+    bad9b = [] if allow_missing else [f"dow-workers clone not found at {workers_root} -- mock roles were NOT checked against the gateway routes"]
+    note9b = ("note: mock roles were NOT checked against the gateway routes -- OVERRIDDEN by a human, proceeding"
+              if allow_missing else None)
+else:
+    bad9b, note9b = check_roles(routes, mocks), None
+_ctl_bad = check_roles({"a_tool": "LM_ONLY", "b_tool": "OWNER"},
+                       {"a_tool": ({}, ""), "b_tool": ({"roles": ["lm"]}, ""), "c_tool": ({"roles": ["lm"]}, "")})
+control9b = len(_ctl_bad) == 2 and not check_roles({"a_tool": "LM_ONLY"}, {"a_tool": ({"roles": ["lm"]}, "")})
+report(f"all {len(mocks)} shared mocks carry the role of their gateway route", bad9b, control9b, note=note9b)
+
 print()
 print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files"
       + (f" -- {len(overrides)} OVERRIDDEN by a human, not run: {', '.join(overrides)}" if overrides else ""))

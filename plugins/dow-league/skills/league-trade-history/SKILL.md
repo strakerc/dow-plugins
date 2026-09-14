@@ -79,11 +79,11 @@ side. Assets are player ids, or pick codes in **two different notations that do
 not read the same way**:
 
 - **Read `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` first.**
-  Since myfantasyleague 0.9.0 every trade row carries them: the same assets with
-  every pick already in words ("Ada's 2028 1st", "2026 rookie pick 2.04") and
-  each player as an id to resolve. When they are present, use them and skip the
-  decoding below. The rules below are for a payload without them
-  (`decodeUnavailable` says why).
+  Every trade row carries them (myfantasyleague 0.9.0): each pick as a `label`
+  already in words, each player as an `id` to resolve. Use the labels; the raw
+  sides beside them still hold codes, and those stay unprinted. Decode by hand,
+  with the rules below, only when the lists are absent (`decodeUnavailable`
+  says why).
 - **`FP_{origin}_{year}_{round}`** — a future pick. The id is the pick's
   **origin**, not its holder. `FP_0002_2027_2` is Pat's 2027 2nd wherever it sits.
   Round numbers here are real round numbers.

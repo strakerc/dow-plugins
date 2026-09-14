@@ -69,7 +69,7 @@ def frontmatter(text):
             v = int(v)
         elif len(v) >= 2 and v[0] == v[-1] and v[0] in "'\"":
             v = v[1:-1]
-        elif k in ("tags", "skills") and v:
+        elif k in ("tags", "skills", "roles") and v:
             v = [t.strip() for t in v.split(",") if t.strip()]
         meta[k] = v
     return meta, m.group(2)
@@ -81,17 +81,29 @@ def parse_mock(path):
 
 
 def visible(meta, role):
-    """A mock with no `roles:` is every role's; `roles: lm` (or a list) names
-    the roles that can see it. An owner-role case then gets "Unknown tool" for
-    an LM-only tool, exactly as production answers a member key -- before this
-    a member-case model could call get_draft_results in the eval and pass where
-    the real gateway would have refused it."""
+    """A mock with no `roles:` is every role's; `roles: lm` names the roles
+    that can see it (frontmatter() already makes it a list; an unquoted
+    `[lm, owner]` arrives as bracketed strings, stripped here)."""
     r = meta.get("roles")
     if not r:
         return True
     if isinstance(r, str):
-        r = [x.strip() for x in r.split(",")]
-    return role in [str(x).strip() for x in r]
+        r = [r]
+    return role in [str(x).strip().strip("[]").strip() for x in r]
+
+
+def served_path(server, dirs, tool):
+    """The file load_tools serves for `tool`: later dirs win, `_`-prefixed
+    files are private. The one answer to "which mock does this case read",
+    for the server and for the runner's fingerprint alike."""
+    if tool.startswith("_"):
+        return None
+    found = None
+    for d in dirs:
+        cand = os.path.join(d, server, tool + ".md")
+        if os.path.isfile(cand):
+            found = cand
+    return found
 
 
 def load_tools(server, dirs):

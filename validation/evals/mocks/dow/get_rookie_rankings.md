@@ -1,5 +1,5 @@
 ---
-description: Rookie rankings, superflex. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` or `rookie-draft-grades` skill BEFORE calling this. Synthetic.
+description: Rookie rankings, superflex. Carries `notes` when the board came back short (fantasypros 0.6.0): pass that caveat on. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` or `rookie-draft-grades` skill BEFORE calling this. Synthetic.
 ---
 {
  "rankings": [

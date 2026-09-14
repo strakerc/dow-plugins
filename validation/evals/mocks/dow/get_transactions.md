@@ -1,5 +1,5 @@
 ---
-description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Every trade row also carries `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` (myfantasyleague 0.9.0): the same assets with every pick code already decoded to words — read those and never print a raw code. Raw payload for the dow-league skills, not an answer for an owner (player ids, pick codes, epoch timestamps). Invoke the `league-trade-history` skill BEFORE calling this; it decodes all three and prints Pacific times. Synthetic.
+description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Every trade row also carries `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` (myfantasyleague 0.9.0): the same assets with every pick code already decoded to words — read those and never print a raw code; they are absent only when the league export failed, and `decodeUnavailable` then says why. Raw payload for the dow-league skills, not an answer for an owner (player ids, pick codes, epoch timestamps). Invoke the `league-trade-history` skill BEFORE calling this; it decodes all three and prints Pacific times. Synthetic.
 ---
 {
  "transactions": {
@@ -13,11 +13,11 @@ description: Transactions for a season; filter with transaction_type=TRADE. Side
     "franchise2_gave_up": "20005,DP_1_3,",
     "franchise1_gave_up_decoded": [
      {"kind": "player", "id": "10006"},
-     {"kind": "pick", "code": "FP_0001_2028_1", "label": "Ada's 2028 1st"}
+     {"kind": "pick", "label": "Ada's 2028 1st"}
     ],
     "franchise2_gave_up_decoded": [
      {"kind": "player", "id": "20005"},
-     {"kind": "pick", "code": "DP_1_3", "label": "2026 rookie pick 2.04"}
+     {"kind": "pick", "label": "2026 rookie pick 2.04"}
     ],
     "comments": ""
    },
@@ -29,7 +29,7 @@ description: Transactions for a season; filter with transaction_type=TRADE. Side
     "franchise1_gave_up": "FP_0003_2027_3,",
     "franchise2_gave_up": "",
     "franchise1_gave_up_decoded": [
-     {"kind": "pick", "code": "FP_0003_2027_3", "label": "Cleo's 2027 3rd"}
+     {"kind": "pick", "label": "Cleo's 2027 3rd"}
     ],
     "franchise2_gave_up_decoded": [],
     "comments": ""

@@ -61,6 +61,9 @@ PLUGINS = ROOT / "plugins"
 SERVER = "dow"
 SUITES = {"dow-league": ["dow-league"],
           "dow-league-lm": ["dow-league", "dow-league-lm"]}
+# The gateway role each suite runs as: the mock gateway hides `roles: lm`
+# mocks from an owner the way dowgateway hides LM_ONLY tools from a member key.
+SUITE_ROLE = {"dow-league": "owner", "dow-league-lm": "lm"}
 KNOWN_GRADERS = {"regex", "tool_used", "tool_order", "llm"}
 # Nothing that reaches outward: no web, no sub-agents, and none of the desktop
 # app's publishing tools -- haiku called Artifact from a schedule case and got
@@ -71,7 +74,7 @@ DISALLOWED = ["WebFetch", "WebSearch", "NotebookEdit", "Agent", "Artifact", "Sen
 
 # --------------------------------------------------------------- loading
 sys.path.insert(0, str(HERE))
-from mock_mcp_server import frontmatter, load_tools, parse_mock  # the one parser
+from mock_mcp_server import frontmatter, load_tools, parse_mock, served_path, visible  # the one parser
 
 
 class JudgeUnreachable(Exception):
@@ -406,9 +409,7 @@ def mcp_config(case, tmp):
     dirs = [str(HERE / "mocks")]
     if (case["dir"] / "mocks").is_dir():
         dirs.append(str(case["dir"] / "mocks"))
-    # dow-league cases run as an owner, dow-league-lm cases as the LM: the mock
-    # gateway hides `roles: lm` mocks from an owner the way production does.
-    role = "lm" if "dow-league-lm" in case["plugins"] else "owner"
+    role = SUITE_ROLE[case["suite"]]
     cfg = {"mcpServers": {SERVER: {
         "command": sys.executable,
         "args": [str(HERE / "mock_mcp_server.py"), "--server", SERVER, "--role", role, "--mocks", *dirs]}}}
@@ -655,13 +656,13 @@ def evals_fp(case, tools=None):
         if tools is None:
             paths.append(HERE / "mocks")
         else:
-            # The mock the case actually serves: a case-local override shadows
-            # the shared file (mock_mcp_server loads dirs in order, later wins),
-            # so hashing the shared one staled trade-executed on every edit to
-            # a file it never read (review finding, 13 Sep 2026 PT).
+            # The mock the case actually serves, asked of the same function the
+            # mock server uses: hashing the shared file staled trade-executed on
+            # every edit to a file its override shadowed (13 Sep 2026 PT).
+            dirs = [str(HERE / "mocks")] + ([str(case["dir"] / "mocks")] if (case["dir"] / "mocks").is_dir() else [])
             for t in tools:
-                local = case["dir"] / "mocks" / SERVER / f"{t}.md"
-                paths.append(local if local.exists() else HERE / "mocks" / SERVER / f"{t}.md")
+                p = served_path(SERVER, dirs, t)
+                paths.append(Path(p) if p else HERE / "mocks" / SERVER / f"{t}.md")
     return _hash_paths(paths, extra=grader_engine())
 
 
@@ -1176,50 +1177,44 @@ def selftest():
     # the server answers a real handshake with the shared set. All three requests
     # go in at once and communicate() has a timeout, so a server that dies before
     # answering is a BAD line, not a hang inside a git hook.
-    p = subprocess.Popen([sys.executable, str(HERE / "mock_mcp_server.py"), "--server", SERVER,
-                          "--role", "lm", "--mocks", str(HERE / "mocks")],
-                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    def mcp_probe(role, reqs, timeout=30):
+        """Drive one mock-server process over stdio; returns (by_id, stderr)."""
+        proc = subprocess.Popen([sys.executable, str(HERE / "mock_mcp_server.py"), "--server", SERVER,
+                                 "--role", role, "--mocks", str(HERE / "mocks")],
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            out, err = proc.communicate("\n".join(json.dumps(r) for r in reqs).encode("utf-8") + b"\n", timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill(); out, err = b"", b"timeout"
+        lines = [json.loads(l) for l in out.decode("utf-8", "replace").splitlines() if l.strip()]
+        return {m.get("id"): m for m in lines}, err
+
+    # LM-only mocks, by what the server would do, not by the presence of a
+    # `roles:` line -- and pinned to the set the gateway's LM_ONLY routes carry a
+    # mock for, so losing one `roles: lm` line is caught (audit check 9 compares
+    # every mock's role to the routes themselves).
+    EXPECTED_LM_ONLY = {"get_draft_results", "list_channels", "send_message"}
+    lm_only = {n for n, (meta, _) in shared.items() if visible(meta, "lm") and not visible(meta, "owner")}
     reqs = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05"}},
             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
             {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "no_such_tool", "arguments": {}}}]
-    try:
-        out, err = p.communicate("".join(json.dumps(r) + "\n" for r in reqs).encode(), timeout=30)
-        replies = {}
-        for line in out.decode("utf-8", "replace").splitlines():
-            if line.strip():
-                m = json.loads(line)
-                replies[m.get("id")] = m
-    except subprocess.TimeoutExpired:
-        p.kill()
-        replies, err = {}, b"timeout"
-    init, lst, unk = replies.get(1, {}), replies.get(2, {}), replies.get(3, {})
-    names = {x["name"] for x in lst.get("result", {}).get("tools", [])}
+    by, err = mcp_probe("lm", reqs)
+    init, unk = by.get(1, {}), by.get(3, {})
+    names = {t["name"] for t in by.get(2, {}).get("result", {}).get("tools", [])}
     check("mock server initialize", "result" in init, "" if "result" in init else err.decode("utf-8", "replace")[-200:])
-    check("mock server tools/list matches files", names == set(shared))
+    check("mock server tools/list matches files (as the LM, who sees every mock)", names == set(shared))
     check("mock server unknown tool says so",
           bool(unk) and "Unknown tool" in unk["result"]["content"][0]["text"] and unk["result"]["isError"])
-    # The role gate: an owner does not see an LM-only mock, and calling it gets
-    # the production answer. Control: the same mock IS listed for the LM above.
-    lm_only = sorted(n for n, (meta, _) in shared.items() if meta.get("roles"))
-    q = subprocess.Popen([sys.executable, str(HERE / "mock_mcp_server.py"), "--server", SERVER,
-                          "--role", "owner", "--mocks", str(HERE / "mocks")],
-                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    oreqs = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05"}},
-             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
-             {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": lm_only[0] if lm_only else "send_message", "arguments": {}}}]
-    try:
-        oout, _ = q.communicate("\n".join(json.dumps(r) for r in oreqs).encode("utf-8") + b"\n", timeout=30)
-    except subprocess.TimeoutExpired:
-        q.kill(); oout = b""
-    olines = [json.loads(l) for l in oout.decode("utf-8", "replace").splitlines() if l.strip()]
-    oby = {m.get("id"): m for m in olines}
+    check("mock server: the LM-only mocks are exactly the gateway's", lm_only == EXPECTED_LM_ONLY,
+          ", ".join(sorted(lm_only)))
+    oreqs = [reqs[0], reqs[1],
+             {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "get_draft_results", "arguments": {}}}]
+    oby, _ = mcp_probe("owner", oreqs)
     onames = {t["name"] for t in oby.get(2, {}).get("result", {}).get("tools", [])}
     ocall = oby.get(3, {}).get("result", {})
-    check("mock server: LM-only mocks exist to gate", bool(lm_only), ", ".join(lm_only))
-    check("mock server: an owner does not see LM-only mocks", bool(lm_only) and not (onames & set(lm_only)) and onames == set(shared) - set(lm_only))
-    check("mock server: an owner calling one gets Unknown tool",
+    check("mock server: an owner sees every mock but the LM-only ones", onames == set(shared) - EXPECTED_LM_ONLY)
+    check("mock server: an owner calling get_draft_results gets Unknown tool",
           bool(ocall) and "Unknown tool" in ocall.get("content", [{}])[0].get("text", "") and ocall.get("isError"))
-    check("mock server: the LM sees every mock (control)", names == set(shared))
 
     # the ledger's state machine, on a dict: new -> current -> stale / failed
     probe = cases[0]

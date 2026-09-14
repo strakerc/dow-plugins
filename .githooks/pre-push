@@ -18,8 +18,12 @@
 # Installed by the same command as the other hooks:
 #     git config core.hooksPath .githooks
 #
-# Bypass for one push, if you are certain and will say so:
-#     git push --no-verify
+# Straker's push choice (CLAUDE.md, "The push choice") reaches this hook as
+# an environment variable, so no choice ever needs --no-verify -- which would
+# skip the free stages and the whole-tree phone/email audit along with the
+# evals:
+#     DOW_EVAL_SCOPE=relevant git push   # only cases covering the changed skills
+#     DOW_EVAL_SCOPE=bypass git push     # free stages only, no model run
 #
 # Written 9 Sep 2026 PT. POSIX sh; the work is in Python.
 # ---------------------------------------------------------------------------
@@ -73,7 +77,7 @@ if [ "$rc" -ne 0 ]; then
   case "$rc" in
     2) printf '          The skill evals could not run. Log the CLI in from a real terminal:  claude auth login\n' ;;
   esac
-  printf '          Fix it, or `git push --no-verify` if you are certain -- and say so in the commit or the chat.\n'
+  printf '          Fix it. If Straker chose a narrower eval scope for this push:  DOW_EVAL_SCOPE=relevant git push  (or =bypass)\n'
   exit 1
 fi
 exit 0

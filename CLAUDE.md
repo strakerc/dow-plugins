@@ -52,7 +52,7 @@ python3 validation/regress.py          # the regression gate: before /code-revie
 ```
 
 ```bash
-python3 validation/regress.py --evals  # plugins/ changed and Straker chose Relevant or All; costs money
+python3 validation/regress.py --evals  # plugins/ changed; with DOW_EVAL_SCOPE=relevant for Relevant; costs money
 ```
 
 ```bash
@@ -135,9 +135,10 @@ that the tool is broken.
    remote has — only the cases the runner's ledger does not already hold a pass
    for against the current files. **A push is refused when the gate fails or
    cannot run** — a CLI that is not logged in blocks the push, because a suite
-   that never ran is not a suite that passed. `git push --no-verify` bypasses it,
-   and is used only when Straker picks **Bypass** at the push choice below —
-   disclosed in the commit message or PR body and in the chat.
+   that never ran is not a suite that passed. Straker's push choice below reaches
+   the hook as `DOW_EVAL_SCOPE=relevant git push` or `DOW_EVAL_SCOPE=bypass git
+   push`; **no choice uses `--no-verify`**, which would also skip the free stages,
+   and the machine-wide defaults forbid it.
 
 The commit hooks scan **added lines only** (and the message itself) — a rule that
 re-flags existing content trains everyone to use `--no-verify`. The pre-push hook is
@@ -259,8 +260,9 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
 2. `/code-review` — before any eval run, including a rerun. A review finding
    fixed here is an eval failure that never has to be paid for.
 3. **If anything under `plugins/` changed, ask Straker which eval scope this push
-   gets** — see "The push choice" below — and on Relevant or All run
-   `python3 validation/regress.py --evals`.
+   gets** — see "The push choice" below — and on Relevant run
+   `DOW_EVAL_SCOPE=relevant python3 validation/regress.py --evals`, on All the
+   same without the variable.
    The runner keeps a per-case ledger in `.git/` and **runs only cases that are
    new, failed, or stale** (their skill files, any skill's description, their
    case or mock files, or the grading code changed since the pass). Already-passed cases are not rerun: "we don't need to retest what we
@@ -290,8 +292,10 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    `regress.py --evals` again — which by construction reruns only the cases the
    fix touched. A grader-only fix needs no model run at all:
    `run_headless.py --regrade <results dir>` rescores the saved transcript.
-5. Push. The pre-push hook (invariant 7) runs the same ledger check, so a push
-   straight after a green step 3 pays nothing.
+5. Push with the same scope: `DOW_EVAL_SCOPE=relevant git push` for Relevant,
+   `DOW_EVAL_SCOPE=bypass git push` for Bypass, plain `git push` for All. The
+   pre-push hook (invariant 7) runs the same ledger check under that scope, so a
+   push straight after a green step 3 pays nothing.
 6. Only on **All**: `python3 validation/regress.py --post-push` — every case,
    forced, against what actually shipped.
 
@@ -305,18 +309,29 @@ affected cases passed and against which files, what he has said is coming next
 end), how much the batch has already spent and where the weekly window stands,
 and how much an owner could be hurt by what changed.
 
-| Option | What runs | Rough cost | When it fits |
-|---|---|---|---|
-| **Relevant** | `--evals`: only the new, failed or stale cases, under every model and effort; the pre-push hook then pays nothing | $2–10 | A normal push mid-batch |
-| **All** | Relevant, then `--post-push` after the push: every case, forced | adds ~$30, 40 min | The last push of a batch, or before a release tag |
-| **Bypass** | Free `regress.py` only, then `git push --no-verify` | nothing | He is certain, or the change is trivial and more are coming |
+| Option | `DOW_EVAL_SCOPE` | What runs | Rough cost | When it fits |
+|---|---|---|---|---|
+| **Relevant** | `relevant` | Cases covering a skill the change touched, plus any new or failed case, under every model and effort | $2–10 | A normal push mid-batch |
+| **All** | unset | Every new, failed or stale case — a description edit stales the whole suite — then `--post-push` after the push: every case, forced | up to ~$30, then ~$30 more after the push | The last push of a batch, or before a release tag |
+| **Bypass** | `bypass` (push only) | The free stages, in the hook; no model | nothing | He is certain, or the change is trivial and more are coming |
 
-Bypass skips the model, not the rules: always run the free `regress.py` first,
-because `--no-verify` also skips the pre-push whole-tree audit that backs
-invariant 6. Nothing is lost by it — the skipped cases stay stale in the ledger
-and run on the next Relevant or All. But the push still reaches every owner,
-so say plainly that it shipped without a model run. A push that does not
-touch `plugins/` has no evals to choose; do not ask.
+**Why Relevant needed its own scope** (13 Sep 2026 PT): the ledger fingerprints
+every skill's description into every case, because a description decides which
+skill fires. So one description edit made all 25 other cases stale, and the
+hook demanded them on a push whose relevant cases had already passed on every
+model. Under `relevant`, a case stale *only* through another skill's change is
+skipped (`routed` in `run_headless.py --ledger --changed-skills ...`). The cost
+is real: a description that starts stealing another skill's questions is not
+caught until an All run, so end a batch that edited a description with All.
+A change under `plugins/` outside a skill directory (a manifest, a plugin
+README) cannot be narrowed, and `relevant` falls back to every stale case.
+
+Bypass skips the model, not the rules: the hook still runs the free stages,
+including the whole-tree audit behind invariant 6. The skipped cases stay stale
+and run on the next All, or the next Relevant push that touches their skill.
+The push still reaches every owner, so say plainly that it shipped without a
+model run. A push that does not touch `plugins/` has no evals to choose; do
+not ask.
 
 **When to halt instead of looping.** The fix-review-rerun loop in step 4 ends
 when the gate is green or when the evidence says it cannot get there: a case

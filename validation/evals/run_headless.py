@@ -670,6 +670,34 @@ def ledger_status(case, led, model, effort=None, model_id=None):
     return "current" if e.get("passed") else "failed"
 
 
+def routing_only(case, led, model, effort, changed, model_id=None):
+    """True for a case that is stale only through a change to skills it does
+    not cover: it passed, its own files and mocks are unchanged, the model
+    behind the alias has not moved, and none of its skills is in `changed`.
+    The relevant push scope skips these (Straker, 13 Sep 2026 PT): a
+    description edit to one skill otherwise stales every case in the suite.
+    `changed` None means no scope was given. A case covering no skills
+    depends on all of them, so it is never routing-only."""
+    if changed is None:
+        return False
+    covered = set(case["skills"] or [])
+    if not covered or covered & changed:
+        return False
+    e = led.get(ledger_key(case, model, effort))
+    if not e or not e.get("passed"):
+        return False                      # new or failed: always runs
+    if model_id and e.get("model_id") and e["model_id"] != model_id:
+        return False
+    return e.get("evals_fp") == evals_fp(case, e.get("tools"))
+
+
+def changed_set(value):
+    """--changed-skills as a set, or None when the flag was not given."""
+    if value is None:
+        return None
+    return {s.strip() for s in value.split(",") if s.strip()}
+
+
 def record(led, case, passed, model, results_dir, skills_fp_value=None, tools=None,
            effort=None, model_id=None):
     led[ledger_key(case, model, effort)] = {
@@ -776,9 +804,12 @@ def print_ledger(args):
         cases = [c for c in cases if any(tg in c["tags"] for tg in args.tag)]
     models = [x.strip() for x in (args.models or args.model).split(",") if x.strip()] or [args.model]
     counts = {}
+    changed = changed_set(args.changed_skills)
     for m in models:
         for c in cases:
             st = ledger_status(c, led, m, args.effort)
+            if st == "stale" and routing_only(c, led, m, args.effort, changed):
+                st = "routed"
             counts[st] = counts.get(st, 0) + 1
             e = led.get(ledger_key(c, m, args.effort), {})
             print(f"  {st:<8} {m:<8} {c['name']:<44} {e.get('when', '')[:19]} {e.get('model_id') or ''}")
@@ -825,6 +856,14 @@ def main_run(args):
         for c in current:
             e = led[ledger_key(c, c["model"] or args.model, args.effort)]
             print(f"  current  {c['name']}  (passed {e['when'][:19]} on {e.get('model_id') or e['model']}; not rerun)")
+        changed = changed_set(args.changed_skills)
+        routed = [c for c in cases if status[c["name"]] == "stale"
+                  and routing_only(c, led, c["model"] or args.model, args.effort, changed,
+                                   ids.get(c["model"] or args.model))]
+        cases = [c for c in cases if c not in routed]
+        for c in routed:
+            print(f"  routed   {c['name']}  (stale only through a change to another skill; "
+                  f"not rerun under the relevant scope)")
         if not cases:
             print("\nnothing to run: every selected case has a recorded pass against the current files")
             return 0
@@ -1168,8 +1207,27 @@ def selftest():
     record(led, probe, True, "sonnet", Path("x"))
     led[ledger_key(probe, "sonnet")]["skills_fp"] = "changed"
     check("ledger: changed skill files are stale", ledger_status(probe, led, "sonnet") == "stale")
+    # the relevant push scope: stale only through another skill is routed, not rerun
+    other = {"some-other-skill"}
+    covered = set(probe["skills"] or [])
+    check("scope: stale through another skill is routed",
+          bool(covered) and routing_only(probe, led, "sonnet", None, other))
+    check("scope: a change to a covered skill is not routed",
+          not routing_only(probe, led, "sonnet", None, covered))
+    check("scope: no scope given routes nothing", not routing_only(probe, led, "sonnet", None, None))
+    led[ledger_key(probe, "sonnet")]["model_id"] = "claude-sonnet-5"
+    check("scope: a moved model alias is not routed",
+          not routing_only(probe, led, "sonnet", None, other, model_id="claude-sonnet-6")
+          and routing_only(probe, led, "sonnet", None, other, model_id="claude-sonnet-5"))
+    check("scope: a case covering no skills is never routed",
+          not routing_only(dict(probe, skills=[]), led, "sonnet", None, other))
+    led[ledger_key(probe, "sonnet")]["evals_fp"] = "changed"
+    check("scope: changed case files are not routed", not routing_only(probe, led, "sonnet", None, other))
+    check("scope: --changed-skills parses to a set, absent to None",
+          changed_set("a, b,") == {"a", "b"} and changed_set("") == set() and changed_set(None) is None)
     record(led, probe, False, "sonnet", Path("x"))
     check("ledger: recorded fail is failed", ledger_status(probe, led, "sonnet") == "failed")
+    check("scope: a failed case is never routed", not routing_only(probe, led, "sonnet", None, other))
     check("ledger: effort is part of the key", ledger_key(probe, "sonnet", "high") != ledger_key(probe, "sonnet"))
     old = {probe["name"]: {"passed": True, "model": "sonnet"}}
     import json as _j, tempfile as _t
@@ -1209,6 +1267,9 @@ def main():
     ap.add_argument("--all", action="store_true",
                     help="run every selected case, including ones with a current recorded pass")
     ap.add_argument("--ledger", action="store_true", help="show each case's recorded status and exit")
+    ap.add_argument("--changed-skills", default=None,
+                    help="relevant scope: comma list of the skills this change touched. A case stale only "
+                         "through a change to skills it does not cover is skipped, not rerun")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())

@@ -40,6 +40,16 @@ printed loudly because a check that did not run is not a check that passed.
                the failures, push) pays for each case once, and the push after
                a local merge pays nothing. --evals --all forces every case.
 
+  SCOPE        Straker's push choice (CLAUDE.md, "The push choice"), from
+               --scope or the DOW_EVAL_SCOPE environment variable, so it
+               reaches the hook through `DOW_EVAL_SCOPE=relevant git push`:
+               unset   every new, failed or stale case (the strict default)
+               relevant  only cases covering a skill this change touched,
+                         plus new and failed ones; a case stale only through
+                         another skill's edit is skipped
+               bypass  pre-push only: the free stages run, the evals do not
+               A push never needs --no-verify, which skips the free stages too.
+
 EXIT CODES
   0  every required stage ran and passed
   1  a stage failed
@@ -193,6 +203,44 @@ def stage_evals_lint():
 
 
 # ------------------------------------------------------- change detection
+SCOPES = ("relevant", "bypass")
+
+
+def changed_skills(base, head=None):
+    """The skill directory names under plugins/ that differ between `base`
+    and `head` (the working tree, plus untracked files, when head is None).
+    None when anything else under plugins/ changed -- a manifest or a plugin
+    README can affect every skill, so the relevant scope cannot narrow it."""
+    rc, diff = git("diff", "--name-only", base, *([head] if head else []), "--", "plugins/")
+    if rc != 0:
+        return None
+    files = diff.splitlines()
+    if head is None:
+        _, new = git("ls-files", "--others", "--exclude-standard", "--", "plugins/")
+        files += new.splitlines()
+    names = set()
+    for f in filter(None, (x.strip() for x in files)):
+        parts = f.split("/")
+        if len(parts) < 5 or parts[2] != "skills":
+            return None
+        names.add(parts[3])
+    return names
+
+
+def apply_scope(args, base, head=None):
+    """Set args.changed_skills for the relevant scope, and say what it chose."""
+    args.changed_skills = None
+    if args.scope != "relevant":
+        return
+    names = changed_skills(base, head) if base else None
+    if names is None:
+        print("note: relevant scope falls back to every stale case -- plugins/ changed outside a "
+              "skill directory, or the base could not be read")
+        return
+    args.changed_skills = names
+    print("  relevant scope: cases covering " + (", ".join(sorted(names)) or "no skill")
+          + ", plus any new or failed case")
+
 def plugins_changed():
     """Has this branch touched plugins/ since it left origin/main? Advisory,
     for the INCOMPLETE exit: merge-base isolates this branch's own work.
@@ -237,13 +285,17 @@ def stage_evals(args, gates=True):
         cmd += ["--case", args.case]
     if args.all:
         cmd.append("--all")
+    elif getattr(args, "changed_skills", None) is not None:
+        cmd += ["--changed-skills", ",".join(sorted(args.changed_skills))]
     p = run(cmd, timeout=6 * 3600)
     if p.returncode == 2:
         say("evals", "FAIL", "model unreachable -- `claude auth login` in a real terminal, then re-run")
         return 2
     label = f"evals[{args.model}@{args.effort}]" if (args.models or args.efforts) else "evals"
     detail = ("headless skill evals, " + ("all cases" if args.full else "gate tag")
-              + (", forced" if args.all else ", stale and failed only"))
+              + (", forced" if args.all else
+                 ", relevant scope" if getattr(args, "changed_skills", None) is not None
+                 else ", stale and failed only"))
     if p.returncode != 0 and not gates:
         say(label, "NOTE", detail + "; failures reported, not gating")
         return 0
@@ -361,6 +413,10 @@ def pre_push(args, local_sha, base_sha):
     if not changed:
         say("evals", "PASS", "not required: plugins/ is identical to what the remote already has")
         return 0
+    if args.scope == "bypass":
+        say("evals", "SKIP", "BYPASSED by DOW_EVAL_SCOPE=bypass, Straker's push choice -- plugins/ ships "
+                             "without a model run; the stale cases stay stale for the next push that tests them")
+        return 0
     wt = working_plugins_tree()
     if wt != pushed_tree:
         say("evals", "FAIL", "the working tree's plugins/ is not the plugins/ being pushed "
@@ -376,6 +432,7 @@ def pre_push(args, local_sha, base_sha):
         print("note: validation/evals has uncommitted changes; a recorded pass may rest on files "
               "that are in no commit:\n" + "\n".join("      " + l for l in dirty.splitlines()[:12]))
     args.full = False
+    apply_scope(args, base_sha, local_sha)
     return evals_matrix(args)
 
 
@@ -421,11 +478,22 @@ def main():
     ap.add_argument("--only", choices=["static", "scripts", "backtest", "evals-lint", "evals"])
     ap.add_argument("--post-push", action="store_true",
                     help="after a push: require plugins/ == origin/main, then run every eval")
+    ap.add_argument("--scope", default=os.environ.get("DOW_EVAL_SCOPE") or None,
+                    help="Straker's push choice: relevant or bypass (default: DOW_EVAL_SCOPE, else every stale case)")
     ap.add_argument("--pre-push", nargs=2, metavar=("LOCAL_SHA", "BASE_SHA"),
                     help="the hook's mode: free stages, then gate evals if plugins/ changed vs BASE")
     args = ap.parse_args()
     if args.post_push and args.only:
         ap.error("--post-push runs every stage and every eval; it cannot be combined with --only")
+    if args.scope is not None:
+        args.scope = args.scope.strip().lower()
+        if args.scope not in SCOPES:
+            ap.error(f"unknown eval scope {args.scope!r} (DOW_EVAL_SCOPE or --scope): use one of {', '.join(SCOPES)}")
+        if args.scope == "bypass" and not args.pre_push:
+            ap.error("bypass is a push scope, for the hook: DOW_EVAL_SCOPE=bypass git push")
+        if args.scope == "relevant" and (args.post_push or args.all):
+            ap.error("--post-push and --all test everything; they cannot be combined with the relevant scope")
+    args.changed_skills = None
 
     print(f"dow-plugins regression gate -- {ROOT}")
     if args.pre_push:
@@ -442,6 +510,8 @@ def main():
     def run_evals():
         if args.official:
             return stage_official(args)
+        rc, base = git("merge-base", "HEAD", "origin/main")
+        apply_scope(args, base if rc == 0 else None)
         return evals_matrix(args)
     rc_evals = None
     if args.only == "evals":

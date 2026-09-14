@@ -10,7 +10,8 @@ against the installed copy after a push.
 STAGES, in order. Each prints PASS, FAIL or SKIP with a reason; a SKIP is
 printed loudly because a check that did not run is not a check that passed.
 
-  1 static     validation/audit.py (the seven invariants, whole tree) and
+  1 static     validation/audit.py (nine checks: the seven invariants, the
+               header block, mock bodies pinned to worker versions) and
                `claude plugin validate` on the marketplace and both manifests
   2 scripts    validation/script_tests.py -- the four skill scripts on
                synthetic fixtures

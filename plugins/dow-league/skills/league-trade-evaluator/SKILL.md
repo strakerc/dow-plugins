@@ -30,7 +30,7 @@ them is the whole point.
 
 | | What it is | How much to trust it |
 |---|---|---|
-| `market` | What a public calculator would say — FantasyCalc blended with FantasyPros superflex ECR | **Direction and size both.** Validated 7 Sep 2026 against a human answer key; it agreed wherever the human had an opinion |
+| `market` | What a public calculator would say — FantasyCalc blended with FantasyPros superflex ECR | **Direction and size both.** Validated 7 Sep 2026 against a human answer key; it agreed wherever the human had an opinion. When `notes` says the FantasyPros board came back short (most answers since September 2026), the size is a ballpark |
 | `leagueAdjusted` | The same trade once salary, contract term, cap space and roster legality are priced in | **Direction only.** The size is systematically overstated — see below |
 
 **Read `divergence` first.** When the two disagree, that sentence is the answer,
@@ -42,8 +42,12 @@ fired during validation.
 ## The one rule that matters: never quote the league-adjusted percentage
 
 `leagueAdjusted.edgeVsValueMovedPct` is **not a measurement.** In validation it
-returned "clear win" on every single trade tested, at 40–62%, including two the
-league manager called dead even. It has never once returned "slight edge".
+returned "clear win" on every trade that touched a large salary, at 40–62% and
+once at 117%, including two the league manager called dead even. On a
+pick-for-pick swap the bands behave — a slight edge at 15%, or dead even —
+which is how we know the fault sits at the top of the salary curve, not in the
+bands. That does not make the number safe on a picks-only trade: the rule
+below holds for every trade.
 
 The cause is structural, not a bug. The price curve is rank-based: a player is
 measured against whoever sits at his *salary* rank. Baker Mayfield is around the
@@ -125,11 +129,20 @@ be scored at all. Say that instead.
 - **Always surface `legality`.** A trade that puts someone over the cap or past
   the 18-man active limit cannot be executed, however good it looks. `blocked`
   is not advisory.
+- **Read `notes`, and pass on a data caveat in one clause.** The evaluator says
+  when a value board came back short. Since September 2026 FantasyPros serves a
+  limited public board, so most answers carry a line of the shape "FantasyPros
+  returned only N players — expected at least M": that is a thinner blend, not
+  a broken tool.
+  Say "the value blend is thinner than usual, so treat the market percentage as
+  a ballpark" and move on. Never tell an owner the tool is broken on the
+  strength of a note.
 - **Report `priceCurve.sampleSize`** if it is far below the league's roster
   count, and treat the verdict as thin if so. A `notes` entry saying the curve
-  was built from the two involved rosters means the valuation moved with the
-  counterparty rather than measuring the asset — that was a real defect, fixed in
-  `tradeval` 0.2.2, and its return would mean the value sources are short.
+  was built from the two involved rosters is different: that means the
+  valuation moved with the counterparty rather than measuring the asset — a
+  real defect, fixed in `tradeval` 0.2.2 — and its return would be a bug worth
+  reporting, not a caveat.
 
 ## What it cannot know, and should say rather than hide
 

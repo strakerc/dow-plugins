@@ -180,9 +180,11 @@ franchise id. The near-miss matters: it
 shows how much headroom the number has, and it is where a gSheet disagreement usually
 resolves.
 
-When asked about a specific player, give `MAX(floor, his salary + 5)`, say **which branch
-bound**, list the five contracts behind the positional floor **with the owner of every
-one of them** (an owner filled in for the asked-about player and blank for the other
+When asked about a specific player, give `MAX(floor, his salary + 5)` and say **which
+branch bound**. If the positional floor bound, say so as the unusual case — the
+note under the rule above says how rarely that branch sets a price (sonnet at low
+effort called it routine, 13 Sep 2026 PT). Then list the five contracts behind the
+positional floor **with the owner of every one of them** (an owner filled in for the asked-about player and blank for the other
 four is the failure this line was written against), and state each eligibility gate
 with its evidence: his contract's final year
 from the current roster (a tag is for the season after it ends), and that no snapshot

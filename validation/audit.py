@@ -22,14 +22,22 @@ def tracked():
 FILES = tracked()
 fails, checks = [], 0
 
-def report(name, bad, control_ok):
+overrides = []
+
+def report(name, bad, control_ok, note=None):
+    """`note` marks a check a human overrode: it prints as OVERRIDE, not PASS,
+    stays out of the fail count so the push proceeds, and is counted in the
+    summary line, because a check that did not run is not a check that passed."""
     global checks
     checks += 1
-    status = "PASS" if not bad else "FAIL"
+    status = "FAIL" if bad else "OVERRIDE" if note else "PASS"
     ctl = "control ok" if control_ok else "*** CONTROL FAILED - CHECK IS INERT ***"
     print(f"  {status}  {name}  [{ctl}]")
     for b in bad:
         print(f"          {b}")
+    if note:
+        print(f"          {note}")
+        overrides.append(name)
     if bad:
         fails.append(name)
     if not control_ok:
@@ -244,6 +252,108 @@ _late = _fm + "body\n" * 8 + "\n".join(hdr_lines) + "\n"                        
 control = header_ok(_ok) and header_ok(_exc) and not header_ok(_para) and not header_ok(_late)
 report(f"all {len(skills)} SKILL.md open with the canonical house block", bad, control)
 
+# --- 9. every shared eval mock is pinned to the worker version it mirrors ----
+# The routing-surface check keeps mock DESCRIPTIONS in step with the gateway;
+# nothing kept mock BODIES in step with the worker that produces them until
+# tradeval 0.2.3 changed its `notes` and the mock said `notes: []` (13 Sep 2026
+# PT). validation/mock-mirrors.json names the worker and version each mock was
+# last read against; this check reads the worker's version out of the sibling
+# dow-workers clone and fails when it has moved. Moving the pin is the
+# acknowledgement that someone re-read the mock. Straker's rule, 13 Sep 2026
+# PT: a missing clone is a FAILURE, not a skip -- a check that never ran is not
+# a check that passed -- and only DOW_ALLOW_MISSING_WORKERS=1 lets it through,
+# reported as OVERRIDE rather than PASS.
+#
+# A version pin misses a body change nobody bumped, and a source hash would
+# fire on every comment edit; the pin is kept because this repo already treats
+# an unbumped worker change as a rule broken (dow-workers CLAUDE.md, "No code
+# change is not no change"), so it leans on a contract that exists.
+import functools, tempfile
+from mock_mcp_server import load_tools
+MIRRORS = os.path.join(ROOT, "validation", "mock-mirrors.json")
+MOCKS_ROOT = os.path.join(ROOT, "validation", "evals", "mocks")
+MOCK_SERVER = "dow"                      # run_headless.SERVER; the mocks live under mocks/dow/
+WORKERS_ROOT_ENV = "DOW_WORKERS_ROOT"    # same shape as DOW_PLUGINS_ROOT in scripts/release.mjs
+OVERRIDE_ENV = "DOW_ALLOW_MISSING_WORKERS"
+# Two declaration forms exist: `const VERSION = "x.y.z";` (dowgateway, tradeval,
+# fantasypros) and an inline `serverInfo: { ..., version: "x.y.z" }`
+# (myfantasyleague, discord). Both are what /admin/versions reports.
+VERSION_RES = (re.compile(r'^(?:export\s+)?const VERSION = "(\d+\.\d+\.\d+)";', re.M),
+               re.compile(r'serverInfo:\s*\{.{0,300}?version:\s*"(\d+\.\d+\.\d+)"', re.S))
+
+def native_path(p):
+    """A Git Bash path (/c/Users/...) handed to a Windows Python is not a path
+    it can open; rewrite the drive prefix. Any other form passes through."""
+    m = re.match(r"^/([A-Za-z])/(.*)$", p or "")
+    return f"{m.group(1).upper()}:/{m.group(2)}" if m and os.name == "nt" else p
+
+@functools.lru_cache(maxsize=None)
+def worker_version(workers_root, worker):
+    path = os.path.join(workers_root, "workers", worker, "src", "worker.js")
+    if not os.path.isfile(path):
+        return None
+    text = io.open(path, encoding="utf-8").read()
+    for pat in VERSION_RES:
+        m = pat.search(text)
+        if m:
+            return m.group(1)
+    return None
+
+def check_mirrors(pins, workers_root, allow_missing, mock_names):
+    """Returns (bad, note): the failures, and the override line when the clone
+    is absent and the override is set."""
+    bad, note = [], None
+    for name in sorted(mock_names):
+        if name not in pins:
+            bad.append(f"{name}.md has no entry in validation/mock-mirrors.json")
+    for name in sorted(set(pins) - set(mock_names)):
+        bad.append(f"mock-mirrors.json pins {name}, but there is no mocks/{MOCK_SERVER}/{name}.md")
+    if not os.path.isdir(os.path.join(workers_root, "workers")):
+        msg = (f"dow-workers clone not found at {workers_root} -- mock bodies were NOT "
+               f"checked against their workers (set {WORKERS_ROOT_ENV}, or "
+               f"{OVERRIDE_ENV}=1 to override)")
+        if allow_missing:
+            note = "note: " + msg + " -- OVERRIDDEN by a human, proceeding"
+        else:
+            bad.append(msg)
+        return bad, note
+    for name, pin in sorted(pins.items()):
+        live = worker_version(workers_root, pin["worker"])
+        if live is None:
+            bad.append(f"{name}: no version found for worker {pin['worker']} under {workers_root}")
+        elif live != pin["version"]:
+            bad.append(f"{name}: pinned to {pin['worker']} {pin['version']}, the worker is now {live} -- "
+                       f"re-read the mock against the worker, then move the pin")
+    return bad, note
+
+pins = json.loads(io.open(MIRRORS, encoding="utf-8").read())["mocks"]
+mock_names = set(load_tools(MOCK_SERVER, [MOCKS_ROOT]))
+workers_root = native_path(os.environ.get(WORKERS_ROOT_ENV)) or \
+    os.path.join(os.path.dirname(ROOT), "dow-workers")
+allow_missing = os.environ.get(OVERRIDE_ENV, "") == "1"
+bad, note = check_mirrors(pins, workers_root, allow_missing, mock_names)
+
+# Controls, against a synthetic clone so they run whether or not the real one
+# is present: a moved version in either declaration form must be caught, a
+# missing clone must fail without the override and pass, loudly, with it.
+with tempfile.TemporaryDirectory() as fake:
+    for w, body in (("tradeval", 'const VERSION = "9.9.9";\n'),
+                    ("discord", 'serverInfo: { name: "discord-mcp", version: "8.8.8" },\n')):
+        d = os.path.join(fake, "workers", w, "src")
+        os.makedirs(d)
+        io.open(os.path.join(d, "worker.js"), "w", encoding="utf-8").write(body)
+    _pins = {"evaluate_trade": {"worker": "tradeval", "version": "0.0.0"},
+             "send_message": {"worker": "discord", "version": "0.0.0"}}
+    _names = {"evaluate_trade", "send_message"}
+    _moved, _ = check_mirrors(_pins, fake, False, _names)
+    _nodir, _ = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), False, _names)
+    _over, _overnote = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), True, _names)
+control = (len(_moved) == 2 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
+           and len(_nodir) == 1 and not _over and _overnote is not None
+           and native_path("/c/x/y") in ("C:/x/y", "/c/x/y"))
+report(f"all {len(mock_names)} shared mocks pinned to a current worker version", bad, control, note=note)
+
 print()
-print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files")
+print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files"
+      + (f" -- {len(overrides)} OVERRIDDEN by a human, not run: {', '.join(overrides)}" if overrides else ""))
 sys.exit(1 if fails else 0)

@@ -12,6 +12,8 @@ the mechanics.
 
 ```
 mocks/dow/<tool>.md            the synthetic gateway, shared by every case
+                               (pinned to a worker version in ../mock-mirrors.json;
+                                audit.py check 9 fails when the worker moves on)
 dow-league/<case>/             cases run with the member plugin loaded
 dow-league-lm/<case>/          cases run with BOTH plugins loaded
   prompt.md                    front matter (name, tags, skills, max_turns) + the prompt

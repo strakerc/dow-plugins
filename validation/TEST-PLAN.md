@@ -59,7 +59,7 @@ A new skill therefore cannot be pushed without one.
 ## What can go wrong, and which stage catches it
 
 The deliverable is prose that loads inside other people's Claude accounts,
-plus four scripts that owners may or may not have. Four things break:
+plus four scripts that owners may or may not have. Five things break:
 
 | Failure | Example that has actually happened | Stage |
 |---|---|---|
@@ -67,19 +67,29 @@ plus four scripts that owners may or may not have. Four things break:
 | Script arithmetic | `contractStatus` read as a length; "Short-Term Ext." read as a plain short-term (found by this plan, 9 Sep 2026 PT) | **scripts** |
 | The lineup chooser | a lineup that is not legal, or not optimal | **backtest** |
 | The prose itself | a skill that answers from memory when the connector is missing; a percentage quoted that the skill says never to quote; a phone number surfacing from a picks question | **evals** |
+| A mock drifting from its worker | tradeval 0.2.3 began emitting a FantasyPros shortfall note while the shared mock said `notes: []` (13 Sep 2026 PT) | **static**, check 9 |
 
-The first three are deterministic and free. The fourth needs a model in the
-loop, costs money, and is the only one that tests what an owner actually
+All but the prose are deterministic and free. The prose needs a model in the
+loop, costs money, and is the only stage that tests what an owner actually
 experiences.
+
+One failure is deliberately NOT caught here: a worker whose pricing is wrong
+(tradeval 0.2.2 scored two identical picks 542 vs 122). That is the sibling
+repo's job — `dow-workers`' `npm test` drives tradeval's functions on canned
+inputs (`tools/verify-tradeval.mjs`) and blocks the commit. This plan only
+checks that the mocks still say what those workers say.
 
 ## Stage 1 — static (free)
 
-`validation/audit.py`: the seven invariants over the whole tracked tree — the
-canonical footer in every `SKILL.md`, no `$` + single digit, every `*.json`
-parses, no contact data anywhere, no build droppings, stated counts match
-reality, every skill named by a `gate` eval case, and every skill opening with
-the canonical "Before you answer" block. Every check carries a control that
-must fail.
+`validation/audit.py`: nine checks over the whole tracked tree — the seven
+invariants (the canonical footer in every `SKILL.md`, no `$` + single digit,
+every `*.json` parses, no contact data anywhere, no build droppings, stated
+counts match reality, every skill named by a `gate` eval case), every skill
+opening with the canonical "Before you answer" block, and every shared mock
+pinned to the version of the worker it mirrors (`validation/mock-mirrors.json`,
+read against the sibling `dow-workers` clone; a missing clone FAILS unless
+`DOW_ALLOW_MISSING_WORKERS=1`, which prints a `note:` line instead). Every
+check carries a control that must fail.
 
 `claude plugin validate` on the marketplace manifest and both plugin
 manifests.

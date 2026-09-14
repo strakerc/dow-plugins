@@ -214,7 +214,11 @@ floor charge = 375 − bbidAvailableBalance + ¾ × (salary of each of its IR pl
 Only the IR rows from `get_rosters` need adding up. Checked 13 Sep 2026 PT
 against the full player-by-player sum for all twelve real franchises: identical.
 **375 minus the balance on its own is the IR-at-a-quarter figure**, and it
-understates every team carrying an IR player. The script's `floorCharge` and
+understates every team carrying an IR player. The ¾ is the add-back of what
+the balance left out, not a rate the floor charges: in the answer an IR
+player counts **in full**, so say "his 30 in full", never "at a quarter" or
+"at three-quarters". A right total under a quarter-charge explanation reads
+as the wrong rule with a lucky number (sonnet at low effort, 14 Sep 2026 PT). The script's `floorCharge` and
 `floorHeadroom` are the same numbers from the full sum; negative headroom is
 short.
 

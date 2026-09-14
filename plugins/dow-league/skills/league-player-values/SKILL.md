@@ -1,6 +1,6 @@
 ---
 name: league-player-values
-description: "Invoke before any league tool call when an owner asks what a player is worth, or which of two players is the better asset, in the Dynasty of Whiners league (MFL 29557) — market value, what his contract costs against it, and whether that makes him an asset or a liability here. Use for \"who's the better asset\", \"X or Y as an asset\", \"what's X worth\", \"is he overpaid\", \"should I keep him at that price\", or sizing up someone else's roster. A raw value lookup treats a missing price as a low one; this skill does not. Not for \"who should I start\" (league-lineup) or a proposed trade (league-trade-evaluator)."
+description: "Invoke before any league tool call when an owner asks what a player is worth, or which of two players is the better asset, in the Dynasty of Whiners league (MFL 29557) — market value, what his contract costs against it, and whether that makes him an asset or a liability here. Use for \"who's the better asset\", \"X or Y as an asset\", \"what's X worth\", \"is he overpaid\", \"should I keep him at that price\", \"who should I take with this pick\", \"should I draft X\", or sizing up someone else's roster. The board's ranking is one answer; what the asking owner already holds is the other, and both are given. A raw value lookup treats a missing price as a low one; this skill does not. Not for \"who should I start\" (league-lineup) or a proposed trade (league-trade-evaluator)."
 ---
 
 # League Player Values
@@ -41,7 +41,7 @@ whether that price is a bargain or a problem.
 | Can't find a name, or want picks | `list_values` — substring search; picks sit under position `PICK` |
 | Consensus rank cross-check | `get_dynasty_rankings` — superflex board, pinned server-side |
 | Rookies | `get_rookie_rankings` |
-| Salary, contract type, contract end year, IR/taxi | `get_rosters` (add `franchise_id` for one team) |
+| Salary, contract type, contract end year, IR/taxi — and always the asking owner's roster before a recommendation *for them*, even when they have said what they hold | `get_rosters` (add `franchise_id` for one team) |
 | Whose cap is under pressure | `get_league` → `bbidAvailableBalance`, then `get_salary_adjustments` |
 | Actual production under our scoring | `get_player_scores` — **pull `week=AVG` as well as `YTD`** |
 | Is he even owned | `get_free_agents` — the only authority on this |
@@ -138,6 +138,46 @@ how good the player is, and a below-market one is worth more than the name.
   never does. Telling the rule as "never print the id" did not stop it (two more
   answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
   was showing its lookup, so do not show the lookup.
+
+## Two answers: the board's, and this roster's
+
+The board ranks every player for a roster nobody has. The owner asking has one,
+and "who's better" from someone on the clock means "who's better *for me*". So
+give two answers, labelled, and never let the second one edit the first.
+
+**1. The board, unedited.** Rank and value, with source and date. This is the
+global layer and it does not move because of who is asking: no name is dropped,
+reordered or softened to make room for the recommendation that follows. If you
+think the board is wrong about a player, say his rank and then say why.
+
+**2. For this roster.** Call `get_rosters` with the owner's `franchise_id`
+before writing the recommendation, **even when the owner has already said what
+they hold**: what they named is the reason they asked, and the roster is what
+shows the open slot, the incumbent's contract and the rest of the position.
+A recommendation written without that call is the board's answer wearing the
+owner's name (sonnet at low effort skipped the call and worked from the
+question alone, 14 Sep 2026 PT). Then say what on the roster changes the answer:
+
+- **What he already holds in the same offense.** Owning the quarterback and one
+  of his receivers, then drafting the other receiver, is not over-exposure. It is
+  a hedge on an unsettled role: whichever receiver becomes the connection, this
+  owner has him. Two backs in one backfield are the same when the split is
+  unsettled. Straker's own precedent, 2025: Sampson beside Judkins, because
+  nobody knew when Judkins would play, and the pairing was right. The pairing is
+  worth more to this owner than to anyone else, and no board can see it.
+  Concentration is a real cost only when the role is **settled** (the second
+  piece has nothing left to win) or when the *offense* is the thing in doubt,
+  and the answer should say which of those, if either, applies. Never use
+  "over-exposed" or "too concentrated" as the whole objection.
+- **The slot he fills.** Positional need against the starting lineup, whether a
+  taxi or roster spot is open, and the contract on the incumbent at that position.
+- **What the owner has already said.** "Nobody knows which of them gets the
+  targets" is the owner's read of the role, and it is evidence for the hedge,
+  per the rule above about a player someone already likes.
+
+Then say both plainly: "The board has X ahead. For you, Y, because ..." When the
+two disagree, that is the whole answer, not a contradiction to smooth over. The
+board line is what the owner argues with later; the roster line is the advice.
 
 ## Where this stops
 

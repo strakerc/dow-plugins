@@ -165,14 +165,21 @@ Answer the one that was asked. Never answer the league-wide question from one
 roster, and never answer either one by reciting the rule: the owner wants the
 numbers.
 
-**Say first whether the floor applies right now.** It applies `[2026]` from
-the end of the FA auction until the first game of the season, and at no other
-time.
+**Call `get_league` and `get_rosters` before writing anything** (and
+`get_nfl_schedule` when week 1's kickoff is what decides the question). The
+answer carries the numbers for the case asked, the owner's team or all
+twelve, whether or not the floor is in force, so the calls are made whatever
+the date says. The rule alone is not an answer,
+and an offer to pull the numbers is not one either: sonnet at low effort
+stopped at the offer twice on 14 Sep 2026 PT, the second time with this
+instruction sitting two paragraphs down, which is why it is now the first.
 
-**Then give every team's number whether or not the floor is in force.** Read
-`get_league` and `get_rosters` (and `get_nfl_schedule` when week 1's kickoff is
-what decides the question), and put the totals in the answer, framed the way
-the bullets below say for the case at hand. An offer to pull them is not an answer (sonnet at low effort stopped at the offer, 14 Sep 2026 PT).
+**Open the answer with whether the floor applies right now.** It applies `[2026]`
+from the end of the FA auction until the first game of the season, and at no
+other time.
+
+**Then give the numbers**, framed the way the bullets below say for the case
+at hand.
 
 - If the owner says where the season is ("the auction just ended", "it's week
   6"), take that as given.
@@ -207,7 +214,11 @@ floor charge = 375 − bbidAvailableBalance + ¾ × (salary of each of its IR pl
 Only the IR rows from `get_rosters` need adding up. Checked 13 Sep 2026 PT
 against the full player-by-player sum for all twelve real franchises: identical.
 **375 minus the balance on its own is the IR-at-a-quarter figure**, and it
-understates every team carrying an IR player. The script's `floorCharge` and
+understates every team carrying an IR player. The ¾ is the add-back of what
+the balance left out, not a rate the floor charges: in the answer an IR
+player counts **in full**, so say "his 30 in full", never "at a quarter" or
+"at three-quarters". A right total under a quarter-charge explanation reads
+as the wrong rule with a lucky number (sonnet at low effort, 14 Sep 2026 PT). The script's `floorCharge` and
 `floorHeadroom` are the same numbers from the full sum; negative headroom is
 short.
 

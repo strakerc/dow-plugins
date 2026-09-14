@@ -1,6 +1,6 @@
 # Skill evals
 
-Thirty-nine cases that exercise the fourteen skills end to end — prompt in,
+Forty cases that exercise the fourteen skills end to end — prompt in,
 tool calls out, answer graded — with no key, no network and no real league
 data. Every skill is named in the `skills:` line of at least one case tagged
 `gate`; `validation/audit.py` check 7 enforces that, so a new skill needs a
@@ -133,6 +133,14 @@ sonnet at low effort went ahead on all three schedule cases anyway (13 Sep
 Straker's call, 13 Sep 2026 PT, for `league-schedule`: Opus or better, the
 models he builds schedules on; the three schedule cases carry it. Every other
 case gates under every combination.
+
+The argument schema each tool advertises comes from `SCHEMAS` in
+`mock_mcp_server.py`, a copy of the live gateway's `tools/list` taken 14 Sep
+2026 PT; a tool with no entry advertises an open object. It is not pinned to
+a gateway version the way bodies are pinned to workers, so re-read it when
+the gateway's arguments change. Before it existed, sonnet at high effort
+answered the empty schema by wrapping every call as a `params` string, which
+the server could not read.
 
 `{{input.week}}` in a body is replaced with that argument from the call. A
 tool with no file answers `Unknown tool`, as the real gateway does for a tool

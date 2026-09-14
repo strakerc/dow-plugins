@@ -13,7 +13,7 @@ get the same answer and can compare working.
 | `league-matchups` | "who do I play in week 6", "what tier am I in and why" |
 | `league-contacts` | "what's Zef's number", "how do I reach Pat", "everyone's contact details" |
 | `league-trade-evaluator` | "is this trade fair", "who wins this deal" |
-| `league-player-values` | "what's X worth", "is he overpaid", "who's the better asset" |
+| `league-player-values` | "what's X worth", "is he overpaid", "who's the better asset", "should I take X with this pick" |
 | `league-trade-history` | "how did that trade turn out", "who won the Worthy trade" |
 | `league-lineup` | "set my lineup", "who should I start", "start or sit week 6" |
 | `league-player-status` | "who has X", "is he available", "how serious is his injury", "with X on IR, who should I target" |

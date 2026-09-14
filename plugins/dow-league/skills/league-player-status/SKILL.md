@@ -172,7 +172,11 @@ about routing a first call; here, call it directly.
 - **Lead with the answer, in the order asked.** Two questions in one message get
   two short answers, not one blended paragraph.
 - **Who has him:** player (position, NFL team), owner's first name and team name,
-  roster slot. One line.
+  roster slot. One line, in exactly that order, and **nothing follows the team
+  name that identifies the franchise**: no parenthesis after it, and not the
+  word "franchise" at all, because the word invites the number after it. The
+  id arrived that way on 14 Sep 2026 PT, in parentheses after a correctly named
+  owner and team, from an answer that was otherwise right.
 - **The injury:** what it is, how long he is expected out, then the source and its
   date, in that order. One sentence of what it means here only when it changes a
   decision — a lineup (`league-lineup`) or an IR move (`league-rules`).

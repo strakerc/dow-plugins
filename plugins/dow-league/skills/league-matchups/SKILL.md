@@ -73,7 +73,10 @@ schedule disagrees with MFL, this is why — MFL is right.
 
 ## Answering well
 
-- **Lead with the matchup**, then the context. "Week 6 you're at Pat."
+- **Lead with the matchup**, then the context. "Week 6 you're at Pat." That
+  sentence is the whole pairing: the opponent by first name, and never the
+  pairing restated as the two franchise ids "in the schedule". Sonnet at high
+  effort appended exactly that to a correct answer, 14 Sep 2026 PT.
 - **Name the tier and the reason** when tiers come up — "Tier 1, because you
   were in the third-place game" is an answer; "Tier 1" is a label.
 - **Strength of schedule is a comparison**, so state what you compared: opponent

@@ -59,7 +59,11 @@ Neither rule bends for time pressure. Nothing about this post is urgent.
 **No ids anywhere a person reads** — not in the writeup, not in the review file, not
 in a note about what was pulled. Players and owners go by name; an id that will not
 resolve through `get_players` is "could not be identified", never the number. The
-first eval run (9 Sep 2026 PT) listed twelve player ids in a status note.
+first eval run (9 Sep 2026 PT) listed twelve player ids in a status note. A
+discrepancy between two payloads is described the same way: which players and
+which owners disagree, by name, never an id range or a franchise number in
+parentheses after a team. Sonnet at low effort wrote a reconciliation note in
+ids on 14 Sep 2026 PT, and the note is read by the same person as the writeup.
 
 ## If the post fails
 

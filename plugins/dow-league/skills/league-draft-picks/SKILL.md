@@ -56,6 +56,9 @@ Early in a season the prior year is a weak anchor — say so rather than implyin
 precision.
 
 **3. `DP_` is a different notation from `FP_`, and it is zero-based.**
+Trade rows carry the picks already decoded (`franchise1_gave_up_decoded` and
+`franchise2_gave_up_decoded`); `league-trade-history` says how to read them,
+and the rules below apply only when those lists are absent.
 `DP_{round}_{pick}` appears in trade records for current-year rookie picks, and
 both numbers start at zero — `DP_1_3` is round 2, pick 4, not round 1, pick 3.
 `FP_{origin}_{year}_{round}` uses real round numbers; do not read the two the

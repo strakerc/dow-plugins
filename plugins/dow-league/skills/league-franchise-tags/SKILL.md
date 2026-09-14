@@ -62,7 +62,7 @@ flag that explicitly rather than quoting it as routine.
 | Do **IR** players count toward the top 5? | **Yes.** Salary is salary regardless of slot. In 2026 this moved QB $48→$54 and WR $54→$59 |
 | Do **taxi** players count? | **Yes**, same reasoning. Has never bound — taxi salaries are far too low |
 | Do **franchise-tagged** contracts count? | **Yes.** This matters enormously — see the ratchet below |
-| Does the **player being tagged** count toward his own position's top 5? | **Yes.** The pool is every contract at the position; the eligibility gates below decide who can be tagged, not what counts in the average. Leaving him out turned a binding positional floor into a tie (opus, 13 Sep 2026 PT) |
+| Does the **player being tagged** count toward his own position's top 5? | **Yes.** The pool is every contract at the position; the eligibility gates below decide who can be tagged, not what counts in the average. Leaving him out turned a binding positional floor into a tie (opus, 13 Sep 2026 PT; sonnet at low effort, 14 Sep 2026 PT) |
 | Which snapshot is "last season"? | End-of-season (week 22) rosters, **union** players dropped mid-season |
 | Rounding | **Ceiling the average, then add 5 dollars.** `ceil(48.2) = 49`, then 49 + 5 = $54 — not 48 + 5 = $53 |
 
@@ -184,8 +184,10 @@ When asked about a specific player, give `MAX(floor, his salary + 5)` and say **
 branch bound**. If the positional floor bound, say so as the unusual case — the
 note under the rule above says how rarely that branch sets a price (sonnet at low
 effort called it routine, 13 Sep 2026 PT). Then list the five contracts behind the
-positional floor **with the owner of every one of them** (an owner filled in for the asked-about player and blank for the other
-four is the failure this line was written against), and state each eligibility gate
+positional floor **with the owner of every one of them** (an owner filled in for
+the asked-about player and blank for the other four is the failure this line was
+written against). **His own contract is one of the five** — see the settled
+interpretation above. Then state each eligibility gate
 with its evidence: his contract's final year
 from the current roster (a tag is for the season after it ends), and that no snapshot
 pulled shows a `Franchise` or `Franchise Tag` contract on him. If tag history further

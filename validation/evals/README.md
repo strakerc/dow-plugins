@@ -12,6 +12,8 @@ the mechanics.
 
 ```
 mocks/dow/<tool>.md            the synthetic gateway, shared by every case
+                               (`roles: lm` in the front matter = LM-only: an owner
+                                case gets "Unknown tool", as production answers)
                                (pinned to a worker version in ../mock-mirrors.json;
                                 audit.py check 9 fails when the worker moves on)
 dow-league/<case>/             cases run with the member plugin loaded

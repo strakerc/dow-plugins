@@ -78,6 +78,12 @@ Each row carries `franchise` and `franchise2` with a `..._gave_up` list for each
 side. Assets are player ids, or pick codes in **two different notations that do
 not read the same way**:
 
+- **Read `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` first.**
+  Every trade row carries them (myfantasyleague 0.9.0): each pick as a `label`
+  already in words, each player as an `id` to resolve. Use the labels; the raw
+  sides beside them still hold codes, and those stay unprinted. Decode by hand,
+  with the rules below, only when the lists are absent (`decodeUnavailable`
+  says why).
 - **`FP_{origin}_{year}_{round}`** — a future pick. The id is the pick's
   **origin**, not its holder. `FP_0002_2027_2` is Pat's 2027 2nd wherever it sits.
   Round numbers here are real round numbers.
@@ -101,14 +107,20 @@ not read the same way**:
 
 ### Timestamps
 
-`timestamp` is Unix epoch. **Convert to Pacific and print the zone**, with UTC in
-parentheses: `29 Aug 2026, 07:37 PT (14:37 UTC)`. **Convert with a tool** -- a
-one-line script or the analysis tool, never arithmetic in your head: a head
-conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). **Convert with a tool** -- a
-one-line script or the analysis tool, never arithmetic in your head: a head
-conversion put a July 2026 trade in November 2028 (10 Sep 2026 PT). Late-evening trades fall on the
-previous day in Pacific, and four of seven in one sample did exactly that — a
-date quoted from the UTC conversion will disagree with what the owners remember.
+**Convert every `timestamp` with the analysis tool or a shell one-liner before
+you write a date -- never arithmetic in your head.** This is arithmetic on a
+value a league tool already returned, which rule 4 in the header does not
+cover; rule 4 is about calling the league tools themselves. A head conversion
+put a July 2026 trade in November 2028 (10 Sep 2026 PT); another put 31 Jul
+2026 in March (sonnet at low effort, 14 Sep 2026 PT).
+
+`timestamp` is Unix epoch: print it in Pacific with the zone, UTC in
+parentheses -- `29 Aug 2026, 07:37 PT (14:37 UTC)`. Late-evening trades fall on
+the previous day in Pacific, and four of seven in one sample did exactly that —
+a date quoted from the UTC conversion will disagree with what the owners
+remember.
+
+If neither tool is available, say the time is unconverted rather than guess.
 
 ---
 

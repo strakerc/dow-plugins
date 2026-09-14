@@ -69,7 +69,7 @@ def frontmatter(text):
             v = int(v)
         elif len(v) >= 2 and v[0] == v[-1] and v[0] in "'\"":
             v = v[1:-1]
-        elif k in ("tags", "skills") and v:
+        elif k in ("tags", "skills", "roles") and v:
             v = [t.strip() for t in v.split(",") if t.strip()]
         meta[k] = v
     return meta, m.group(2)
@@ -78,6 +78,32 @@ def frontmatter(text):
 def parse_mock(path):
     meta, body = frontmatter(open(path, encoding="utf-8").read())
     return meta, body.strip("\n")
+
+
+def visible(meta, role):
+    """A mock with no `roles:` is every role's; `roles: lm` names the roles
+    that can see it (frontmatter() already makes it a list; an unquoted
+    `[lm, owner]` arrives as bracketed strings, stripped here)."""
+    r = meta.get("roles")
+    if not r:
+        return True
+    if isinstance(r, str):
+        r = [r]
+    return role in [str(x).strip().strip("[]").strip() for x in r]
+
+
+def served_path(server, dirs, tool):
+    """The file load_tools serves for `tool`: later dirs win, `_`-prefixed
+    files are private. The one answer to "which mock does this case read",
+    for the server and for the runner's fingerprint alike."""
+    if tool.startswith("_"):
+        return None
+    found = None
+    for d in dirs:
+        cand = os.path.join(d, server, tool + ".md")
+        if os.path.isfile(cand):
+            found = cand
+    return found
 
 
 def load_tools(server, dirs):
@@ -103,8 +129,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--server", required=True)
     ap.add_argument("--mocks", nargs="+", required=True)
+    ap.add_argument("--role", default="owner",
+                    help="the caller's gateway role: a mock whose front matter says "
+                         "`roles: lm` is served to lm only, the way dowgateway hides "
+                         "LM_ONLY tools from an owner key (13 Sep 2026 PT)")
     a = ap.parse_args()
-    tools = load_tools(a.server, a.mocks)
+    tools = {n: t for n, t in load_tools(a.server, a.mocks).items() if visible(t[0], a.role)}
 
     out = sys.stdout.buffer
     def send(msg):

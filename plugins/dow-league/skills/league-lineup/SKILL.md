@@ -262,6 +262,9 @@ recommending any swap**:
 
 - **A clear favourite should reduce variance** and take known usage.
 - **A clear underdog should take ceiling and leverage.**
+- **A close projection is still a side.** Name the marginal favourite by the
+  number, then use the table as the tiebreaker below — “coin flip” alone names
+  no side (sonnet at high effort, 14 Sep 2026 PT).
 
 **It breaks ties. It does not overturn material gaps.** Moving a player two or
 more projected points behind is rationalising, not strategy — if you do it anyway,
@@ -292,9 +295,13 @@ draft pick.
 `get_nfl_schedule` with the same `week` is the kickoff source. Each game carries
 `kickoff` in Unix seconds and `gameSecondsRemaining` (3600 before kickoff, 0 at
 final); each side's `id` is the same code as `team` on a roster row, which is
-the join. Convert every kickoff to Pacific and write the zone.
+the join. Convert every kickoff to Pacific and write the zone -- with the analysis tool or a shell one-liner, never arithmetic in your head (the timestamps rule in league-trade-history; a head conversion has put a July trade in March).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
+**Join every one of the recommended ten to his game by `team`, and put all
+ten in the answer with team name and kickoff before you name the earliest** —
+never scan the schedule for teams you remember (opus at low effort said nobody
+played Thursday while two of the ten did, 14 Sep 2026 PT).
 Name the **earliest-starting recommended players and their kickoff, in Pacific
 with the zone labelled** — a Thursday game locks two starters days before the
 rest. A player whose game has already started is locked; say so instead of

@@ -49,7 +49,7 @@ Neither rule bends for time pressure. Nothing about this post is urgent.
 ## Shape of the work
 
 1. Pull the draft from MFL — draft results, league (franchise ID → team → owner), players
-2. Gather values from three sources: FantasyPros (`position=OP` is what makes it superflex), FantasyCalc, and KTC (manual screenshot — scraping KTC is expressly forbidden)
+2. Gather values from three sources: FantasyPros (`position=OP` is what makes it superflex; when its payload carries `notes` the board came back short, so say so once and never read a rookie missing from it as a bust), FantasyCalc, and KTC (manual screenshot — scraping KTC is expressly forbidden)
 3. Re-rank each source across **only the drafted players**, then average. One figure in the deliverable, never two numbers separated by a slash
 4. Verify every role claim; pull depth charts (rule 2); check who got waived at cutdowns — that news is the best material and appears in no ranking feed
 5. Write it — teams ordered by first pick selected, bolded team name as header, numbered list of picks in order, grade A+ through F for every team including any that made no picks

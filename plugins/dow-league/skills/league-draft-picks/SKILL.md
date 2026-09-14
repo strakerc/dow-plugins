@@ -61,8 +61,11 @@ both numbers start at zero — `DP_1_3` is round 2, pick 4, not round 1, pick 3.
 `FP_{origin}_{year}_{round}` uses real round numbers; do not read the two the
 same way. Confirm any `DP_` reference against `get_draft_results` for that
 season before naming a slot: an off-by-one here produces a plausible pick with
-no error anywhere. Found 7 Sep 2026, when `DP_1_3` in a 2026 trade was reported
-as 1.03 and was actually 2.04.
+no error anywhere. Found 7 Sep 2026 PT, when `DP_1_3` in a 2026 trade was reported
+as 1.03 and was actually 2.04. A member cannot call `get_draft_results` — it is
+LM-only — so use `get_rosters` for that season instead: its `drafted` field
+carries the slot for anyone still rostered at season end. If that does not
+settle it, name the decoded slot marked unverified, never the code.
 
 **Only the upcoming three seasons are tradeable.** In the 2026 offseason
 that is 2027, 2028 and 2029.

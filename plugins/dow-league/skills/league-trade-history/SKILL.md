@@ -90,7 +90,14 @@ not read the same way**:
   exact thing the header forbids. Confirm every
   `DP_` against `get_draft_results` before naming a slot out loud: an off-by-one
   produces a completely plausible wrong pick with no error anywhere. This has
-  already happened once, on 7 Sep 2026.
+  already happened once, on 7 Sep 2026 PT.
+- **If you cannot make that call** -- a member cannot; see the LM-only section
+  below -- try the `get_rosters` fallback described there. If that does not
+  settle the slot, write the decoded slot marked unverified ("pick 2.04, slot
+  unverified" for the example above) and stop.
+- **Rule 1 in the header covers your working too.** The code is never shown --
+  not in backticks, not as "best-effort decode of" (a sonnet run did exactly
+  that, 13 Sep 2026 PT).
 
 ### Timestamps
 

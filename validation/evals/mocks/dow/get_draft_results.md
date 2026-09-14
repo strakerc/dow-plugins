@@ -1,4 +1,5 @@
 ---
+roles: lm
 description: Rookie draft results for a season: round, pick, franchise, player. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-trade-history` or `rookie-draft-grades` skill BEFORE calling this. Synthetic.
 ---
 {

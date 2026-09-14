@@ -1,7 +1,11 @@
 ---
-description: Dynasty rankings, pinned to the superflex board. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` skill BEFORE calling this. Synthetic.
+description: Dynasty rankings, pinned to the superflex board. Carries `notes` when the board came back short or the public API is limited (fantasypros 0.6.0): pass that caveat on in one clause, and never treat a player missing from the board as a low rank. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-player-values` skill BEFORE calling this. Synthetic.
 ---
 {
+ "notes": [
+  "FantasyPros public API is serving a limited board (5 experts).",
+  "FantasyPros returned only 60 players — expected at least 500. A player missing from this board is unranked here, not worthless; say the board is thinner than usual rather than treating absence as a low rank."
+ ],
  "rankings": [
   {
    "rank": 1,

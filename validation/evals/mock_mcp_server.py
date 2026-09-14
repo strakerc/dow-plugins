@@ -80,6 +80,20 @@ def parse_mock(path):
     return meta, body.strip("\n")
 
 
+def visible(meta, role):
+    """A mock with no `roles:` is every role's; `roles: lm` (or a list) names
+    the roles that can see it. An owner-role case then gets "Unknown tool" for
+    an LM-only tool, exactly as production answers a member key -- before this
+    a member-case model could call get_draft_results in the eval and pass where
+    the real gateway would have refused it."""
+    r = meta.get("roles")
+    if not r:
+        return True
+    if isinstance(r, str):
+        r = [x.strip() for x in r.split(",")]
+    return role in [str(x).strip() for x in r]
+
+
 def load_tools(server, dirs):
     tools = {}
     for d in dirs:
@@ -103,8 +117,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--server", required=True)
     ap.add_argument("--mocks", nargs="+", required=True)
+    ap.add_argument("--role", default="owner",
+                    help="the caller's gateway role: a mock whose front matter says "
+                         "`roles: lm` is served to lm only, the way dowgateway hides "
+                         "LM_ONLY tools from an owner key (13 Sep 2026 PT)")
     a = ap.parse_args()
-    tools = load_tools(a.server, a.mocks)
+    tools = {n: t for n, t in load_tools(a.server, a.mocks).items() if visible(t[0], a.role)}
 
     out = sys.stdout.buffer
     def send(msg):

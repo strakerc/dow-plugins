@@ -56,6 +56,9 @@ Early in a season the prior year is a weak anchor — say so rather than implyin
 precision.
 
 **3. `DP_` is a different notation from `FP_`, and it is zero-based.**
+Trade rows from myfantasyleague 0.9.0 carry `franchise1_gave_up_decoded` and
+`franchise2_gave_up_decoded` with every pick already in words; read those first
+and decode by hand only when they are absent.
 `DP_{round}_{pick}` appears in trade records for current-year rookie picks, and
 both numbers start at zero — `DP_1_3` is round 2, pick 4, not round 1, pick 3.
 `FP_{origin}_{year}_{round}` uses real round numbers; do not read the two the

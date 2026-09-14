@@ -117,7 +117,9 @@ reports **SKIP** loudly when they are absent.
 
 ## Stage 4 — evals-lint (free)
 
-`run_headless.py --selftest`: every case and mock loads, every grader type is
+`run_headless.py --selftest`: every case and mock loads, the mock gateway hides
+`roles: lm` mocks from an owner-role case and answers "Unknown tool" for them
+(dow-league cases run as an owner, dow-league-lm as the LM), every grader type is
 seen passing and failing on a canned transcript, every regex compiles, every
 skill named in a grader exists, the mock gateway answers a real MCP handshake
 and reports `Unknown tool` the way the real one does.

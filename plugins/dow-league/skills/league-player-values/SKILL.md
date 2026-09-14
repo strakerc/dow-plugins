@@ -73,6 +73,11 @@ how good the player is, and a below-market one is worth more than the name.
 
 ## Traps, all of which have cost something here
 
+- **Read `notes` on the rankings payload, and pass a caveat on in one clause.**
+  Since September 2026 FantasyPros serves a limited public board and the tool
+  says so ("FantasyPros returned only N players — expected at least M"). Say the
+  board is thinner than usual; a player missing from it is unranked here, not
+  worthless, so never treat absence as a low rank.
 - **Superflex, always.** The gateway pins `get_dynasty_rankings` to the
   superflex board server-side, so the trap cannot be hit through it — but know
   why it exists. Josh Allen is #1 on that board and #21 on the 1QB one. If a rank

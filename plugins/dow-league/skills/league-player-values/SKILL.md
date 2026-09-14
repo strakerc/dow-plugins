@@ -41,7 +41,7 @@ whether that price is a bargain or a problem.
 | Can't find a name, or want picks | `list_values` — substring search; picks sit under position `PICK` |
 | Consensus rank cross-check | `get_dynasty_rankings` — superflex board, pinned server-side |
 | Rookies | `get_rookie_rankings` |
-| Salary, contract type, contract end year, IR/taxi | `get_rosters` (add `franchise_id` for one team) |
+| Salary, contract type, contract end year, IR/taxi — and always the asking owner's roster before a recommendation *for them*, even when they have said what they hold | `get_rosters` (add `franchise_id` for one team) |
 | Whose cap is under pressure | `get_league` → `bbidAvailableBalance`, then `get_salary_adjustments` |
 | Actual production under our scoring | `get_player_scores` — **pull `week=AVG` as well as `YTD`** |
 | Is he even owned | `get_free_agents` — the only authority on this |
@@ -150,8 +150,13 @@ global layer and it does not move because of who is asking: no name is dropped,
 reordered or softened to make room for the recommendation that follows. If you
 think the board is wrong about a player, say his rank and then say why.
 
-**2. For this roster.** Pull the owner's roster (`get_rosters` with
-`franchise_id`) before recommending, and say what on it changes the answer:
+**2. For this roster.** Call `get_rosters` with the owner's `franchise_id`
+before writing the recommendation, **even when the owner has already said what
+they hold**: what they named is the reason they asked, and the roster is what
+shows the open slot, the incumbent's contract and the rest of the position.
+A recommendation written without that call is the board's answer wearing the
+owner's name (sonnet at low effort skipped the call and worked from the
+question alone, 14 Sep 2026 PT). Then say what on the roster changes the answer:
 
 - **What he already holds in the same offense.** Owning the quarterback and one
   of his receivers, then drafting the other receiver, is not over-exposure. It is

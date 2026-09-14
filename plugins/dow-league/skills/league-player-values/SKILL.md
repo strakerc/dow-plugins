@@ -145,7 +145,8 @@ how good the player is, and a below-market one is worth more than the name.
 
 **Do not compute a surplus score here.** `evaluate_trade` produces one, and its
 *size* is known to be overstated — it returned "clear win" on every trade in
-validation, including deals the league manager called even. Direction is usable,
+validation that touched a large salary, including deals the league manager
+called even; pick-for-pick swaps band sensibly. Direction is usable,
 the magnitude is not, and a single-player version of it would be worse. Describe
 the tension in words: what he is worth, what he costs, how long, and whether that
 is a problem for his owner.

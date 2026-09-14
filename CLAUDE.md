@@ -140,6 +140,10 @@ that the tool is broken.
    push`; **no choice uses `--no-verify`**, which would also skip the free stages,
    and the machine-wide defaults forbid it.
 
+Two more `audit.py` checks ride on the same pre-push hook: check 8, the header
+(invariant 5), and check 9, every shared eval mock pinned to the version of the
+worker it mirrors -- see "Validating a change to a skill".
+
 The commit hooks scan **added lines only** (and the message itself) — a rule that
 re-flags existing content trains everyone to use `--no-verify`. The pre-push hook is
 the exception, on purpose: it runs the whole gate, because the push is the release.
@@ -350,12 +354,12 @@ routing-surface check keeps mock *descriptions* in step with the gateway;
 nothing kept mock *bodies* in step with the worker that produces them until
 tradeval 0.2.3 changed its `notes` and the mock said `notes: []` (13 Sep 2026
 PT). Each shared mock names the worker and version it was last read against;
-the check reads the worker's version out of the sibling `..\dow-workers` clone
-(`DOW_WORKERS_DIR` to point elsewhere) and fails when it has moved. Moving the
+the check reads the worker's version out of the sibling `../dow-workers` clone
+(`DOW_WORKERS_ROOT` to point elsewhere) and fails when it has moved. Moving the
 pin is the acknowledgement that someone re-read the mock. **A missing clone is a
 failure, not a skip** -- Straker's rule, 13 Sep 2026 PT -- and only
-`DOW_ALLOW_MISSING_WORKERS=1` lets a push through, with a `note:` line saying
-the bodies were NOT checked. The pins live outside `mocks/` on purpose: a pin
+`DOW_ALLOW_MISSING_WORKERS=1` lets a push through, reported as `OVERRIDE`
+rather than `PASS`, with a `note:` line saying the bodies were NOT checked. The pins live outside `mocks/` on purpose: a pin
 change must not re-fingerprint every eval case.
 
 The plan and the per-skill coverage are in `validation/TEST-PLAN.md`. The evals

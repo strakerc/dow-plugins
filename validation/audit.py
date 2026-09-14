@@ -244,6 +244,83 @@ _late = _fm + "body\n" * 8 + "\n".join(hdr_lines) + "\n"                        
 control = header_ok(_ok) and header_ok(_exc) and not header_ok(_para) and not header_ok(_late)
 report(f"all {len(skills)} SKILL.md open with the canonical house block", bad, control)
 
+# --- 9. every shared eval mock is pinned to the worker version it mirrors ----
+# The routing-surface check keeps mock DESCRIPTIONS in step with the gateway;
+# nothing kept mock BODIES in step with the worker that produces them until
+# tradeval 0.2.3 changed its `notes` and the mock said `notes: []` (13 Sep 2026
+# PT). validation/mock-mirrors.json names the worker and version each mock was
+# last read against; this check reads the worker's VERSION out of the sibling
+# dow-workers clone and fails when it has moved. Moving the pin is the
+# acknowledgement that someone re-read the mock. Straker's rule, 13 Sep 2026
+# PT: a missing clone is a FAILURE, not a skip -- a check that never ran is not
+# a check that passed -- and only DOW_ALLOW_MISSING_WORKERS=1 lets it through,
+# loudly.
+MIRRORS = os.path.join(ROOT, "validation", "mock-mirrors.json")
+MOCK_DIR = os.path.join(ROOT, "validation", "evals", "mocks", "dow")
+# Two declaration forms exist: `const VERSION = "x.y.z";` (dowgateway, tradeval,
+# fantasypros, myfantasyleague) and an inline `serverInfo: { ..., version: "x.y.z" }`
+# (discord). Both are what /admin/versions reports.
+VERSION_RES = (re.compile(r'^const VERSION = "(\d+\.\d+\.\d+)";', re.M),
+               re.compile(r'serverInfo:\s*\{[^}]*version:\s*"(\d+\.\d+\.\d+)"'))
+
+def worker_version(workers_dir, worker):
+    path = os.path.join(workers_dir, "workers", worker, "src", "worker.js")
+    if not os.path.isfile(path):
+        return None
+    text = io.open(path, encoding="utf-8").read()
+    for pat in VERSION_RES:
+        m = pat.search(text)
+        if m:
+            return m.group(1)
+    return None
+
+def check_mirrors(mirrors, workers_dir, allow_missing, mock_names):
+    """Returns (bad, note). `bad` is the list of failures; `note` is the loud
+    line printed when the clone is absent and the override is set."""
+    bad, note = [], None
+    pins = mirrors.get("mocks", {})
+    for name in sorted(mock_names):
+        if name not in pins:
+            bad.append(f"{name}.md has no entry in validation/mock-mirrors.json")
+    for name in sorted(set(pins) - set(mock_names)):
+        bad.append(f"mock-mirrors.json pins {name}, but there is no mocks/dow/{name}.md")
+    if not os.path.isdir(os.path.join(workers_dir, "workers")):
+        msg = (f"dow-workers clone not found at {workers_dir} -- mock bodies were NOT "
+               f"checked against their workers (set DOW_WORKERS_DIR, or "
+               f"DOW_ALLOW_MISSING_WORKERS=1 to override)")
+        if allow_missing:
+            note = "note: " + msg + " -- OVERRIDDEN, proceeding"
+        else:
+            bad.append(msg)
+        return bad, note
+    for name, pin in sorted(pins.items()):
+        live = worker_version(workers_dir, pin["worker"])
+        if live is None:
+            bad.append(f"{name}: no VERSION found for worker {pin['worker']} under {workers_dir}")
+        elif live != pin["version"]:
+            bad.append(f"{name}: pinned to {pin['worker']} {pin['version']}, the worker is now {live} -- "
+                       f"re-read the mock against the worker, then move the pin")
+    return bad, note
+
+mirrors = json.loads(io.open(MIRRORS, encoding="utf-8").read())
+mock_names = {f[:-3] for f in os.listdir(MOCK_DIR) if f.endswith(".md")}
+workers_dir = os.environ.get(mirrors.get("workers_dir_env", "DOW_WORKERS_DIR")) or \
+    os.path.join(os.path.dirname(ROOT), "dow-workers")
+allow_missing = os.environ.get(mirrors.get("override_env", "DOW_ALLOW_MISSING_WORKERS"), "") == "1"
+bad, note = check_mirrors(mirrors, workers_dir, allow_missing, mock_names)
+# Controls: a moved worker version must be caught; a missing clone must fail
+# without the override and pass, loudly, with it.
+_pins = {"mocks": {"evaluate_trade": {"worker": "tradeval", "version": "0.0.0"}}}
+_moved, _ = check_mirrors(_pins, workers_dir, False, {"evaluate_trade"})
+_nodir, _ = check_mirrors(_pins, os.path.join(ROOT, "no-such-dir"), False, {"evaluate_trade"})
+_over, _overnote = check_mirrors(_pins, os.path.join(ROOT, "no-such-dir"), True, {"evaluate_trade"})
+_present = os.path.isdir(os.path.join(workers_dir, "workers"))
+control = (not _present or (len(_moved) == 1 and "0.0.0" in _moved[0])) and len(_nodir) == 1 \
+    and not _over and _overnote is not None
+report(f"all {len(mock_names)} shared mocks pinned to a current worker version", bad, control)
+if note:
+    print(f"          {note}")
+
 print()
 print(f"{checks - len(fails)}/{checks} checks passed over {len(FILES)} tracked files")
 sys.exit(1 if fails else 0)

@@ -344,6 +344,20 @@ Do not spend more runs hoping, and do not override the rule to finish the task â
 he set this on 10 Sep 2026 PT after the haiku night: "good call to stop and not
 needlessly burn tokens."
 
+**Mock bodies are pinned to worker versions** (`validation/mock-mirrors.json`,
+`audit.py` check 9, so the free gate and the pre-push hook both run it). The
+routing-surface check keeps mock *descriptions* in step with the gateway;
+nothing kept mock *bodies* in step with the worker that produces them until
+tradeval 0.2.3 changed its `notes` and the mock said `notes: []` (13 Sep 2026
+PT). Each shared mock names the worker and version it was last read against;
+the check reads the worker's version out of the sibling `..\dow-workers` clone
+(`DOW_WORKERS_DIR` to point elsewhere) and fails when it has moved. Moving the
+pin is the acknowledgement that someone re-read the mock. **A missing clone is a
+failure, not a skip** -- Straker's rule, 13 Sep 2026 PT -- and only
+`DOW_ALLOW_MISSING_WORKERS=1` lets a push through, with a `note:` line saying
+the bodies were NOT checked. The pins live outside `mocks/` on purpose: a pin
+change must not re-fingerprint every eval case.
+
 The plan and the per-skill coverage are in `validation/TEST-PLAN.md`. The evals
 are the only stage that reads the prose the way an owner's Claude does, so **a
 prose-only edit to a `SKILL.md` is exactly what they exist for** â€” the code-review

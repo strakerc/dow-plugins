@@ -106,6 +106,332 @@ def served_path(server, dirs, tool):
     return found
 
 
+# The gateway's own argument schemas, copied from the live connector's tools/list
+# on 14 Sep 2026 PT (dowgateway, the same surface the mock descriptions mirror).
+# Until then every mock advertised an empty object, and sonnet at high effort
+# answered that by wrapping every call as {"params": "<json string>"}: the
+# server saw no `week`, rendered the season-long body, and the graders that
+# match on the input JSON counted zero calls (lineup-two-tables, 14 Sep 2026
+# PT). A tool with no entry here keeps the open schema.
+SCHEMAS = {
+ "get_projections": {
+  "type": "object",
+  "required": [
+   "position",
+   "week"
+  ],
+  "properties": {
+   "full": {
+    "description": "Untrimmed upstream payload. Defaults false. ALL untrimmed is ~240 KB.",
+    "type": "boolean"
+   },
+   "position": {
+    "description": "ALL returns every position in one call and is preferred for a lineup.",
+    "enum": [
+     "ALL",
+     "QB",
+     "RB",
+     "WR",
+     "TE",
+     "K",
+     "DST"
+    ],
+    "type": "string"
+   },
+   "week": {
+    "description": "NFL week 1-18. Required; there is no default, on purpose.",
+    "maximum": 18,
+    "minimum": 1,
+    "type": "integer"
+   }
+  }
+ },
+ "get_weekly_results": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "week": {
+    "type": "string"
+   }
+  }
+ },
+ "get_rosters": {
+  "type": "object",
+  "properties": {
+   "franchise_id": {
+    "description": "Optional 4-digit franchise id for one team.",
+    "type": "string"
+   },
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_matchups": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "week": {
+    "type": "string"
+   }
+  }
+ },
+ "get_nfl_schedule": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "week": {
+    "description": "Optional NFL week (1-18). Omit for the current week.",
+    "type": "string"
+   }
+  }
+ },
+ "get_player_scores": {
+  "type": "object",
+  "properties": {
+   "count": {
+    "description": "Limit results, e.g. '50'.",
+    "type": "string"
+   },
+   "players": {
+    "description": "Comma-separated player ids.",
+    "type": "string"
+   },
+   "position": {
+    "enum": [
+     "QB",
+     "RB",
+     "WR",
+     "TE",
+     "PK",
+     "DEF"
+    ],
+    "type": "string"
+   },
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "week": {
+    "description": "1-21, or 'YTD' for totals, or 'AVG' for per-game.",
+    "type": "string"
+   }
+  }
+ },
+ "get_players": {
+  "type": "object",
+  "properties": {
+   "details": {
+    "description": "Include age, height, weight, draft year, status.",
+    "type": "boolean"
+   },
+   "players": {
+    "description": "Comma-separated MFL player ids. Strongly recommended.",
+    "type": "string"
+   },
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_player_values": {
+  "type": "object",
+  "required": [
+   "players"
+  ],
+  "properties": {
+   "players": {
+    "description": "Semicolon-separated names. 'First Last' or 'Last, First' both work.",
+    "type": "string"
+   }
+  }
+ },
+ "get_free_agents": {
+  "type": "object",
+  "properties": {
+   "position": {
+    "enum": [
+     "QB",
+     "RB",
+     "WR",
+     "TE",
+     "PK",
+     "DEF"
+    ],
+    "type": "string"
+   },
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "evaluate_trade": {
+  "type": "object",
+  "required": [
+   "teamB"
+  ],
+  "properties": {
+   "aGives": {
+    "description": "What team A sends: player names and/or picks.",
+    "items": {
+     "type": "string"
+    },
+    "type": "array"
+   },
+   "bGives": {
+    "description": "What team B sends.",
+    "items": {
+     "type": "string"
+    },
+    "type": "array"
+   },
+   "teamA": {
+    "description": "Owner first name or 4-digit MFL franchise id. Defaults to your own team.",
+    "type": "string"
+   },
+   "teamB": {
+    "description": "The other side.",
+    "type": "string"
+   }
+  }
+ },
+ "get_injuries": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "week": {
+    "type": "string"
+   }
+  }
+ },
+ "get_standings": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_transactions": {
+  "type": "object",
+  "properties": {
+   "days": {
+    "description": "Lookback window in days.",
+    "type": "string"
+   },
+   "franchise_id": {
+    "type": "string"
+   },
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   },
+   "transaction_type": {
+    "description": "Omit for all types — and omit it if you want auction prices.",
+    "enum": [
+     "TRADE",
+     "WAIVER",
+     "FREE_AGENT",
+     "BBID_WAIVER",
+     "IR",
+     "TAXI"
+    ],
+    "type": "string"
+   }
+  }
+ },
+ "get_league": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_salary_adjustments": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_future_draft_picks": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "get_draft_results": {
+  "type": "object",
+  "properties": {
+   "season": {
+    "description": "Optional four-digit season, e.g. '2023'. Defaults to the current season. Use for history — auction prices, past contracts, prior standings.",
+    "type": "string"
+   }
+  }
+ },
+ "list_channels": {
+  "type": "object",
+  "required": [
+   "guild_id"
+  ],
+  "properties": {
+   "guild_id": {
+    "description": "From list_guilds.",
+    "type": "string"
+   }
+  }
+ },
+ "send_message": {
+  "type": "object",
+  "required": [
+   "channel_id",
+   "content"
+  ],
+  "properties": {
+   "channel_id": {
+    "description": "From list_channels.",
+    "type": "string"
+   },
+   "content": {
+    "description": "Message text to post.",
+    "type": "string"
+   }
+  }
+ },
+ "get_dynasty_rankings": {
+  "type": "object",
+  "properties": {}
+ },
+ "get_rookie_rankings": {
+  "type": "object",
+  "properties": {}
+ }
+}
+
+
 def load_tools(server, dirs):
     tools = {}
     for d in dirs:
@@ -158,8 +484,8 @@ def main():
         elif method == "tools/list":
             send({"jsonrpc": "2.0", "id": rid, "result": {"tools": [
                 {"name": n, "description": meta.get("description", f"{n} (mock)"),
-                 "inputSchema": {"type": "object", "properties": {},
-                                 "additionalProperties": True}}
+                 "inputSchema": SCHEMAS.get(n, {"type": "object", "properties": {},
+                                              "additionalProperties": True})}
                 for n, (meta, _) in tools.items()]}})
         elif method == "tools/call":
             name, args = params.get("name"), params.get("arguments") or {}

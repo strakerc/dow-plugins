@@ -35,7 +35,12 @@ them is the whole point.
 
 **Read `divergence` first.** When the two disagree, that sentence is the answer,
 and it is the part no external site can compute. It was correct in every case it
-fired during validation.
+fired during validation. **Restate it without changing its direction**: it
+already says which contract is the cheap one and which is at or above market,
+so take that from the sentence, never from the sign of a surplus or from a
+salary rank on its own. Sonnet at high effort restated it with the cheap
+contract called overpriced (14 Sep 2026 PT): right verdict, backwards reason,
+and the reason is what gets quoted back in the argument.
 
 ---
 

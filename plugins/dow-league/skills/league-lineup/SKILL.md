@@ -298,6 +298,10 @@ final); each side's `id` is the same code as `team` on a roster row, which is
 the join. Convert every kickoff to Pacific and write the zone -- with the analysis tool or a shell one-liner, never arithmetic in your head (the timestamps rule in league-trade-history; a head conversion has put a July trade in March).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
+**Join every one of the recommended ten to his game by `team`, and put all
+ten in the answer with team name and kickoff before you name the earliest** —
+never scan the schedule for teams you remember (opus at low effort said nobody
+played Thursday while two of the ten did, 14 Sep 2026 PT).
 Name the **earliest-starting recommended players and their kickoff, in Pacific
 with the zone labelled** — a Thursday game locks two starters days before the
 rest. A player whose game has already started is locked; say so instead of

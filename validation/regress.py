@@ -241,6 +241,7 @@ def apply_scope(args, base, head=None):
     print("  relevant scope: cases covering " + (", ".join(sorted(names)) or "no skill")
           + ", plus any new or failed case")
 
+
 def plugins_changed():
     """Has this branch touched plugins/ since it left origin/main? Advisory,
     for the INCOMPLETE exit: merge-base isolates this branch's own work.
@@ -486,13 +487,17 @@ def main():
     if args.post_push and args.only:
         ap.error("--post-push runs every stage and every eval; it cannot be combined with --only")
     if args.scope is not None:
+        # Exit 1, not argparse's 2: the hook reads 2 as "the CLI is not logged in".
+        def scope_error(msg):
+            print(f"regress.py: error: {msg}", file=sys.stderr)
+            sys.exit(1)
         args.scope = args.scope.strip().lower()
         if args.scope not in SCOPES:
-            ap.error(f"unknown eval scope {args.scope!r} (DOW_EVAL_SCOPE or --scope): use one of {', '.join(SCOPES)}")
+            scope_error(f"unknown eval scope {args.scope!r} (DOW_EVAL_SCOPE or --scope): use one of {', '.join(SCOPES)}")
         if args.scope == "bypass" and not args.pre_push:
-            ap.error("bypass is a push scope, for the hook: DOW_EVAL_SCOPE=bypass git push")
+            scope_error("bypass is a push scope, for the hook: DOW_EVAL_SCOPE=bypass git push")
         if args.scope == "relevant" and (args.post_push or args.all):
-            ap.error("--post-push and --all test everything; they cannot be combined with the relevant scope")
+            scope_error("--post-push and --all test everything; they cannot be combined with the relevant scope")
     args.changed_skills = None
 
     print(f"dow-plugins regression gate -- {ROOT}")

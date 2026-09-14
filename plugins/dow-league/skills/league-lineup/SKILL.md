@@ -292,7 +292,7 @@ draft pick.
 `get_nfl_schedule` with the same `week` is the kickoff source. Each game carries
 `kickoff` in Unix seconds and `gameSecondsRemaining` (3600 before kickoff, 0 at
 final); each side's `id` is the same code as `team` on a roster row, which is
-the join. Convert every kickoff to Pacific and write the zone.
+the join. Convert every kickoff to Pacific and write the zone -- with the analysis tool or a shell one-liner, never arithmetic in your head (the timestamps rule in league-trade-history; a head conversion has put a July trade in March).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
 Name the **earliest-starting recommended players and their kickoff, in Pacific

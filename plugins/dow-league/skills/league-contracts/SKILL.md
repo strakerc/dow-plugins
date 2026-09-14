@@ -169,6 +169,11 @@ numbers.
 the end of the FA auction until the first game of the season, and at no other
 time.
 
+**Then give every team's number whether or not the floor is in force.** Read
+`get_league` and `get_rosters` (and `get_nfl_schedule` when week 1's kickoff is
+what decides the question), and put the totals in the answer, framed the way
+the bullets below say for the case at hand. An offer to pull them is not an answer (sonnet at low effort stopped at the offer, 14 Sep 2026 PT).
+
 - If the owner says where the season is ("the auction just ended", "it's week
   6"), take that as given.
 - Otherwise go by today's date. Once the first game of week 1 has kicked off

@@ -99,7 +99,11 @@ makes every player in the league ineligible, which is the mistake this line exis
 (10 Sep 2026 PT).
 
 Note the exact wording on #3 — **"more than twice"**, so a second tag by the same owner is
-legal and a third is not. Plus, from the constitution:
+legal and a third is not — **but never in the season straight after the first, because
+#1 bars that on its own.** "Can I tag him again next year" is a no under #1 before #3
+is ever reached; #3 only says the second tag may come after a gap. Sonnet at both
+efforts answered yes from #3 alone (14 Sep 2026 PT), which is the wrong answer to
+the question owners actually ask. Plus, from the constitution:
 
 - **One active tag per team.** A trade creating a second forces a conversion.
 - A player on a **short-term** contract before the tag cannot take another short-term

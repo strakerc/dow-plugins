@@ -169,7 +169,9 @@ NFL years or taxi eligibility, and it does not block a short-term the year after
 - **Rookies and sophomores only** — first two NFL years. A 2026 draftee stays
   eligible through 2027.
 - Taxi players **cannot start**; promote first, clearing a roster spot.
-- After promotion, a player may return to taxi after **7 days**.
+- After promotion, a player may return to taxi after **4 days** `[2026, was 7]`.
+  MFL enforces the wait itself in the taxi squad setup, and a lineup with an
+  ineligible player on taxi is blocked from submitting.
 - **100% of salary counts against the cap.**
 
 **IR — 4 spots.** Eligible: on real-life IR, or carrying **Out** or **Doubtful**.

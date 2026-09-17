@@ -125,7 +125,7 @@ and reports `Unknown tool` the way the real one does.
 
 ## Stage 5 — the skill evals (costs money)
 
-Forty cases under `validation/evals/`, in the layout `claude plugin eval`
+Forty-one cases under `validation/evals/`, in the layout `claude plugin eval`
 documents: `<case>/prompt.md`, `<case>/graders/*.md`, `mocks/dow/<tool>.md`.
 They are run today by `validation/evals/run_headless.py`, which drives
 `claude -p` with the plugin loaded from the working tree and a synthetic
@@ -135,7 +135,7 @@ mechanics and the synthetic league.
 **Gate set** (`--evals`, 31 cases, tagged `gate`): at least one behavioural
 case for every skill, the footer, and every case where a wrong answer costs
 the league something. This is what the pre-push hook runs.
-**Full set** (`--full`, all 40): everything below.
+**Full set** (`--full`, all 41): everything below.
 **The matrix: models × efforts.** Every run, including the push hook's,
 covers the models in `--models` (default `haiku,sonnet,opus`) under every
 effort in `--efforts` (default `low,high`), one ledger entry per case per
@@ -168,7 +168,7 @@ newer model the old passes read as stale and rerun.
 | `league-franchise-tags` | `tags-price-brandt` ⚑ | The positional floor binds (24 over a personal 23), the binding branch is named and flagged as unusual, the five contracts behind the average are shown with owners, eligibility confirmed |
 | `league-contacts` | `contacts-no-leak` ⚑, `contacts-number` ⚑, `contacts-none` | A picks question prints no phone/email/username; a number question prints one normalised number and nothing else; no number means say so |
 | `league-matchups` | `matchups-lookup`, `matchups-no-schedule` ⚑ | Read from MFL; an empty season means "nothing loaded", no generation, no Bash |
-| `league-trade-evaluator` | `trade-no-percentage` ⚑, `trade-executed` | The league-adjusted percentage never appears; legality is a hard stop; a completed trade is either refused by the evaluator with the refusal explained, or handed to trade history and answered from the record, never scored as a proposal |
+| `league-trade-evaluator` | `trade-no-percentage` ⚑, `trade-executed`, `trade-executed-explicit` | The league-adjusted percentage never appears; legality is a hard stop; a completed trade is either refused by the evaluator with the refusal explained, or handed to trade history and answered from the record, never scored as a proposal; asked for the evaluator by name, it runs, is refused, and says the refusal is the tool working |
 | `league-lineup` | `lineup-two-tables` ⚑, `lineup-opponent-submitted` ⚑, `lineup-no-write` ⚑, `trigger-lineup-not-values` | Projections called with the week; scores not used; two labelled lineups; the objective ten is exactly the known optimum, name by name, with its total (103.6) printed -- the unconstrained top ten is three QBs and two WRs and scores higher, and a player on another roster is in the projection payload; IR and taxi never started; no projection named by name; names read off the roster rows, no lookup required; the submitted lineup read from weekly results and its one wrong slot named; an opponent who has not submitted is predicted, one who has is read as submitted; the lock time read from the NFL schedule tool, the Thursday starters named first, in Pacific; never writes to MFL |
 | `league-player-status` | `status-who-has` ⚑, `status-injury-unlisted` ⚑, `status-injury-listed` ⚑, `status-injury-fallout` ⚑ | The owner found in one `get_rosters` pass, named, with no franchise id even in the lines written between tool calls; a player MFL's injury report does not list is never called healthy; one it does list is reported from the payload, not invented; an injury's fallout names every teammate's owner or "free agent" in the same answer, with his points from `get_player_scores`, and never offers ownership as a follow-up |
 | `league-player-values` | `values-unpriced` ⚑, `values-for-my-roster` ⚑ | A missing price is reported as missing, never as low; an owner on the clock gets the board unchanged and a separate recommendation from their own roster, where two players in one offense on an unsettled role is a hedge, not over-exposure |

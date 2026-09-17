@@ -299,7 +299,7 @@ def worker_version(workers_root, worker):
             return m.group(1)
     return None
 
-def check_mirrors(pins, workers_root, allow_missing, mock_names):
+def check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin=None):
     """Returns (bad, note): the failures, and the override line when the clone
     is absent and the override is set."""
     bad, note = [], None
@@ -324,14 +324,28 @@ def check_mirrors(pins, workers_root, allow_missing, mock_names):
         elif live != pin["version"]:
             bad.append(f"{name}: pinned to {pin['worker']} {pin['version']}, the worker is now {live} -- "
                        f"re-read the mock against the worker, then move the pin")
+    # The argument schemas the mock server advertises (SCHEMAS in
+    # mock_mcp_server.py) are a hand copy of the gateway's tools/list, pinned
+    # the same way: a gateway bump fails here until someone re-reads them
+    # (added 17 Sep 2026 PT; the copy itself dates from 14 Sep).
+    if schema_pin:
+        live = worker_version(workers_root, schema_pin["worker"])
+        if live is None:
+            bad.append(f"schemas: no version found for worker {schema_pin['worker']} under {workers_root}")
+        elif live != schema_pin["version"]:
+            bad.append(f"schemas: SCHEMAS in mock_mcp_server.py pinned to {schema_pin['worker']} "
+                       f"{schema_pin['version']}, the worker is now {live} -- re-read tools/list, then move the pin")
     return bad, note
 
-pins = json.loads(io.open(MIRRORS, encoding="utf-8").read())["mocks"]
+_mirrors = json.loads(io.open(MIRRORS, encoding="utf-8").read())
+pins, schema_pin = _mirrors["mocks"], _mirrors.get("schemas")
 mock_names = set(load_tools(MOCK_SERVER, [MOCKS_ROOT]))
 workers_root = native_path(os.environ.get(WORKERS_ROOT_ENV)) or \
     os.path.join(os.path.dirname(ROOT), "dow-workers")
 allow_missing = os.environ.get(OVERRIDE_ENV, "") == "1"
-bad, note = check_mirrors(pins, workers_root, allow_missing, mock_names)
+bad, note = check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin)
+if schema_pin is None:
+    bad.append("mock-mirrors.json has no `schemas` pin for SCHEMAS in mock_mcp_server.py")
 
 # Controls, against a synthetic clone so they run whether or not the real one
 # is present: a moved version in either declaration form must be caught, a
@@ -345,13 +359,15 @@ with tempfile.TemporaryDirectory() as fake:
     _pins = {"evaluate_trade": {"worker": "tradeval", "version": "0.0.0"},
              "send_message": {"worker": "discord", "version": "0.0.0"}}
     _names = {"evaluate_trade", "send_message"}
-    _moved, _ = check_mirrors(_pins, fake, False, _names)
+    _moved, _ = check_mirrors(_pins, fake, False, _names,
+                              {"worker": "tradeval", "version": "0.0.0"})
     _nodir, _ = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), False, _names)
     _over, _overnote = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), True, _names)
-control = (len(_moved) == 2 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
+control = (len(_moved) == 3 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
+           and _moved[2].startswith("schemas:") and "9.9.9" in _moved[2]
            and len(_nodir) == 1 and not _over and _overnote is not None
            and native_path("/c/x/y") in ("C:/x/y", "/c/x/y"))
-report(f"all {len(mock_names)} shared mocks pinned to a current worker version", bad, control, note=note)
+report(f"all {len(mock_names)} shared mocks and the schema table pinned to a current worker version", bad, control, note=note)
 
 # --- 9b. every shared mock's role matches the gateway route it mirrors -------
 # `roles: lm` in a mock's front matter is hand-set, and roles have moved before

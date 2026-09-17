@@ -112,7 +112,8 @@ def served_path(server, dirs, tool):
 # answered that by wrapping every call as {"params": "<json string>"}: the
 # server saw no `week`, rendered the season-long body, and the graders that
 # match on the input JSON counted zero calls (lineup-two-tables, 14 Sep 2026
-# PT). A tool with no entry here keeps the open schema.
+# PT). A tool with no entry here keeps the open schema. Pinned to a dowgateway
+# version under `schemas` in validation/mock-mirrors.json (audit check 9).
 SCHEMAS = {
  "get_projections": {
   "type": "object",

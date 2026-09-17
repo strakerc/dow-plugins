@@ -84,5 +84,10 @@
    "worker": "discord",
    "version": "1.1.0"
   }
+ },
+ "schemas": {
+  "worker": "dowgateway",
+  "version": "1.7.1",
+  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; move this pin only after re-reading it"
  }
 }

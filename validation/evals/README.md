@@ -1,6 +1,6 @@
 # Skill evals
 
-Forty cases that exercise the fourteen skills end to end — prompt in,
+Forty-one cases that exercise the fourteen skills end to end — prompt in,
 tool calls out, answer graded — with no key, no network and no real league
 data. Every skill is named in the `skills:` line of at least one case tagged
 `gate`; `validation/audit.py` check 7 enforces that, so a new skill needs a
@@ -136,9 +136,11 @@ case gates under every combination.
 
 The argument schema each tool advertises comes from `SCHEMAS` in
 `mock_mcp_server.py`, a copy of the live gateway's `tools/list` taken 14 Sep
-2026 PT; a tool with no entry advertises an open object. It is not pinned to
-a gateway version the way bodies are pinned to workers, so re-read it when
-the gateway's arguments change. Before it existed, sonnet at high effort
+2026 PT; a tool with no entry advertises an open object. It is pinned to a
+gateway version under `schemas` in `../mock-mirrors.json`, checked by audit
+check 9 like the bodies: a gateway bump fails the free gate until someone
+re-reads `tools/list` and moves the pin.
+Before it existed, sonnet at high effort
 answered the empty schema by wrapping every call as a `params` string, which
 the server could not read.
 

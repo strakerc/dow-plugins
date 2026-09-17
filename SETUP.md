@@ -98,6 +98,11 @@ is still something you do yourself in MFL.
 happens to the cap if I cut him", "who owns my 2028 second". You do not need to
 name a skill or a tool.
 
+**Use Sonnet or better.** The skills are tested on Sonnet and Opus. Haiku
+loads them but misses things the others get right — kickoff lock times among
+them — so a lineup answer on Haiku can be wrong in a way that costs you a slot.
+If your chat has a model picker, choose Sonnet or Opus for league questions.
+
 **It can be wrong.** Everything comes from live MFL data, but the reasoning on
 top of it is Claude's. Check anything you are about to act on, and tell Straker
 when something looks off — several of these skills exist in their current shape

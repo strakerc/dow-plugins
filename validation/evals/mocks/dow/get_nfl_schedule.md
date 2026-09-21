@@ -1,5 +1,5 @@
 ---
-description: NFL schedule for a week: every game with `kickoff` in Unix seconds (convert to Pacific and label the zone), `gameSecondsRemaining` (3600 = not started, 0 = final), each side's `id` (MFL team code, the same code as `team` on a roster row), `isHome`, `score` and `spread`. Omit `week` for the current week. This is the only kickoff source in the stack: a lock time not read from here is a guess. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-lineup` skill BEFORE calling this. Synthetic: week 3 of 2026, the twelve NFL teams the synthetic league rosters, Thursday and Monday games included; every game unstarted.
+description: "NFL schedule for a week: every game with `kickoff` in Unix seconds (convert to Pacific and label the zone), `gameSecondsRemaining` (3600 = not started, 0 = final), each side's `id` (MFL team code, the same code as `team` on a roster row), `isHome`, `score` and `spread`. Each side also carries `passDefenseRank`, `rushDefenseRank`, `passOffenseRank` and `rushOffenseRank`: 1 is the best unit, so a HIGH defence rank is a soft matchup; blank before the season has data. Omit `week` for the current week. This is the only kickoff source in the stack: a lock time not read from here is a guess. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-lineup` skill BEFORE calling this. Synthetic: week 3 of 2026, the twelve NFL teams the synthetic league rosters, Thursday and Monday games included; every game unstarted; unit ranks out of 32."
 ---
 {
  "version": "1.0",
@@ -17,10 +17,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "3.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "11",
+      "rushOffenseRank": "20",
+      "passDefenseRank": "14",
+      "rushDefenseRank": "19"
      },
      {
       "id": "GB",
@@ -29,10 +29,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-3.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "9",
+      "rushOffenseRank": "22",
+      "passDefenseRank": "12",
+      "rushDefenseRank": "11"
      }
     ]
    },
@@ -47,10 +47,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-1.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "17",
+      "rushOffenseRank": "9",
+      "passDefenseRank": "13",
+      "rushDefenseRank": "10"
      },
      {
       "id": "PIT",
@@ -59,10 +59,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "1.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "24",
+      "rushOffenseRank": "21",
+      "passDefenseRank": "31",
+      "rushDefenseRank": "18"
      }
     ]
    },
@@ -77,10 +77,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "2.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "4",
+      "rushOffenseRank": "6",
+      "passDefenseRank": "20",
+      "rushDefenseRank": "13"
      },
      {
       "id": "DET",
@@ -89,10 +89,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-2.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "7",
+      "rushOffenseRank": "12",
+      "passDefenseRank": "21",
+      "rushDefenseRank": "16"
      }
     ]
    },
@@ -107,10 +107,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "4.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "21",
+      "rushOffenseRank": "18",
+      "passDefenseRank": "15",
+      "rushDefenseRank": "19"
      },
      {
       "id": "LAR",
@@ -119,10 +119,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-4.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "16",
+      "rushOffenseRank": "13",
+      "passDefenseRank": "17",
+      "rushDefenseRank": "22"
      }
     ]
    },
@@ -137,10 +137,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "6.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "18",
+      "rushOffenseRank": "19",
+      "passDefenseRank": "11",
+      "rushDefenseRank": "21"
      },
      {
       "id": "KC",
@@ -149,10 +149,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-6.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "5",
+      "rushOffenseRank": "10",
+      "passDefenseRank": "2",
+      "rushDefenseRank": "11"
      }
     ]
    },
@@ -167,10 +167,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "-2.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "12",
+      "rushOffenseRank": "14",
+      "passDefenseRank": "16",
+      "rushDefenseRank": "15"
      },
      {
       "id": "SF",
@@ -179,10 +179,10 @@ description: NFL schedule for a week: every game with `kickoff` in Unix seconds 
       "spread": "2.5",
       "hasPossession": "0",
       "inRedZone": "0",
-      "passOffenseRank": "",
-      "rushOffenseRank": "",
-      "passDefenseRank": "",
-      "rushDefenseRank": ""
+      "passOffenseRank": "8",
+      "rushOffenseRank": "11",
+      "passDefenseRank": "18",
+      "rushDefenseRank": "14"
      }
     ]
    }

@@ -1,6 +1,5 @@
 ---
 type: tool_used
 tool: get_player_scores
-min: 0
-max: 0
+min: 1
 ---

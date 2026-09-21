@@ -319,12 +319,14 @@ other, and if both are gone say the matchup could not be read. Nothing about a
 defence comes from memory.
 
 **Season form — the ten, plus any left-out player who projects no worse than
-three points below the lowest projection in the ten.** `get_player_scores` twice, with `players` set
-to those ids comma-separated: `week="AVG"` and `week="YTD"`. AVG is points per
-game here; YTD divided by AVG is how many games that average rests on, so say
-it when it is one or two. An id with no row has not scored this season — that
-is "no games yet", not an average of zero. Do not build form from single
-weeks: a week that comes back 0 for every player was not read (measured 21 Sep
+three points below the lowest projection in the ten.** `get_player_scores`
+twice, with `players` set to those ids comma-separated: `week="AVG"` and
+`week="YTD"`. AVG is YTD divided by the weeks he has a score for — a week he
+played and scored nothing counts, a week he sat out does not (measured 21 Sep
+2026 PT). So YTD divided by AVG is how many games the average rests on; say it
+when it is one or two. An id with no row, or an average of zero, has not
+scored this season: say "no points yet this season" and divide nothing. Do not
+build form from single weeks: a week that comes back 0 for every player was not read (measured 21 Sep
 2026 PT), and it is not a scoreless week.
 
 **What gets written: one clause after the name, only where it is notable.**
@@ -335,15 +337,16 @@ weeks: a week that comes back 0 for every player was not read (measured 21 Sep
   either way.
 
 Everyone else gets nothing; twenty clauses of "average matchup" bury the two
-that matter. Those two thresholds only choose what earns a clause. They are
-judgement, not back-tested (21 Sep 2026 PT), and they decide nothing.
+that matter. Those two thresholds only choose what earns a clause, and the
+quarter-of-the-table gap below only chooses what gets offered. All three are
+judgement, not back-tested (21 Sep 2026 PT), and none of them decides a start.
 
 **What it may change is what step 6 may change: ties, not material gaps.**
 
 - A left-out player **within two points** of a starter he could legally
-  replace, facing a soft matchup while the starter faces a hard one, is a
-  swap candidate. Name him, the starter, and the projection given up. The
-  owner decides.
+  replace, whose matchup is the better of the two by a quarter of the table
+  or more (8 ranks of 32), is a swap candidate. Name him, the starter, both
+  ranks and the projection given up. The owner decides.
 - **Further back than that, he is still named** — "Teo Alvarez faces the
   softest defence against receivers in the league, on two games, but projects
   3.4 behind Owen Frost: worth knowing, not enough to start him." A soft

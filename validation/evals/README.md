@@ -18,7 +18,7 @@ mocks/dow/<tool>.md            the synthetic gateway, shared by every case
                                 audit.py check 9 fails when the worker moves on)
 dow-league/<case>/             cases run with the member plugin loaded
 dow-league-lm/<case>/          cases run with BOTH plugins loaded
-  prompt.md                    front matter (name, tags, skills, max_turns) + the prompt
+  prompt.md                    front matter (name, tags, skills, max_turns, optional max_budget in USD) + the prompt
   graders/<name>.md            one grader each: regex | tool_used | tool_order | llm
   mocks/dow/<tool>.md          optional: overrides one tool for this case only
 mock_mcp_server.py             an MCP server over stdio that serves the mocks

@@ -6,59 +6,59 @@
   },
   "get_league": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_rosters": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_players": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_player_scores": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_free_agents": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_salary_adjustments": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_future_draft_picks": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_standings": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_transactions": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_matchups": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_draft_results": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_weekly_results": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_injuries": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_nfl_schedule": {
    "worker": "myfantasyleague",
-   "version": "0.9.0"
+   "version": "0.10.0"
   },
   "get_dynasty_rankings": {
    "worker": "fantasypros",
@@ -74,7 +74,7 @@
   },
   "get_player_values": {
    "worker": "dowgateway",
-   "version": "1.7.1"
+   "version": "1.8.0"
   },
   "list_channels": {
    "worker": "discord",
@@ -83,11 +83,15 @@
   "send_message": {
    "worker": "discord",
    "version": "1.1.0"
+  },
+  "get_points_allowed": {
+   "worker": "myfantasyleague",
+   "version": "0.10.0"
   }
  },
  "schemas": {
   "worker": "dowgateway",
-  "version": "1.7.1",
-  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; move this pin only after re-reading it"
+  "version": "1.8.0",
+  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; re-read against dowgateway 1.8.0 on 21 Sep 2026 PT: its one new tool, get_points_allowed, takes only `season` and is left on the open schema rather than staling every mocked case for one optional argument; move this pin only after re-reading it"
  }
 }

@@ -121,6 +121,11 @@ def load_cases(only_suite=None):
                 "tags": tags, "skills": skills_covered,
                 "prompt": body.strip(), "graders": graders,
                 "max_turns": int(meta.get("max_turns", 12)),
+                # A case may raise the per-run USD ceiling above --max-budget.
+                # league-lineup reads eight tools and computes; at the 1.00
+                # default sonnet at low effort wrote "given the budget
+                # remaining" and skipped three steps (21 Sep 2026 PT).
+                "max_budget": float(meta.get("max_budget", 0) or 0),
                 "runs": int(meta.get("runs", 1)),
                 "model": meta.get("model"),
                 "mocks": "no-connector" not in tags,
@@ -448,8 +453,10 @@ def run_case_once(case, args, claude, results_dir, run_no):
     else:
         cmd += ["--strict-mcp-config"]
     cmd += ["--allowedTools", *allowed]
-    if args.max_budget:
-        cmd += ["--max-budget-usd", str(args.max_budget)]
+    # --max-budget 0 means no ceiling, and a case cannot put one back.
+    budget = max(args.max_budget, case["max_budget"]) if args.max_budget else 0
+    if budget:
+        cmd += ["--max-budget-usd", str(budget)]
     # The transcript says what produced it: which case, which model, the
     # skills fingerprint the model saw and the tools it called. A regrade
     # reads these back instead of guessing from the file name or trusting the

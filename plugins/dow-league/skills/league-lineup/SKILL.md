@@ -33,6 +33,11 @@ judgement about variance, and it is the part no public tool does.
 > decide. Never collapse the two into one recommendation, and never quietly drop a
 > candidate because this skill dislikes it.
 
+Beside them sits a short third section, **form and matchup** (step 7): what each
+player has actually scored here, and how the defence he faces has treated his
+position. It is context the owner weighs. It never moves a number in either
+lineup.
+
 ---
 
 ## The projection source, and the one field that matters
@@ -41,8 +46,9 @@ judgement about variance, and it is the part no public tool does.
 is **not**, and reaching for either is the likeliest way this skill ships
 confidently wrong:
 
-- `get_player_scores` is points **already scored**. Authoritative, and useless for
-  a lineup — it exists only after the games.
+- `get_player_scores` is points **already scored**. Authoritative, and **never
+  the ranking input** — a lineup ranked on last month is a lineup for last
+  month. Step 7 reads it as context beside the projection, and nowhere else.
 - `get_dynasty_rankings`, `get_rookie_rankings` and `get_player_values` are
   **dynasty asset values**. A player can be a top-fifteen dynasty asset and the
   wrong week-9 start.
@@ -148,6 +154,12 @@ page every owner can already see.
   step 2's pool, named there, so nothing needs a lookup. An id in `starters`
   that is not on the roster is a player moved since the lineup was set: name
   him and say the slot is empty until it is refilled.
+- **The owner's block is read and written out first, whatever the question
+  led with.** "Factor in Bram's lineup" still starts with Ada's: on 21 Sep 2026
+  PT sonnet at low effort, asked exactly that, wrote out Bram's ten and then
+  "nothing is submitted yet" for Ada, with her ten ids sitting in the payload.
+  Two lists, the owner's then the opponent's, or a named reason each is
+  missing.
 - **Only a block with no `starters` field, or an empty one, means not
   submitted yet** — not an empty lineup, not an error. Check the field before
   writing that sentence: one run (sonnet, low effort, 13 Sep 2026 PT) called a
@@ -277,7 +289,103 @@ the first table is still a conclusion, so write it. On 13 Sep 2026 PT opus at
 low effort noted that step 4's swap "happens to" suit the matchup and never
 said whether anything changed, which is the two lineups merged by omission.
 
-### 7. Risk flags — the shortlist, not the roster
+### 7. Form and matchup — named beside the projection, never added to it
+
+> Straker, 21 Sep 2026 PT: a receiver who would not normally start, facing one
+> of the worst pass defences in the league — "that is at least worth
+> acknowledging and considering in the lineup recommendation."
+
+**The projection already prices both.** FantasyPros builds the opponent and
+recent usage into `points_half`, so "a few points for the matchup" counts the
+matchup twice. Neither table changes here. What this step adds is what sits
+behind the numbers, from payloads and never from a defence's reputation.
+
+**The defence each player faces — every startable player in step 2's pool.**
+
+1. His opponent: read `team` off his own roster row, find that code in
+   `get_nfl_schedule` (the same call step 9 reads; make it once), and write
+   the opponent beside his name in step 2's pool line before ranking anything.
+   The code comes from the row, never from memory of where he plays: a Seattle
+   quarterback was written against San Francisco's defence in one run (sonnet
+   at low effort, 21 Sep 2026 PT). The other side of that game is who he
+   faces. No game that week is a bye; say so.
+2. `get_points_allowed`, no arguments: the opponent's row, then the player's
+   own position in it — `per_game`, `rank`, and the team's `games`. **Rank 1
+   allows the fewest; the highest rank is the softest matchup.** It is scored
+   under this league's rules and it is per position, so it can tell a defence
+   that is soft against tight ends from one that is soft against receivers.
+   Lead with it.
+3. The second read, already in the schedule payload: the opponent's
+   `passDefenseRank` for a quarterback, receiver or tight end, `rushDefenseRank`
+   for a running back. 1 is the stingiest. These rank a whole unit and cannot
+   separate a receiver from a tight end, which is why they come second.
+
+Say how much football a rank rests on: "30th of 32 against receivers, on two
+games". `through_week` and `games` are in the payload; early in a season every
+rank is a small sample, and the week in progress is never in it. A blank rank,
+a `gamesUnavailable` note, or `get_points_allowed` missing from the connector
+(it predates the tool) means that source could not be read: say so, use the
+other, and if both are gone say the matchup could not be read. Nothing about a
+defence comes from memory.
+
+**Season form — the ten, plus any left-out player who projects no worse than
+three points below the lowest projection in the ten.** `get_player_scores`
+twice, with `players` set to those ids comma-separated: `week="AVG"` and
+`week="YTD"`. AVG is YTD divided by the weeks he has a score for — a week he
+played and scored nothing counts, a week he sat out does not (measured 21 Sep
+2026 PT). So YTD divided by AVG is how many games the average rests on; say it
+when it is one or two. An id with no row, or an average of zero, has not
+scored this season: say "no points yet this season" and divide nothing. Do not
+build form from single weeks: a week that comes back 0 for every player was not read (measured 21 Sep
+2026 PT), and it is not a scoreless week.
+
+**What gets written: one clause after the name, only where it is notable —
+and the bench is checked the same way as the ten.** A clause is earned by:
+
+- The opponent is in the softest or the stingiest quarter of `ranked_teams`
+  for his position — of 32, ranks 25 and up, or 8 and down.
+- His season average is four or more points away from this week's projection,
+  either way.
+
+Everyone else gets nothing; twenty clauses of "average matchup" bury the two
+that matter. Those two thresholds only choose what earns a clause, and the
+quarter-of-the-table gap below only chooses what gets offered. All three are
+judgement, not back-tested (21 Sep 2026 PT), and none of them decides a start.
+
+**Then the bench line, always — the mirror of step 4's "left out and why".**
+One line per left-out player who projects above zero: his name, the rank of
+the defence he faces at his position, and his gap to the starter he would
+replace. "Dmitri Sol: faces the softest defence against quarterbacks, on two
+games; 4.1 behind Jonah Reyes." The notable-only filter above is for the ten;
+the bench is short and every one of them is written, because the bench is
+where the candidate the owner has not thought of sits. Two of three runs at
+sonnet low effort on 21 Sep 2026 PT named a defence as a plus for the
+starter and never mentioned the backup facing the same defence — once as
+"the bench doesn't clear the bar", once by silence. A line that is always
+written cannot be skipped by judgement.
+
+**What it may change is what step 6 may change: ties, not material gaps.**
+
+- A left-out player **within two points** of a starter he could legally
+  replace, whose matchup is the better of the two by a quarter of the table
+  or more (8 ranks of 32), is a swap candidate. Name him, the starter, both
+  ranks and the projection given up. The owner decides.
+- **Further back than that, the clause still names him and his gap** — "Teo
+  Alvarez faces the softest defence against receivers in the league, on two
+  games, but projects 3.4 behind Owen Frost: worth knowing, not enough to
+  start him." A soft matchup the owner never hears about is this skill
+  quietly dropping a candidate.
+- A player projected zero or with no projection is not a matchup candidate.
+  No defence is soft enough to help a player who is not expected to play.
+- Form far from the projection is "go look" — a role change, a return from
+  injury, one huge game — not a verdict in either direction (step 8's rule
+  about variance applies here unchanged).
+
+**Its own labelled section, after the opponent section, ending in one line:**
+the swap candidate it raises with the points given up, or "no change to the
+ten". Never folded into the first table, and never a third lineup.
+
+### 8. Risk flags — the shortlist, not the roster
 
 For the recommended ten plus close alternatives only: injury and practice reports,
 snap and touch share, depth-chart and quarterback changes, game total.
@@ -290,12 +398,20 @@ up front with the flags ready — do not go looking mid-decision.
 "go look into this", not "fade this". That misread has already cost this league a
 draft pick.
 
-### 8. Say when it locks
+### 9. Say when it locks
 
 `get_nfl_schedule` with the same `week` is the kickoff source. Each game carries
 `kickoff` in Unix seconds and `gameSecondsRemaining` (3600 before kickoff, 0 at
 final); each side's `id` is the same code as `team` on a roster row, which is
-the join. Convert every kickoff to Pacific and write the zone -- with the analysis tool or a shell one-liner, never arithmetic in your head (the timestamps rule in league-trade-history; a head conversion has put a July trade in March).
+the join. Convert every kickoff to Pacific and write the zone -- with the
+analysis tool or a shell one-liner, never arithmetic in your head (the
+timestamps rule in league-trade-history; a head conversion has put a July
+trade in March). The shape that works in a shell is
+`TZ=America/Los_Angeles date -d @1789690500 '+%A %d %b %Y %I:%M %p %Z'`, one
+timestamp per line; **the weekday comes out of that command too (`%A`), never
+counted forward from the date** -- one run wrote Tuesday against a Thursday
+timestamp and carried the two-day slip through every row (sonnet at low
+effort, 21 Sep 2026 PT).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
 **Join every one of the recommended ten to his game by `team`, and put all
@@ -338,6 +454,8 @@ because nothing gave it a real time. Now something does.
   answers on 9 Sep 2026 PT opened with the id): the id appears because the answer
   was showing its lookup, so do not show the lookup.
 - **Never present the correlation-adjusted lineup alone.** Both tables, labelled.
+- **Never add points to a projection for form or matchup, and never rank on
+  past scores.** The projection already carries both; step 7 names them.
 - **Never explain the format back.** The audience knows what superflex is.
 - **One blended figure, never two separated by a slash**, where a projection has
   more than one source. Per-source detail on request, out of the default output.

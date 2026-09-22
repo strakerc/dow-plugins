@@ -134,6 +134,16 @@ All calls go to the MyFantasyLeague worker, league `29557`.
    one-line script or the analysis tool, then paste the rows. Ranking two hundred
    roster rows by reading them dropped a $16 contract in two runs out of three
    (10 Sep 2026 PT), and a wrong top five is a wrong price with no error anywhere.
+   **The same one-liner prints the sum, the average, the ceiling and the floor**
+   -- for the 2025 RB example below, `python3 -c "import math; s=[75,74,73,68,65];
+   a=sum(s)/5; print(sum(s), a, math.ceil(a), math.ceil(a)+5)"` prints
+   `355 71.0 71 76` -- and the answer carries those four numbers as printed,
+   never re-derived in prose. **The arithmetic decides which branch bound; the
+   note that branch 1 rarely binds does not.** Three runs at sonnet low effort
+   on 21 Sep 2026 PT each reached a floor one dollar under the player's own
+   number by a different slip -- 19 plus 5 as 22, 94 over 5 as 16.8, five
+   salaries summing to 84 instead of 94 -- and every slip was the one that let
+   the usual branch win. Numbers you did not print are numbers you expected.
    The position is the one `get_players` returned for that id and nothing else — a
    name that sounds like a receiver is not a receiver, and a contract at the wrong
    position is out however high its salary. Carry the position into the table so a

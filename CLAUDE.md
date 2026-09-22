@@ -183,7 +183,7 @@ gateway began *enforcing* that on 5 Sep 2026; the workers ran open before then, 
 anything written earlier described the intent rather than the behaviour.
 
 Common tools: `get_rosters`, `get_future_draft_picks`, `get_salary_adjustments`,
-`get_standings`, `get_weekly_results`, `get_nfl_schedule`, `get_transactions`, `get_players`,
+`get_standings`, `get_weekly_results`, `get_nfl_schedule`, `get_points_allowed`, `get_transactions`, `get_players`,
 `get_matchups`, `get_league`, `get_assets`, `get_draft_results`.
 
 Key consequences that shape the prose:

@@ -115,13 +115,8 @@ an answer.
 - **No web search this turn?** Then MFL's report is all there is. Say so, say it
   lags the news, and say no current news was checked. Do not fill the gap from
   memory.
-- **Take the owner's "he's hurt" as given.** The first sentence of the answer
-  is about his teammates, or about the injury as the owner stated it -- never
-  about his roster slot or MFL's report. Do not open by questioning it, and
-  never cite MFL against it: "the owner's roster lists him active, not on IR"
-  was the opening line of one sonnet run at high effort (21 Sep 2026 PT), in
-  an answer that then handled the silent report correctly, and the opener alone
-  is the failure. MFL cannot contradict it: the injury report lags by
+- **Take the owner's "he's hurt" as given.** Do not open by questioning it, and
+  never cite MFL against it. MFL cannot contradict it: the injury report lags by
   days, his roster slot is his owner's choice rather than a diagnosis, and a score
   this week says only that he played, not that he came out of the game healthy.
   Answer the question asked first; one closing line may say what MFL has not
@@ -155,12 +150,6 @@ of every name, all in one answer.
 `get_player_scores` names other skills in its tool description. That line is
 about routing a first call; here, call it directly.
 
-- **Every row step 2 kept is a row in the answer.** Count them before
-  writing -- three teammates kept, three names in the table -- and the count
-  is written: "Detroit's three other receivers". One run kept three and wrote
-  two (sonnet at low effort, 21 Sep 2026 PT); the one it dropped was the one
-  on another owner's roster, which is exactly the kind of name the owner asked
-  about.
 - **Availability goes in this answer, never offered as a follow-up.** Every
   teammate named carries his owner's first name and team name, or "free agent".
   Measured 11 Sep 2026 PT: an answer led with a receiver who was already on

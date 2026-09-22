@@ -406,12 +406,15 @@ final); each side's `id` is the same code as `team` on a roster row, which is
 the join. Convert every kickoff to Pacific and write the zone -- with the
 analysis tool or a shell one-liner, never arithmetic in your head (the
 timestamps rule in league-trade-history; a head conversion has put a July
-trade in March). The shape that works in a shell is
-`TZ=America/Los_Angeles date -d @1789690500 '+%A %d %b %Y %I:%M %p %Z'`, one
-timestamp per line; **the weekday comes out of that command too (`%A`), never
-counted forward from the date** -- one run wrote Tuesday against a Thursday
-timestamp and carried the two-day slip through every row (sonnet at low
-effort, 21 Sep 2026 PT).
+trade in March). In the analysis tool: `new Date(k*1000).toLocaleString(
+'en-US', {timeZone: 'America/Los_Angeles', weekday: 'long', timeZoneName:
+'short', ...})`, one kickoff per line; in a shell, `date -d @k '+%A %d %b %Y
+%I:%M %p %Z'` on a machine set to Pacific -- a `TZ=America/Los_Angeles`
+prefix is ignored by some shells and prints the UTC clock labelled GMT, so
+keep a result only when its zone reads PDT or PST. **The weekday comes out of
+the same call, never counted forward from the date** -- one run wrote Tuesday
+against a Thursday timestamp and carried the two-day slip through every row
+(sonnet at low effort, 21 Sep 2026 PT).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
 **Join every one of the recommended ten to his game by `team`, and put all

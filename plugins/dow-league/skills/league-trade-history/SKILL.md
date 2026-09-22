@@ -120,14 +120,17 @@ the previous day in Pacific, and four of seven in one sample did exactly that â€
 a date quoted from the UTC conversion will disagree with what the owners
 remember.
 
-Both halves come out of the same command, one timestamp per line:
-`TZ=America/Los_Angeles date -d @1785550100 '+%d %b %Y, %H:%M %Z'` for the
-Pacific half and `date -u -d @1785550100 '+%H:%M UTC'` for the other. **Check
-the pair before writing it: Pacific is seven or eight hours behind UTC, so a
-line where the two clocks read the same was never converted.** Opus at low
-effort wrote `1 Aug 2026, 02:08 PT (02:08 UTC)` for a trade made at 19:08 PT
-on 31 Jul (21 Sep 2026 PT) -- the UTC clock with a Pacific label, and the
-wrong day with it.
+Both halves come from the tool, one timestamp per line. In the analysis
+tool: `new Date(1787890200*1000).toLocaleString('en-US', {timeZone:
+'America/Los_Angeles', timeZoneName: 'short', hour12: false, ...})` prints
+`Aug 27, 2026, 21:10 PDT`, and `.toISOString()` the UTC half,
+`2026-08-28T04:10Z`. In a shell, `date -d @1787890200` on a machine set to
+Pacific; a `TZ=America/Los_Angeles` prefix is ignored by some shells and
+prints the UTC clock labelled GMT. **Keep a result only when its zone reads
+PDT or PST, and check the pair before writing it: Pacific is seven or eight
+hours behind UTC, so a line where the two clocks read the same was never
+converted.** Opus at low effort wrote a trade's UTC clock with a Pacific
+label, and the wrong day with it, in one run on 21 Sep 2026 PT.
 
 If neither tool is available, say the time is unconverted rather than guess.
 

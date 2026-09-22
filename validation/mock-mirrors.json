@@ -2,7 +2,7 @@
  "mocks": {
   "evaluate_trade": {
    "worker": "tradeval",
-   "version": "0.2.3"
+   "version": "0.2.4"
   },
   "get_league": {
    "worker": "myfantasyleague",

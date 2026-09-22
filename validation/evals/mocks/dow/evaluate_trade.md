@@ -40,6 +40,11 @@ description: Score a proposed trade: market verdict and league-adjusted verdict,
    "reason": "Bram would be $3 over the cap after the trade"
   }
  },
+ "capDollars": {
+  "phase": "in-season",
+  "currentYearDragWeight": 0.2,
+  "note": "The season has started: an overpay on this year's salary counts at the weight shown, because a cap dollar cannot be redeployed until the August auction. Every future locked year counts in full."
+ },
  "priceCurve": {
   "sampleSize": 180,
   "basis": "league-wide rosters"

@@ -1,5 +1,5 @@
 ---
-description: "NFL schedule for a week: every game with `kickoff` in Unix seconds (convert to Pacific and label the zone), `gameSecondsRemaining` (3600 = not started, 0 = final), each side's `id` (MFL team code, the same code as `team` on a roster row), `isHome`, `score` and `spread`. Each side also carries `passDefenseRank`, `rushDefenseRank`, `passOffenseRank` and `rushOffenseRank`: 1 is the best unit, so a HIGH defence rank is a soft matchup; blank before the season has data. Omit `week` for the current week. This is the only kickoff source in the stack: a lock time not read from here is a guess. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-lineup` skill BEFORE calling this. Synthetic: week 3 of 2026, the twelve NFL teams the synthetic league rosters, Thursday and Monday games included; every game unstarted; unit ranks out of 32."
+description: "NFL schedule for a week: every game with `kickoff` in Unix seconds (convert to Pacific and label the zone), `gameSecondsRemaining` (3600 = not started, 0 = final), each side's `id` (MFL team code, the same code as `team` on a roster row), `isHome`, `score` and `spread`. Each side also carries `passDefenseRank`, `rushDefenseRank`, `passOffenseRank` and `rushOffenseRank`: 1 is the best unit, so a HIGH defence rank is a soft matchup; blank before the season has data. Omit `week` for the current week. This is the only kickoff source in the stack: a lock time not read from here is a guess. Raw payload for the dow-league skills, not an answer for an owner. Invoke the `league-lineup` skill BEFORE calling this. Synthetic: week 3 (kickoffs 16-20 Sep 2027 PT, moved forward a year on 21 Sep 2026 PT because the real week-3 dates had passed while every game still read unstarted, and sonnet at high effort refused to state a lock time it could not reconcile; same weekdays and clock times), the twelve NFL teams the synthetic league rosters, Thursday and Monday games included; every game unstarted; unit ranks out of 32."
 ---
 {
  "version": "1.0",
@@ -7,7 +7,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
  "nflSchedule": {
   "matchup": [
    {
-    "kickoff": "1789690500",
+    "kickoff": "1821140100",
     "gameSecondsRemaining": "3600",
     "team": [
      {
@@ -37,7 +37,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
     ]
    },
    {
-    "kickoff": "1789923600",
+    "kickoff": "1821373200",
     "gameSecondsRemaining": "3600",
     "team": [
      {
@@ -67,7 +67,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
     ]
    },
    {
-    "kickoff": "1789923600",
+    "kickoff": "1821373200",
     "gameSecondsRemaining": "3600",
     "team": [
      {
@@ -97,7 +97,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
     ]
    },
    {
-    "kickoff": "1789934700",
+    "kickoff": "1821384300",
     "gameSecondsRemaining": "3600",
     "team": [
      {
@@ -127,7 +127,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
     ]
    },
    {
-    "kickoff": "1789935900",
+    "kickoff": "1821385500",
     "gameSecondsRemaining": "3600",
     "team": [
      {
@@ -157,7 +157,7 @@ description: "NFL schedule for a week: every game with `kickoff` in Unix seconds
     ]
    },
    {
-    "kickoff": "1790036100",
+    "kickoff": "1821485700",
     "gameSecondsRemaining": "3600",
     "team": [
      {

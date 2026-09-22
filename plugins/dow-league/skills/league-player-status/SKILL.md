@@ -115,8 +115,13 @@ an answer.
 - **No web search this turn?** Then MFL's report is all there is. Say so, say it
   lags the news, and say no current news was checked. Do not fill the gap from
   memory.
-- **Take the owner's "he's hurt" as given.** Do not open by questioning it, and
-  never cite MFL against it. MFL cannot contradict it: the injury report lags by
+- **Take the owner's "he's hurt" as given.** The first sentence of the answer
+  is about his teammates, or about the injury as the owner stated it -- never
+  about his roster slot or MFL's report. Do not open by questioning it, and
+  never cite MFL against it: "the owner's roster lists him active, not on IR"
+  was the opening line of one sonnet run at high effort (21 Sep 2026 PT), in
+  an answer that then handled the silent report correctly, and the opener alone
+  is the failure. MFL cannot contradict it: the injury report lags by
   days, his roster slot is his owner's choice rather than a diagnosis, and a score
   this week says only that he played, not that he came out of the game healthy.
   Answer the question asked first; one closing line may say what MFL has not

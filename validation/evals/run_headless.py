@@ -445,7 +445,11 @@ def run_case_once(case, args, claude, results_dir, run_no):
             copy_error = f"could not copy plugin {pl}: {e}"      # nothing ran; the suite stops
             break
         cmd += ["--plugin-dir", str(dst)]
-    allowed = ["Skill", "Read", "Write", "Edit", "Glob", "Grep", "Bash(python3 *)", "Bash(python *)",
+    # node: the skills say to convert timestamps with the analysis tool, which
+    # is JavaScript, and a model under test reaches for `node -e` to do it; an
+    # opus run reported every date unconverted when that was refused (21 Sep
+    # 2026 PT). Same footing as python.
+    allowed = ["Skill", "Read", "Write", "Edit", "Glob", "Grep", "Bash(python3 *)", "Bash(python *)", "Bash(node *)",
                "Bash(ls *)", "Bash(cat *)"]
     if case["mocks"]:
         cmd += ["--mcp-config", mcp_config(case, tmp), "--strict-mcp-config"]

@@ -302,9 +302,13 @@ behind the numbers, from payloads and never from a defence's reputation.
 
 **The defence each player faces — every startable player in step 2's pool.**
 
-1. His opponent: find his `team` in `get_nfl_schedule` (the same call step 9
-   reads; make it once). The other side of that game is who he faces. No game
-   that week is a bye; say so.
+1. His opponent: read `team` off his own roster row, find that code in
+   `get_nfl_schedule` (the same call step 9 reads; make it once), and write
+   the opponent beside his name in step 2's pool line before ranking anything.
+   The code comes from the row, never from memory of where he plays: a Seattle
+   quarterback was written against San Francisco's defence in one run (sonnet
+   at low effort, 21 Sep 2026 PT). The other side of that game is who he
+   faces. No game that week is a bye; say so.
 2. `get_points_allowed`, no arguments: the opponent's row, then the player's
    own position in it — `per_game`, `rank`, and the team's `games`. **Rank 1
    allows the fewest; the highest rank is the softest matchup.** It is scored
@@ -399,7 +403,15 @@ draft pick.
 `get_nfl_schedule` with the same `week` is the kickoff source. Each game carries
 `kickoff` in Unix seconds and `gameSecondsRemaining` (3600 before kickoff, 0 at
 final); each side's `id` is the same code as `team` on a roster row, which is
-the join. Convert every kickoff to Pacific and write the zone -- with the analysis tool or a shell one-liner, never arithmetic in your head (the timestamps rule in league-trade-history; a head conversion has put a July trade in March).
+the join. Convert every kickoff to Pacific and write the zone -- with the
+analysis tool or a shell one-liner, never arithmetic in your head (the
+timestamps rule in league-trade-history; a head conversion has put a July
+trade in March). The shape that works in a shell is
+`TZ=America/Los_Angeles date -d @1789690500 '+%A %d %b %Y %I:%M %p %Z'`, one
+timestamp per line; **the weekday comes out of that command too (`%A`), never
+counted forward from the date** -- one run wrote Tuesday against a Thursday
+timestamp and carried the two-day slip through every row (sonnet at low
+effort, 21 Sep 2026 PT).
 
 MFL locks each player at their own kickoff, not at a single weekly deadline.
 **Join every one of the recommended ten to his game by `team`, and put all

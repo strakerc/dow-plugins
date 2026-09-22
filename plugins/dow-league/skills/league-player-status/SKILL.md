@@ -155,6 +155,12 @@ of every name, all in one answer.
 `get_player_scores` names other skills in its tool description. That line is
 about routing a first call; here, call it directly.
 
+- **Every row step 2 kept is a row in the answer.** Count them before
+  writing -- three teammates kept, three names in the table -- and the count
+  is written: "Detroit's three other receivers". One run kept three and wrote
+  two (sonnet at low effort, 21 Sep 2026 PT); the one it dropped was the one
+  on another owner's roster, which is exactly the kind of name the owner asked
+  about.
 - **Availability goes in this answer, never offered as a follow-up.** Every
   teammate named carries his owner's first name and team name, or "free agent".
   Measured 11 Sep 2026 PT: an answer led with a receiver who was already on

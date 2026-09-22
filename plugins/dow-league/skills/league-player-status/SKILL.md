@@ -143,7 +143,7 @@ of every name, all in one answer.
 | Step | Call |
 |---|---|
 | 1 | The injury, exactly as in the section above: `get_injuries`, `get_player_scores`, dated news |
-| 2 | `get_player_scores` with his `position` for the latest week with games in it, then `get_players` on every id returned; keep the rows on his NFL team. From week 3 on, add `week=AVG` |
+| 2 | `get_player_scores` with his `position` for the latest week with games in it, then `get_players` with `players` set to **every id in that payload, pasted as one list** -- the teams are not known until it returns, so nothing can be left out before it; keep the rows whose `team` is his after. From week 3 on, add `week=AVG` |
 | 3 | `get_rosters` with no `franchise_id`, `get_free_agents` for the position, and `get_league` for the owners — the one pass from "Who has him", covering every teammate you will name |
 | 4 | The news, for the depth chart: who takes his snaps, and who the team signed or promoted. Put the month and year in the query |
 

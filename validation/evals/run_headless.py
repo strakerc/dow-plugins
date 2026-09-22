@@ -453,7 +453,8 @@ def run_case_once(case, args, claude, results_dir, run_no):
     else:
         cmd += ["--strict-mcp-config"]
     cmd += ["--allowedTools", *allowed]
-    budget = max(args.max_budget or 0, case["max_budget"])
+    # --max-budget 0 means no ceiling, and a case cannot put one back.
+    budget = max(args.max_budget, case["max_budget"]) if args.max_budget else 0
     if budget:
         cmd += ["--max-budget-usd", str(budget)]
     # The transcript says what produced it: which case, which model, the

@@ -348,12 +348,17 @@ that matter. Those two thresholds only choose what earns a clause, and the
 quarter-of-the-table gap below only chooses what gets offered. All three are
 judgement, not back-tested (21 Sep 2026 PT), and none of them decides a start.
 
-**A left-out player who earns a clause gets it by name, with his gap to the
-starter he would replace — always, whether or not a swap is offered.** Never
-"the bench doesn't clear the bar": on 21 Sep 2026 PT sonnet at low effort
-wrote exactly that about a backup quarterback facing the softest defence in
-the league, having named the same defence as a plus for the starter one line
-earlier. The owner cannot weigh a candidate who is not named.
+**Then the bench line, always — the mirror of step 4's "left out and why".**
+One line per left-out player who projects above zero: his name, the rank of
+the defence he faces at his position, and his gap to the starter he would
+replace. "Dmitri Sol: faces the softest defence against quarterbacks, on two
+games; 4.1 behind Jonah Reyes." The notable-only filter above is for the ten;
+the bench is short and every one of them is written, because the bench is
+where the candidate the owner has not thought of sits. Two of three runs at
+sonnet low effort on 21 Sep 2026 PT named a defence as a plus for the
+starter and never mentioned the backup facing the same defence — once as
+"the bench doesn't clear the bar", once by silence. A line that is always
+written cannot be skipped by judgement.
 
 **What it may change is what step 6 may change: ties, not material gaps.**
 

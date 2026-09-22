@@ -154,6 +154,12 @@ page every owner can already see.
   step 2's pool, named there, so nothing needs a lookup. An id in `starters`
   that is not on the roster is a player moved since the lineup was set: name
   him and say the slot is empty until it is refilled.
+- **The owner's block is read and written out first, whatever the question
+  led with.** "Factor in Bram's lineup" still starts with Ada's: on 21 Sep 2026
+  PT sonnet at low effort, asked exactly that, wrote out Bram's ten and then
+  "nothing is submitted yet" for Ada, with her ten ids sitting in the payload.
+  Two lists, the owner's then the opponent's, or a named reason each is
+  missing.
 - **Only a block with no `starters` field, or an empty one, means not
   submitted yet** — not an empty lineup, not an error. Check the field before
   writing that sentence: one run (sonnet, low effort, 13 Sep 2026 PT) called a

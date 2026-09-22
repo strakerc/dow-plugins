@@ -134,6 +134,11 @@ All calls go to the MyFantasyLeague worker, league `29557`.
    one-line script or the analysis tool, then paste the rows. Ranking two hundred
    roster rows by reading them dropped a $16 contract in two runs out of three
    (10 Sep 2026 PT), and a wrong top five is a wrong price with no error anywhere.
+   **The same one-liner prints the sum, the average, the ceiling and the floor**,
+   and the answer carries those four numbers as printed, never re-derived in
+   prose: in the head, 94 over 5 became 16.8 in one run and 19 plus 5 became 22
+   in the next (sonnet at low effort, 21 Sep 2026 PT), each a wrong floor
+   presented with full confidence.
    The position is the one `get_players` returned for that id and nothing else — a
    name that sounds like a receiver is not a receiver, and a contract at the wrong
    position is out however high its salary. Carry the position into the table so a

@@ -189,12 +189,11 @@ board line is what the owner argues with later; the roster line is the advice.
 | Who holds which future pick | `league-draft-picks` |
 
 **Do not compute a surplus score here.** `evaluate_trade` produces one, and its
-*size* is known to be overstated — it returned "clear win" on every trade in
-validation that touched a large salary, including deals the league manager
-called even; pick-for-pick swaps band sensibly. Direction is usable,
-the magnitude is not, and a single-player version of it would be worse. Describe
-the tension in words: what he is worth, what he costs, how long, and whether that
-is a problem for his owner.
+*size* is not calibrated: direction usable, magnitude not, and it moves with
+the calendar — `league-trade-evaluator` has the record and the rule. A
+single-player version of it would be worse. Describe the tension in words: what
+he is worth, what he costs, how long, and whether that is a problem for his
+owner.
 
 > **Editing note — do not "correct" this.** Amounts below ten are written WITHOUT
 > a dollar sign. A dollar sign immediately followed by one digit is silently

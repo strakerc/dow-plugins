@@ -30,8 +30,8 @@ them is the whole point.
 
 | | What it is | How much to trust it |
 |---|---|---|
-| `market` | What a public calculator would say — FantasyCalc blended with FantasyPros superflex ECR | **Direction and size both.** Validated 7 Sep 2026 against a human answer key; it agreed wherever the human had an opinion. When `notes` says the FantasyPros board came back short (most answers since September 2026), the size is a ballpark |
-| `leagueAdjusted` | The same trade once salary, contract term, cap space and roster legality are priced in | **Direction only.** The size is systematically overstated — see below |
+| `market` | What a public calculator would say — FantasyCalc blended with FantasyPros superflex ECR | **Direction and size both.** Checked against a human answer key twice (7 Sep and 21 Sep 2026 PT): in September it matched the league manager's band and side on 11 of 15 trades, and its side never went against his except once, on a trade he called fair. When `notes` says the FantasyPros board came back short (most answers since September 2026), the size is a ballpark |
+| `leagueAdjusted` | The same trade once salary, contract term, cap space and roster legality are priced in | **Direction only.** The size is not calibrated — see below |
 
 **Read `divergence` first.** When the two disagree, that sentence is the answer,
 and it is the part no external site can compute. It was correct in every case it
@@ -46,20 +46,26 @@ and the reason is what gets quoted back in the argument.
 
 ## The one rule that matters: never quote the league-adjusted percentage
 
-`leagueAdjusted.edgeVsValueMovedPct` is **not a measurement.** In validation it
-returned "clear win" on every trade that touched a large salary, at 40–62% and
-once at 117%, including two the league manager called dead even. On a
-pick-for-pick swap the bands behave — a slight edge at 15%, or dead even —
-which is how we know the fault sits at the top of the salary curve, not in the
-bands. That does not make the number safe on a picks-only trade: the rule
-below holds for every trade.
+`leagueAdjusted.edgeVsValueMovedPct` is **not a measurement.** Against the
+league manager's fifteen-trade answer key (21 Sep 2026 PT) the league-adjusted
+side never went against his, though twice it called even a trade he gave a
+side. The size is another matter: his key has bands, not percentages, and the
+percentages behind matching bands ran from the thirties to near ninety with
+nothing to say what the difference means; one trade he called fair scored
+20%, and 80% under `tradeval` 0.2.3. No owner reads such a number as anything
+but a claim.
 
 The cause is structural, not a bug. The price curve is rank-based: a player is
-measured against whoever sits at his *salary* rank. Baker Mayfield is around the
-4th-highest salary in the league at $61, so he is measured against the
-4th-most-valuable player — an expectation of 8,665 against his actual market
-value of 3,379, for a surplus of −5,286. Value is steeply convex at the top and
-salary is not, so **every expensive contract reads as a landslide.**
+measured against whoever sits at his *salary* rank. Baker Mayfield is around
+the 4th-highest salary in the league at $61, so he is measured against the
+4th-most-valuable player — an expectation of about 8,600 against his actual
+market value of about 3,400. Value is steeply convex at the top and salary is
+not. Since `tradeval` 0.2.4 the overpay on *this season's* salary counts at a
+fifth once the season has started (a cap dollar cannot be redeployed until the
+August auction) and in full in the offseason — the response says which in
+`capDollars.phase` — so Mayfield's drag reads −1,054 in October and −5,270 in
+March. The direction is the same either way; the size moves with the calendar,
+which is one more reason it is not a number to repeat.
 
 So:
 

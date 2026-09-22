@@ -329,7 +329,8 @@ scored this season: say "no points yet this season" and divide nothing. Do not
 build form from single weeks: a week that comes back 0 for every player was not read (measured 21 Sep
 2026 PT), and it is not a scoreless week.
 
-**What gets written: one clause after the name, only where it is notable.**
+**What gets written: one clause after the name, only where it is notable —
+and the bench is checked the same way as the ten.** A clause is earned by:
 
 - The opponent is in the softest or the stingiest quarter of `ranked_teams`
   for his position — of 32, ranks 25 and up, or 8 and down.
@@ -341,17 +342,24 @@ that matter. Those two thresholds only choose what earns a clause, and the
 quarter-of-the-table gap below only chooses what gets offered. All three are
 judgement, not back-tested (21 Sep 2026 PT), and none of them decides a start.
 
+**A left-out player who earns a clause gets it by name, with his gap to the
+starter he would replace — always, whether or not a swap is offered.** Never
+"the bench doesn't clear the bar": on 21 Sep 2026 PT sonnet at low effort
+wrote exactly that about a backup quarterback facing the softest defence in
+the league, having named the same defence as a plus for the starter one line
+earlier. The owner cannot weigh a candidate who is not named.
+
 **What it may change is what step 6 may change: ties, not material gaps.**
 
 - A left-out player **within two points** of a starter he could legally
   replace, whose matchup is the better of the two by a quarter of the table
   or more (8 ranks of 32), is a swap candidate. Name him, the starter, both
   ranks and the projection given up. The owner decides.
-- **Further back than that, he is still named** — "Teo Alvarez faces the
-  softest defence against receivers in the league, on two games, but projects
-  3.4 behind Owen Frost: worth knowing, not enough to start him." A soft
-  matchup the owner never hears about is this skill quietly dropping a
-  candidate.
+- **Further back than that, the clause still names him and his gap** — "Teo
+  Alvarez faces the softest defence against receivers in the league, on two
+  games, but projects 3.4 behind Owen Frost: worth knowing, not enough to
+  start him." A soft matchup the owner never hears about is this skill
+  quietly dropping a candidate.
 - A player projected zero or with no projection is not a matchup candidate.
   No defence is soft enough to help a player who is not expected to play.
 - Form far from the projection is "go look" — a role change, a return from

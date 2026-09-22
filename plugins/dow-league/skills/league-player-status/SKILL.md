@@ -180,8 +180,16 @@ about routing a first call; here, call it directly.
 - **The injury:** what it is, how long he is expected out, then the source and its
   date, in that order. One sentence of what it means here only when it changes a
   decision — a lineup (`league-lineup`) or an IR move (`league-rules`).
-- **Who steps in:** the injury in one line with its source and date, then one row
-  per teammate — his points in the latest week, his owner's first name and team
+- **Who steps in:** line one is the injury as the owner stated it, in this
+  shape and no other: "Owen Frost is on IR, per Bram." — then the source and
+  date if there is one. Not "MFL shows him active", not "his status doesn't
+  match the tools", not a flag before the list: the roster slot and the
+  silent report cannot contradict an owner (Traps, above), and an answer that
+  leads with the disagreement has doubted the premise however it goes on.
+  Three sonnet runs at high effort opened that way on 21 Sep 2026 PT with the
+  rest of the answer right. If MFL has nothing on him, that is **the last
+  line**, one clause: "MFL's report has not caught up on him yet." Then one
+  row per teammate — his points in the latest week, his owner's first name and team
   name or "free agent", and his role now from the depth-chart news. End by
   naming which of them can be claimed today.
 - **Name the source and date inline**, dates in Pacific. An undated injury claim

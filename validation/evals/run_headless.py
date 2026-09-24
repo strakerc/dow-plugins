@@ -50,7 +50,7 @@ REAL DATA NEVER ENTERS. The mock gateway serves synthetic files, the run
 directory is empty, and the transcripts land in results/, which is ignored by
 git. Do not point --mcp-config at the real connector from here.
 """
-import argparse, fnmatch, hashlib, json, os, re, shutil, subprocess, sys, tempfile, threading, time
+import argparse, fnmatch, functools, hashlib, json, os, re, shutil, subprocess, sys, tempfile, threading, time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
@@ -528,6 +528,7 @@ def unreachable(t):
 # touches only cases that are new, failed, or stale. Straker's rule, 9 Sep
 # 2026 PT: "we don't need to retest what we already tested". Lives in .git/,
 # so it never ships and never commits.
+@functools.lru_cache(maxsize=None)
 def git_dir(common=False):
     """This checkout's git dir, or with `common` the one every worktree shares
     (in the main checkout they are the same directory)."""
@@ -545,7 +546,11 @@ def git_dir(common=False):
 
 
 def ledger_path():
-    g = git_dir()
+    """In the git dir every worktree shares, so a pass recorded in one
+    worktree counts in all of them (Straker, 24 Sep 2026 PT). Safe because
+    an entry is valid only against the file fingerprints it was recorded
+    with; a worktree whose files differ reads it as stale."""
+    g = git_dir(common=True)
     return (g / "dow-evals-ledger.json") if g else None
 
 
@@ -583,23 +588,80 @@ def write_ledger(led):
     pays for everything again."""
     p = ledger_path()
     if p:
-        tmp = p.with_suffix(".json.tmp")
+        # Per process: two worktrees writing one shared .tmp would swap halves.
+        tmp = p.with_suffix(f".json.{os.getpid()}.tmp")
         tmp.write_text(json.dumps(led, indent=1, sort_keys=True), encoding="utf-8")
-        os.replace(tmp, p)
+        # Windows refuses to replace a file another process has open, and
+        # readers do not take the lock: a reader holds it for milliseconds.
+        for attempt in range(40):
+            try:
+                os.replace(tmp, p)
+                return
+            except PermissionError:
+                if attempt == 39:
+                    raise
+                time.sleep(0.05)
 
 
 _LEDGER_LOCK = threading.Lock()   # parallel cases in one process record one at a time
 
 
+class LedgerFileLock:
+    """Across processes: runners in different worktrees now share one ledger.
+    An O_EXCL lock file, because it behaves the same on Windows and POSIX.
+    A lock older than `stale` seconds is a runner that died holding it; a
+    read-modify-write takes milliseconds."""
+    def __init__(self, path, timeout=90.0, stale=30.0):
+        # timeout > stale, so a lock a killed runner left behind is broken
+        # before the waiter gives up on it.
+        self.path, self.timeout, self.stale = path, timeout, stale
+
+    def __enter__(self):
+        deadline = time.monotonic() + self.timeout
+        while True:
+            try:
+                fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                os.write(fd, str(os.getpid()).encode())
+                os.close(fd)
+                return self
+            except (FileExistsError, PermissionError):   # Windows: a lock mid-delete
+                try:
+                    if time.time() - os.path.getmtime(self.path) > self.stale:
+                        os.remove(self.path)
+                        continue
+                except OSError:
+                    pass                # released between the two calls: retry below
+            if time.monotonic() > deadline:
+                raise TimeoutError(f"{self.path} held for over {self.timeout:.0f}s")
+            time.sleep(0.05)
+
+    def __exit__(self, *exc):
+        try:
+            os.remove(self.path)
+        except OSError:
+            pass
+
+
 def record_now(case, passed, model, results_dir, skills_fp_value=None, tools=None,
                effort=None, model_id=None):
     """Read-modify-write one entry. Two runners can be alive at once (a rerun
-    loop and a regrade, 9 Sep 2026 PT), and a process that held the ledger in
-    memory for its whole run wrote back over the other's entries."""
+    loop and a regrade, 9 Sep 2026 PT; or two worktrees since the ledger is
+    shared, 24 Sep), and a process that held the ledger in memory for its
+    whole run wrote back over the other's entries."""
+    p = ledger_path()
     with _LEDGER_LOCK:
-        led = read_ledger()
-        record(led, case, passed, model, results_dir, skills_fp_value, tools, effort, model_id)
-        write_ledger(led)
+        if p is None:
+            return
+        # Called just after a case was paid for: a ledger that cannot be
+        # written costs a rerun of that case, never the rest of the run.
+        try:
+            with LedgerFileLock(p.with_suffix(".json.lock")):
+                led = read_ledger()
+                record(led, case, passed, model, results_dir, skills_fp_value, tools, effort, model_id)
+                write_ledger(led)
+        except (OSError, TimeoutError) as e:
+            print(f"warning: {case['name']} not recorded in the ledger ({e}); it will run again next time",
+                  file=sys.stderr)
 
 
 def _hash_paths(paths, extra=b""):
@@ -1086,12 +1148,29 @@ def selftest():
     check("a case with no floor is untouched", floor_status(mocked, "haiku", "low") == "ok")
     check("a floored case at its floor keeps its ordinary graders",
           "shared:connector-used" in {g["_name"] for g in graders_for(floored)})
-    # Under the repo's git dir, not the checkout: in a linked worktree that is
-    # .git/worktrees/<name> in the main checkout, outside ROOT (24 Sep 2026 PT).
+    # In the git dir every worktree shares, not this worktree's own
+    # .git/worktrees/<name>, and not the checkout (24 Sep 2026 PT).
     common = git_dir(common=True)
-    check("ledger path is under the repo's git dir",
+    check("ledger is in the git dir every worktree shares",
           common is not None and ledger_path() is not None
-          and common.resolve() in ledger_path().resolve().parents)
+          and ledger_path().parent.resolve() == common.resolve())
+    with tempfile.TemporaryDirectory() as d:
+        lk = Path(d) / "l.lock"
+        with LedgerFileLock(lk):
+            try:
+                with LedgerFileLock(lk, timeout=0.2):
+                    held = False
+            except TimeoutError:
+                held = True
+        check("ledger lock excludes a second holder, and is released", held and not lk.exists())
+        lk.write_text("0")
+        os.utime(lk, (time.time() - 120, time.time() - 120))
+        try:
+            with LedgerFileLock(lk, timeout=0.2):
+                broke = True
+        except TimeoutError:
+            broke = False
+        check("ledger lock breaks a stale lock", broke and not lk.exists())
     fp_a = evals_fp(mocked, ["get_league"])
     fp_b = evals_fp(mocked, ["get_league", "get_rosters"])
     check("evals fingerprint depends on the tools a run called", fp_a != fp_b and fp_a == evals_fp(mocked, ["get_league"]))

@@ -59,7 +59,10 @@ directly, this runner covers the one `--model` at the one `--effort` given. A ru
 covers, every skill's name and description, its own files, the mock files for
 the tools its last run called, the mock server and the grading code all
 unchanged, and the same model.
-`--all` forces. The ledger lives in `.git/dow-evals-ledger.json`. A grader
+`--all` forces. The ledger lives in `.git/dow-evals-ledger.json` of the main
+checkout, and every worktree reads and writes that one file (under a lock
+file beside it); transcripts stay in the `results/` of the worktree that ran
+them, so `--regrade` one by its full path from anywhere else. A grader
 change is settled with `--regrade` against the transcript already paid for;
 only a skill or mock change needs the model again, and only for the cases
 that cover it. Every transcript begins with a `dow-meta` line naming its

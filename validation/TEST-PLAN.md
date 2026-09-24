@@ -31,7 +31,8 @@ were not run, so "the gate passed" cannot be said about a run that never
 asked the model anything.
 
 **Nothing is retested that already passed.** The runner keeps a ledger in
-`.git/dow-evals-ledger.json` with, per case, the last result, the model, and
+`.git/dow-evals-ledger.json` (the main checkout's, shared by every worktree,
+so a pass paid for in one counts in all) with, per case, the last result, the model, and
 two fingerprints: the skill directories the case covers plus every skill's
 name and description (the routing surface, since a description edit elsewhere
 can change which skill fires), and the case's own files, the mock files for the tools its last run

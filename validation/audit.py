@@ -337,11 +337,29 @@ def check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin=None
                        f"{schema_pin['version']}, the worker is now {live} -- re-read tools/list, then move the pin")
     return bad, note
 
+def default_workers_root():
+    """The sibling of this checkout, or, in a linked worktree, the sibling of
+    the main checkout: a worktree lives at .claude/worktrees/<name>, where
+    ../dow-workers is nothing (found 24 Sep 2026 PT, the first worktree push).
+    The main checkout is the parent of git's common dir."""
+    here = os.path.join(os.path.dirname(ROOT), "dow-workers")
+    if os.path.isdir(os.path.join(here, "workers")):
+        return here
+    try:
+        p = subprocess.run(["git", "rev-parse", "--git-common-dir"],
+                           capture_output=True, text=True, cwd=ROOT, timeout=60)
+    except (OSError, subprocess.TimeoutExpired):
+        return here
+    if p.returncode != 0 or not p.stdout.strip():
+        return here
+    # Relative ('.git') in the main checkout, absolute from a worktree.
+    main = os.path.dirname(os.path.normpath(os.path.join(ROOT, p.stdout.strip())))
+    return os.path.join(os.path.dirname(main), "dow-workers")
+
 _mirrors = json.loads(io.open(MIRRORS, encoding="utf-8").read())
 pins, schema_pin = _mirrors["mocks"], _mirrors.get("schemas")
 mock_names = set(load_tools(MOCK_SERVER, [MOCKS_ROOT]))
-workers_root = native_path(os.environ.get(WORKERS_ROOT_ENV)) or \
-    os.path.join(os.path.dirname(ROOT), "dow-workers")
+workers_root = native_path(os.environ.get(WORKERS_ROOT_ENV)) or default_workers_root()
 allow_missing = os.environ.get(OVERRIDE_ENV, "") == "1"
 bad, note = check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin)
 if schema_pin is None:

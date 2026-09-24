@@ -528,10 +528,12 @@ def unreachable(t):
 # touches only cases that are new, failed, or stale. Straker's rule, 9 Sep
 # 2026 PT: "we don't need to retest what we already tested". Lives in .git/,
 # so it never ships and never commits.
-def git_dir():
+def git_dir(common=False):
+    """This checkout's git dir, or with `common` the one every worktree shares
+    (in the main checkout they are the same directory)."""
     try:
-        p = subprocess.run(["git", "rev-parse", "--git-dir"], capture_output=True, text=True,
-                           cwd=ROOT, timeout=60)
+        p = subprocess.run(["git", "rev-parse", "--git-common-dir" if common else "--git-dir"],
+                           capture_output=True, text=True, cwd=ROOT, timeout=60)
     except (OSError, subprocess.TimeoutExpired):
         return None
     if p.returncode != 0:
@@ -1084,7 +1086,12 @@ def selftest():
     check("a case with no floor is untouched", floor_status(mocked, "haiku", "low") == "ok")
     check("a floored case at its floor keeps its ordinary graders",
           "shared:connector-used" in {g["_name"] for g in graders_for(floored)})
-    check("ledger path is under the repo", str(ledger_path()).startswith(str(ROOT)))
+    # Under the repo's git dir, not the checkout: in a linked worktree that is
+    # .git/worktrees/<name> in the main checkout, outside ROOT (24 Sep 2026 PT).
+    common = git_dir(common=True)
+    check("ledger path is under the repo's git dir",
+          common is not None and ledger_path() is not None
+          and common.resolve() in ledger_path().resolve().parents)
     fp_a = evals_fp(mocked, ["get_league"])
     fp_b = evals_fp(mocked, ["get_league", "get_rosters"])
     check("evals fingerprint depends on the tools a run called", fp_a != fp_b and fp_a == evals_fp(mocked, ["get_league"]))

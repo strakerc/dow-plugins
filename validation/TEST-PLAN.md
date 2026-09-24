@@ -87,7 +87,8 @@ every `*.json` parses, no contact data anywhere, no build droppings, stated
 counts match reality, every skill named by a `gate` eval case), every skill
 opening with the canonical "Before you answer" block, and every shared mock
 pinned to the version of the worker it mirrors (`validation/mock-mirrors.json`,
-read against the sibling `dow-workers` clone; a missing clone FAILS unless
+read against the sibling `dow-workers` clone, the main checkout's sibling from
+a worktree; a missing clone FAILS unless
 `DOW_ALLOW_MISSING_WORKERS=1`, which prints a `note:` line instead). Every
 check carries a control that must fail.
 

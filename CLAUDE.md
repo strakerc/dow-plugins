@@ -355,7 +355,8 @@ nothing kept mock *bodies* in step with the worker that produces them until
 tradeval 0.2.3 changed its `notes` and the mock said `notes: []` (13 Sep 2026
 PT). Each shared mock names the worker and version it was last read against;
 the check reads the worker's version out of the sibling `../dow-workers` clone
-(`DOW_WORKERS_ROOT` to point elsewhere) and fails when it has moved. Moving the
+(from a linked worktree, the main checkout's sibling; `DOW_WORKERS_ROOT` to
+point elsewhere) and fails when it has moved. Moving the
 pin is the acknowledgement that someone re-read the mock. **A missing clone is a
 failure, not a skip** -- Straker's rule, 13 Sep 2026 PT -- and only
 `DOW_ALLOW_MISSING_WORKERS=1` lets a push through, reported as `OVERRIDE`

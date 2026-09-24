@@ -9,6 +9,7 @@ rather than erroring, which is the worst failure mode available.
 | `league-schedule` | Computes the three tiers from prior-season results, generates a validated 14-week schedule, produces the MFL import block |
 | `rookie-draft-grades` | The annual humorous rookie draft writeup |
 | `fa-auction-grades` | The post-auction money report |
+| `league-cut-audit` | Pairs MFL's automatic 25% row for each cut of a guaranteed contract with the LM's 75% row, checks #general for the 24-hour report, and lists the entries still to make by hand |
 
 ## Why these are separate
 
@@ -17,6 +18,9 @@ generative schedule skill, every member could produce a plausible schedule that
 is not the one in MFL — silently, confidently, and differently from each other.
 Members read the schedule back from MFL instead (`league-matchups`), so a
 re-roll propagates automatically and there is nothing to invalidate.
+
+The cut audit is LM-only because it reads Discord through LM-only tools and
+its output is a list of entries to make in the league's cap ledger.
 
 The grades skills are LM-only for a duller reason: they post to Discord, and
 nine extra people carrying their descriptions makes those skills fire on

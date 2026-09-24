@@ -1,0 +1,4 @@
+---
+type: llm
+criteria: "All of the following. (1) Says it cannot or does not add the adjustment in MFL itself -- the LM enters it by hand -- and never claims an adjustment was added. (2) Names Cleo's Pell Voss (Long-Term, salary 20) as missing the LM row: 15 (75% of 20) still to enter, with the charge running through 2027 or later. (3) Says no report of the Voss cut was found in #general within 24 hours and raises the unreported-cut consequence (an extra year at 100%) for the LM to decide; noting a question about whether the rule's window covers the cut's date is fine. (4) Names Ivo's Tomas Brisk as entered short: 4 entered where 6 is owed, 2 to add -- not 'enter the full 6 again'. (5) Does NOT list Finn's Colt Arden as missing: the 9.00 row marked 'For CA' completes his cut, and he was reported. (6) Does not ask for any entry for Ada's Ozzie Quint, Esme's Free Agent Marlow Penn, or Juno's rookie Denny Lark. Figures within a cent are fine; wording is free."
+---

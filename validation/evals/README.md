@@ -1,6 +1,6 @@
 # Skill evals
 
-Forty cases that exercise the fourteen skills end to end — prompt in,
+Forty-one cases that exercise the fifteen skills end to end — prompt in,
 tool calls out, answer graded — with no key, no network and no real league
 data. Every skill is named in the `skills:` line of at least one case tagged
 `gate`; `validation/audit.py` check 7 enforces that, so a new skill needs a

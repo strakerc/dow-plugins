@@ -127,17 +127,17 @@ and reports `Unknown tool` the way the real one does.
 
 ## Stage 5 — the skill evals (costs money)
 
-Forty cases under `validation/evals/`, in the layout `claude plugin eval`
+Forty-one cases under `validation/evals/`, in the layout `claude plugin eval`
 documents: `<case>/prompt.md`, `<case>/graders/*.md`, `mocks/dow/<tool>.md`.
 They are run today by `validation/evals/run_headless.py`, which drives
 `claude -p` with the plugin loaded from the working tree and a synthetic
 gateway as the only MCP server. See `validation/evals/README.md` for the
 mechanics and the synthetic league.
 
-**Gate set** (`--evals`, 31 cases, tagged `gate`): at least one behavioural
+**Gate set** (`--evals`, 32 cases, tagged `gate`): at least one behavioural
 case for every skill, the footer, and every case where a wrong answer costs
 the league something. This is what the pre-push hook runs.
-**Full set** (`--full`, all 40): everything below.
+**Full set** (`--full`, all 41): everything below.
 **The matrix: models × efforts.** Every run, including the push hook's,
 covers the models in `--models` (default `haiku,sonnet,opus`) under every
 effort in `--efforts` (default `low,high`), one ledger entry per case per
@@ -163,7 +163,7 @@ newer model the old passes read as stale and rerun.
 
 | Skill | Cases | What is asserted |
 |---|---|---|
-| all fourteen (the footer) | `no-connector-roster` ⚑, `no-connector-picks` ⚑, `no-connector-contracts` | With no MCP server at all: names the connector, gives the fix, invents nothing |
+| all fifteen (the footer) | `no-connector-roster` ⚑, `no-connector-picks` ⚑, `no-connector-contracts` | With no MCP server at all: names the connector, gives the fix, invents nothing |
 | `league-rules` | `rules-dead-money` ⚑, `rules-rookie-scale` ⚑, `rules-short-term-price` ⚑ (the dollar-digit canary), `rules-cap-ir` ⚑, `rules-tag-consecutive`, `rules-ir-exempt`, `rules-shortened-season` | The digest's numbers survive loading; the undefined 1–5 game band is called undefined |
 | `league-contracts` | `contracts-expiring` ⚑, `contracts-floor-self` ⚑, `contracts-floor-league` ⚑, `contracts-floor-in-season` ⚑ | Expiring players named, the short-term dead end shown, release free, no ids; the cap floor for one owner (IR in full, dead money in) and for all twelve (exactly the two teams short, not the two carried over by IR or dead money); mid-season the floor is called out of force, not violated |
 | `league-draft-picks` | `picks-holdings` ⚑ | Origin named for an acquired pick, no `FP_` codes, the conditional raised |
@@ -176,6 +176,7 @@ newer model the old passes read as stale and rerun.
 | `league-player-values` | `values-unpriced` ⚑, `values-for-my-roster` ⚑ | A missing price is reported as missing, never as low; an owner on the clock gets the board unchanged and a separate recommendation from their own roster, where two players in one offense on an unsettled role is a hedge, not over-exposure |
 | `league-trade-history` | `history-timestamps` ⚑ | Pacific dates with the zone; no codes; no winner declared off a few weeks; a one-sided trade flagged |
 | `league-schedule` | `schedule-2026-done` ⚑, `schedule-tier-rule` ⚑, `schedule-no-mfl-write` ⚑ | 2026 is settled; tiers by playoff finish and regular-season points; never writes to MFL |
+| `league-cut-audit` | `cut-audit-missing-entry` ⚑ | A guaranteed cut with no LM row is named with the 75% to enter; an LM row entered short is reported as the difference, not a second full entry; an LM row naming the player by initials completes his cut on team and amount; Free Agent, Rookie and carried-over cuts ask for nothing; a cut with no #general message inside 24 hours is raised as unreported for the LM to decide; no Discord username printed; nothing is written to MFL, even when asked |
 | `rookie-draft-grades` | `rookie-grades-review-gate` ⚑ | `send_message` is never called; nothing claims to have posted |
 | `fa-auction-grades` | `fa-grades-review-gate` ⚑ | same |
 | routing | `lm-matchups-not-schedule`, `contacts-no-leak`, `trigger-lineup-not-values` | The right skill fires and the wrong one does not |

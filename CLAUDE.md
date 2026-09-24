@@ -8,7 +8,7 @@ A **Claude plugin marketplace**, not an application. `.claude-plugin/marketplace
 lists two plugins under `plugins/`; people add this repo's URL in Claude and install
 from it, so every commit here loads as instructions inside other owners' accounts.
 
-The deliverable is almost entirely **prose**: fourteen `SKILL.md` files. The four Python
+The deliverable is almost entirely **prose**: fifteen `SKILL.md` files. The four Python
 scripts are optional accelerators — each skill states what to do when its script is
 absent, because an account-saved copy of a skill ships without `scripts/`. Keep that
 fallback accurate whenever a script changes.
@@ -211,6 +211,7 @@ Key consequences that shape the prose:
 | Who holds which future pick, conditional obligations | `league-draft-picks` |
 | Reading the schedule back | `league-matchups` (read-only) |
 | Generating the schedule | `league-schedule` (LM-only) |
+| Whether each cut of a guaranteed contract is fully charged and was reported | `league-cut-audit` (LM-only; hands the LM the entries, never writes) |
 | Contact details — phone, email, the member directory | `league-contacts` (read-only) |
 | Scoring a proposed trade, market vs league-adjusted | `league-trade-evaluator` |
 | What a player is worth here, whether his contract is an asset or a drag, and whether he fits the roster asking | `league-player-values` |

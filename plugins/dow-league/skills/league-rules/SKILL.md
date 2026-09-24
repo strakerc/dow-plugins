@@ -335,15 +335,27 @@ constitution with a `[YEAR]` tag.
 
 ---
 
-## Known open item
+## Known open item: the shortened-season rules were never finished
 
-**Shortened season, 1–5 games — or exactly 6 — played: the constitution does
-not say.** For 1–5 it literally reads `<rules TBD>`.
-0 games = dues refunded and all contracts freeze. **More than 6** but short of a
-full season = that year only, winners and draft order from a stack rank by total
-points for. The 1–5 band is genuinely undefined — say so rather than reasoning by
-analogy. **Exactly 6 games is not covered either:** the constitution's bands are
-"no more than 5" and "more than 6", so say that too if 6 is asked about.
+The constitution's shortened-season section was drafted and never completed. An
+LM note on it from December 2021 says as much. What it does say:
+
+- **0 games:** dues refunded and every contract freezes (a one-year short-term
+  stays the same contract the next year).
+- **1–5 games:** the text literally reads `<rules TBD>`.
+- **More than 6 games, short of a full season:** that year only, winners and
+  next year's draft order come from a stack rank by total points for.
+- **Exactly 6 games** falls between the bands and is not covered. The section
+  also calls a full season "16-week", which is not our calendar — a leftover
+  of the unfinished draft.
+
+**How to answer.** Lead with the fact that this part of the constitution was
+never finished, and that the case the owner asked about is not decided. You
+may then reason from what *is* written — which band is nearest, and what it
+would suggest — provided you label it as a reading, not a rule, and close by
+saying the LMs would have to decide. Do not stretch past the text: no invented
+specifics it never contemplates (partial refunds, prorated contracts, payout
+splits), and no reading presented as the answer.
 
 ---
 

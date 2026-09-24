@@ -32,7 +32,9 @@ Format: **12 teams, dynasty, salary cap, superflex, half-PPR.** Don't explain th
 format back to the reader — everyone here already knows it.
 
 **Rules carry year tags**, e.g. `[2026]`, marking when they passed. Some have
-future effective dates; check them before quoting a price for a later season.
+future effective dates; check them before quoting a price for a later season. A
+tag for a year that has not started yet, such as `[2027]`, is the year the rule
+takes effect, not a typo.
 
 **If you ever find a rule stated two different ways, say so rather than picking
 one.** The scheduling tier rule was stated twice, differently, until 4 Sep 2026,
@@ -230,14 +232,19 @@ read who owes whom off the sheet alone.
 
 ## Deadlines and penalties
 
-Annual order: rule votes → **rookie draft** (after the NFL draft, ideally
-July/August) → **roster submission deadline** → **owner-executed cuts** →
-**FA auction** (mid-to-late August).
+Annual order: rule votes → **rookie draft** (after the NFL draft, early
+August) → **roster submission deadline** → **owner-executed cuts** →
+**FA auction** (as close to NFL kickoff as availability allows). The auction
+date is set first and every other date is worked back from it.
 
-- **Roster submission:** usually midnight PT the Saturday before the FA draft.
-  `[2025]` **$25/day** late fee.
+- **Roster submission:** `[2027]` usually midnight PT the **Sunday** before the
+  FA draft. Before 2027 it was the Saturday. `[2025]` **$25/day** late fee.
 - **Cuts:** by midnight the following day. **Do not cut early** — it influences
   other owners' contract decisions. `[2025]` **$25/day, stacking** with the above.
+- **Cuts of players on guaranteed contracts must still be reported to the LMs**,
+  so the guaranteed money is charged. "Guaranteed" is the constitution's word for
+  the contracts whose cut costs 100% of the remainder (see Cutting players); MFL
+  charges only 25% on its own. LMs audit this, including with Claude skills.
 - Dues unpaid by kickoff of game 1: **$25/week** to a discretionary league fund.
 
 **Rookie draft** `[2026]`: 4 rounds, reverse order of previous standings, async,
@@ -254,9 +261,9 @@ audit before and after.
 **Mid-season:** all free agents lock **1PM ET Sunday**; blind bids process
 Wednesday afternoon; then continuous FCFS. Dropped players go to **waivers**, not
 FCFS, minimum 24h. Waivers process Wednesday evening, Saturday morning, and
-Sunday around noon ET. No spending limit beyond staying under the cap after each
-signing — and you may **not** bid above your cap space intending to drop
-afterwards; drops must come first.
+Sunday at noon ET, an hour before the 1PM ET kickoff. No spending limit beyond
+staying under the cap after each signing — and you may **not** bid above your
+cap space intending to drop afterwards; drops must come first.
 
 **Consequence worth stating:** unspent auction capital is in-season buying power.
 Leaving the auction with money is a position, not a failure.
@@ -282,7 +289,8 @@ records); playoff teams by finish. **Exception:** first-round playoff losers tak
 **#7** (lower seed) and **#8** (higher seed).
 
 **Scoring:** passing TD 4, 25 yds 1, INT −1; rushing TD 6, 10 yds 1; receiving
-TD 6, 10 yds 1, **reception 0.5**; 40+ yard TD bonus 1; fumble −1 and fumble lost
+TD 6, 10 yds 1, **reception 0.5**; 40+ yard TD bonus 1 on passing, rushing and
+receiving TDs alike; fumble −1 and fumble lost
 −1; 2PC 2; `[2026]` all other TDs 6.
 
 **Tanking** — triggered by fielding an incomplete roster, starting inactive
@@ -327,10 +335,13 @@ constitution with a `[YEAR]` tag.
 
 ## Known open item
 
-**Shortened season, 1–5 games played: the constitution says `<rules TBD>`.**
-0 games = dues refunded and all contracts freeze. 6+ but short of a full season =
-that year only, winners and draft order from a stack rank by total points for.
-The 1–5 band is genuinely undefined — say so rather than reasoning by analogy.
+**Shortened season, 1–5 games — or exactly 6 — played: the constitution does
+not say.** For 1–5 it literally reads `<rules TBD>`.
+0 games = dues refunded and all contracts freeze. **More than 6** but short of a
+full season = that year only, winners and draft order from a stack rank by total
+points for. The 1–5 band is genuinely undefined — say so rather than reasoning by
+analogy. **Exactly 6 games is not covered either:** the constitution's bands are
+"no more than 5" and "more than 6", so say that too if 6 is asked about.
 
 ---
 

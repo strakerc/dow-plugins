@@ -239,6 +239,11 @@ date is set first and every other date is worked back from it.
 
 - **Roster submission:** `[2027]` usually midnight PT the **Sunday** before the
   FA draft. Before 2027 it was the Saturday. `[2025]` **$25/day** late fee.
+  The constitution adds that the deadline should ideally fall *after* teams'
+  cut decisions, so those can be accounted for — while the next step says cuts
+  are made *after* submission and never before it. **These two sentences pull
+  against each other.** If an owner's question turns on the order, say so and
+  point at the constitution rather than choosing a reading.
 - **Cuts:** by midnight the following day. **Do not cut early** — it influences
   other owners' contract decisions. `[2025]` **$25/day, stacking** with the above.
 - **Cuts of players on guaranteed contracts must still be reported to the LMs**,

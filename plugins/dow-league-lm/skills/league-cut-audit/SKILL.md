@@ -176,7 +176,10 @@ the count: "All 5 guaranteed cuts this season are fully charged and were
 reported."
 
 1. **Entries to make**, one table: Team (owner) | Player | Contract | Cut (PT) |
-   Charged now | Enter | Through. Money as plain numbers with two decimals.
+   MFL row | LM row | Enter | Through. "MFL row" is its 25%, which is always
+   charged; "LM row" is what the LM entered, or "none". Never merge them into
+   one "charged" figure: a missing LM row is not a cut charged nothing. Money
+   as plain numbers with two decimals.
    Missing rows, wrong amounts, possible partial entries and carry-forward
    gaps all go here; last season's gaps go in a second table under "Last
    season".

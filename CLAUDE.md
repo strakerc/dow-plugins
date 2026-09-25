@@ -330,6 +330,14 @@ is real: a description that starts stealing another skill's questions is not
 caught until an All run, so end a batch that edited a description with All.
 A change under `plugins/` outside a skill directory (a manifest, a plugin
 README) cannot be narrowed, and `relevant` falls back to every stale case.
+**Every new skill is such a change** -- the audit requires its row in the
+plugin's `README.md` -- and its description stales every other case, so
+Relevant on a new skill's push costs what All does (measured 24 Sep 2026 PT:
+29 cases, $6.92, at the first stage alone). Quote it that way. The cheap
+path Straker chose that day: run the new case alone under every model and
+effort (`run_headless.py --case <name> --model <m> --effort <e>`, cheapest
+first, stop at the first gating red; about $3), then push with Bypass and
+leave the rest for the batch's All run.
 
 Bypass skips the model, not the rules: the hook still runs the free stages,
 including the whole-tree audit behind invariant 6. The skipped cases stay stale

@@ -94,48 +94,29 @@ about four times the size.
 
 ### Every turn starts here: the clock, then what is submitted
 
-A lineup conversation runs for days: Thursday night to Sunday morning is one
-chat. **Each message is a new read, not a continuation of the last one.**
-Before any answer that recommends a start or sit or states a time, the first
-message or the fifth, a full "set my lineup" or a one-line "what about X over
-either?", do both of these:
+A lineup chat can run from Thursday to Sunday. **Before any answer that
+recommends a start or sit or states a time, do both of these**, whether it's
+the first message or the fifth, a full "set my lineup" or a one-line "X over
+Y?":
 
-1. **Read the clock.** Get now from a clock call and convert it to Pacific
-   in that same call, the way step 9 converts a kickoff: `new Date()` in the
-   analysis tool, or `date` in a shell, keeping the result only when its zone
-   reads PDT or PST. A sandbox shell usually runs on UTC, and a Saturday
-   evening in Pacific is already Sunday there.
-   Don't take it from the date the conversation opened, the date your last
-   message assumed, or what you'd guess the day is. If no clock is available,
-   say so and write every time as an absolute weekday, date and time in PT.
-   Don't write "tonight", "tomorrow" or "Friday's report" then, because
-   there's nothing to tell whether they've already passed.
-   Then check every time-bound phrase in your answer against it. **An event
-   that has passed is read and reported as what happened, never offered as
-   what's coming.** "Friday's practice report decides it" was written after
-   that report was out, and the owner had to say "It's Sunday just past
-   midnight" to correct it (27 Sep 2026 PT). A game whose kickoff has passed
-   is locked (step 9). Re-read `get_nfl_schedule` whenever a kickoff has
-   passed since the last read.
-2. **Read the owner's submitted lineup: step 3, from `get_weekly_results`,
-   again.** The owner may have changed it since your last message, and a
-   start/sit answer is only right against what's in MFL now. That rules out
-   what you recommended earlier and what you assume they did with it.
-   Re-read `get_rosters` with it: a starter who isn't in the pool you built
-   earlier may be a pickup since then, not a player who has left.
-   **A narrow question gets the same read.** "Should I start X over Y" is
-   answered against the submitted ten: which of the two is in it, and whose
-   slot the other would take. **A swap moves a bench player in and a
-   submitted starter out, never the other way round.** Don't offer a player
-   who is already submitted as the one to put in. When both players asked
-   about are already starting, that's the answer: say so, and say which
-   starter the next-best bench player would replace instead. The optimum
-   table in step 4 still lists all ten, submitted or not. **A narrow answer
-   still reads `get_injuries` (step 8) for the players it names**. The
-   27 Sep misattribution happened in exactly this kind of follow-up.
-   On 27 Sep 2026 PT a whole chat weighed two of an owner's starters as
-   options for a slot they both already held. The owner had to say "pull my
-   starters" twice before `get_weekly_results` was called at all.
+1. **Read the clock**, converted to Pacific in the same call the way step 9
+   converts a kickoff. Keep the result only when its zone reads PDT or PST;
+   a sandbox shell runs on UTC. Never take the date the chat opened, or the
+   one your last message assumed. An event that has already passed is
+   reported as what happened, never offered as coming ("Friday's report
+   decides it" on a Sunday). With no clock, say so and write every time as
+   an absolute weekday, date and time in PT, never "tonight" or "tomorrow".
+2. **Re-read `get_weekly_results` and `get_rosters`** (steps 2 and 3). The
+   owner may have changed the lineup or picked someone up since. **A narrow
+   question is answered against the submitted ten**: a swap puts a bench
+   player in for a submitted starter, never a starter in. When both players
+   asked about already start, say so, and name the swap that would help
+   instead. A narrow answer still reads `get_injuries` for the players it
+   names (step 8).
+
+(27 Sep 2026 PT: one chat weighed two of the owner's own starters as options
+for a slot they both held, and wrote "Friday's report decides it" after that
+report was out.)
 
 ### 1. Slots from live data, every run
 
@@ -397,17 +378,21 @@ that matter. Those two thresholds only choose what earns a clause, and the
 quarter-of-the-table gap below only chooses what gets offered. All three are
 judgement, not back-tested (21 Sep 2026 PT), and none of them decides a start.
 
-**Then the bench line, always — the mirror of step 4's "left out and why".**
-One line per left-out player who projects above zero: his name, the rank of
-the defence he faces at his position, and his gap to the starter he would
-replace. "Dmitri Sol: faces the softest defence against quarterbacks, on two
-games; 4.1 behind Jonah Reyes." The notable-only filter above is for the ten;
-the bench is short and every one of them is written, because the bench is
-where the candidate the owner has not thought of sits. Two of three runs at
-sonnet low effort on 21 Sep 2026 PT named a defence as a plus for the
-starter and never mentioned the backup facing the same defence — once as
-"the bench doesn't clear the bar", once by silence. A line that is always
-written cannot be skipped by judgement.
+**Then the bench line, always: step 4's "left out and why" line again, name
+for name.** Each name on it that projects above zero gets its own line: his
+name, the rank of the defence he faces at his position, and his gap to **the
+lowest-projected starter he could legally replace** (step 4's limits
+decide), the one he would actually push out, never the best. "Dmitri Sol: faces the softest defence
+against quarterbacks, on two games; 4.1 behind Jonah Reyes." The rest share
+one line, each labelled with which case he is: "Nils Hart, projected zero;
+Omar Pell, no projection: not matchup candidates." Never "at or near zero"
+for both, because that reads a missing value as a low one. **Count the names
+against step 4's line before moving on.** The notable-only filter above is
+for the ten. Every bench name is written, because the bench is where the
+candidate the owner hasn't thought of sits. Sonnet at low effort has skipped
+this line as "nobody clears the bar" or in silence (21 and 27 Sep 2026 PT),
+and once measured the backup quarterback against the starting one instead of
+the second.
 
 **What it may change is what step 6 may change: ties, not material gaps.**
 
@@ -422,11 +407,6 @@ written cannot be skipped by judgement.
   quietly dropping a candidate.
 - A player projected zero or with no projection is not a matchup candidate.
   No defence is soft enough to help a player who is not expected to play.
-  **Say which of the two he is, in separate words:** "projected zero" or "no
-  projection", never "at or near zero" for both. On 27 Sep 2026 PT sonnet at
-  low effort named Harlan Voss correctly under the first table as having no
-  projection, then wrote "Voss and Ferro project at/near zero" in the bench
-  line. That is a missing value read as a low one.
 - Form far from the projection is "go look" — a role change, a return from
   injury, one huge game — not a verdict in either direction (step 8's rule
   about variance applies here unchanged).
@@ -448,13 +428,11 @@ With no code tool, go the other way: take each shortlist player's id from
 his roster row and look for that exact string in the report, one player at
 a time. Never scan the report for ids that look familiar.
 The ids in one league run in near-sequence, so a one-digit difference is
-another team's player. On 27 Sep 2026 PT a row for another franchise's
-player, four off in the last digit, was read as the owner's starter "twice,
-last night and again this morning". He was called questionable with a hip
-injury he didn't have. **Before you write that a player is on the report,
-check that the row's id and his roster row's id are the same string.** Never
-list, count or quote the rows that don't match. No row for him means MFL
-hasn't listed him, not that he's healthy (the lag is in
+another team's player (27 Sep 2026 PT: a row four off in the last digit made
+a healthy starter "questionable"). **Before you write that a player is on
+the report, check that the row's id and his roster row's id are the same
+string.** Never list, count or quote the rows that don't match. No row for
+him means MFL hasn't listed him, not that he's healthy (the lag is in
 `league-player-status`).
 
 **One clause after the name, never a paragraph**, and only where it could change
@@ -493,10 +471,8 @@ as name and `team` pairs, look each team up among the games' side `id`s, and
 print one line per player: name, kickoff weekday, date and time, zone, or
 "bye" when his team has no game (a bye starter is a zero; say so). Then
 copy those lines into the answer as printed, dates included. Don't retype a
-date from what you remember of the NFL calendar. On 27 Sep 2026 PT sonnet at
-low effort converted the kickoffs correctly as times alone. It then wrote
-dates two days off, taken from the real calendar, and repeated the 14 Sep
-miss, with the two Thursday starters named in its own matchup section.
+date from what you remember of the NFL calendar (27 Sep 2026 PT: correct
+times, dates two days off, and the 14 Sep miss again).
 Name the **earliest-starting recommended players and their kickoff, in Pacific
 with the zone labelled** — a Thursday game locks two starters days before the
 rest. A player whose game has already started is locked; say so instead of

@@ -130,7 +130,9 @@ either?", do both of these:
    who is already submitted as the one to put in. When both players asked
    about are already starting, that's the answer: say so, and say which
    starter the next-best bench player would replace instead. The optimum
-   table in step 4 still lists all ten, submitted or not.
+   table in step 4 still lists all ten, submitted or not. **A narrow answer
+   still reads `get_injuries` (step 8) for the players it names**. The
+   27 Sep misattribution happened in exactly this kind of follow-up.
    On 27 Sep 2026 PT a whole chat weighed two of an owner's starters as
    options for a slot they both already held. The owner had to say "pull my
    starters" twice before `get_weekly_results` was called at all.

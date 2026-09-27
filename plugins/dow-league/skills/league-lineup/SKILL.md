@@ -420,6 +420,11 @@ written cannot be skipped by judgement.
   quietly dropping a candidate.
 - A player projected zero or with no projection is not a matchup candidate.
   No defence is soft enough to help a player who is not expected to play.
+  **Say which of the two he is, in separate words:** "projected zero" or "no
+  projection", never "at or near zero" for both. On 27 Sep 2026 PT sonnet at
+  low effort named Harlan Voss correctly under the first table as having no
+  projection, then wrote "Voss and Ferro project at/near zero" in the bench
+  line. That is a missing value read as a low one.
 - Form far from the projection is "go look" — a role change, a return from
   injury, one huge game — not a verdict in either direction (step 8's rule
   about variance applies here unchanged).

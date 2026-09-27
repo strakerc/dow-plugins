@@ -442,6 +442,10 @@ What is specific to this repo is what a branch is protecting you from:
   (`gh pr merge --squash --delete-branch`), never as a local merge pushed
   to `main`. That overrides the global default of skipping the PR on a repo with
   no CI: here the PR isn't a gate, it's the delivery trigger.
+  **Enforced:** `.claude/protect-main` at the root opts this repo, and only
+  this repo, into the machine-wide branch guard, which refuses a Claude Code
+  commit on `main` or a push to it. It reads commands as text and fails open
+  (see the hook's header), so it's a seatbelt; the rule still stands without it.
 - **There is no CI here**, and no second reviewer, so a PR on this repo runs no
   checks and gates nothing. The pre-push hook is the gate; the merge is the
   release.

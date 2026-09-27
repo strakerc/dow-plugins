@@ -1,0 +1,9 @@
+This file opts dow-plugins into the machine-wide branch guard
+(~/claude-config/public/hooks/block-commit-on-main.mjs): Claude Code sessions
+cannot commit on main or push to it here. Other repositories are untouched;
+the guard acts only where this file exists.
+
+Why here: owners receive a change only when a PR is merged on GitHub. A direct
+push to main is never synced to installs (measured 27 Sep 2026 PT; see
+CLAUDE.md, "Publishing"), so it silently delivers nothing. Branch, push the
+branch, then gh pr create and gh pr merge --squash --delete-branch.

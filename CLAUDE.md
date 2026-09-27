@@ -467,8 +467,10 @@ delivery**, and bumping it wouldn't have helped. The 9 Sep sync of a direct
 push (62df110 to 03ae6e9, no version bump) was most likely a manual **Check
 for updates**, since the sync toggle was being located that same day. That's
 unconfirmed. What triggers a sync is inferred from timing, not documented.
-Merging the PR that recorded this (27 Sep) is the next observation: its minute
-should appear in the Contents list.
+**Confirmed 27 Sep 2026 PT:** #13, a CLAUDE.md-only PR, merged at 1:11 PM PT,
+and within minutes both plugins read "updated 4m ago". That delivered the six
+days of direct pushes, including `league-cut-audit`, which had never reached
+the LM plugin.
 
 So:
 

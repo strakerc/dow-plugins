@@ -92,6 +92,49 @@ about four times the size.
 
 ## The method, in order
 
+### Every turn starts here: the clock, then what is submitted
+
+A lineup conversation runs for days: Thursday night to Sunday morning is one
+chat. **Each message is a new read, not a continuation of the last one.**
+Before any answer that recommends a start or sit or states a time, the first
+message or the fifth, a full "set my lineup" or a one-line "what about X over
+either?", do both of these:
+
+1. **Read the clock.** Get now from a clock call and convert it to Pacific
+   in that same call, the way step 9 converts a kickoff: `new Date()` in the
+   analysis tool, or `date` in a shell, keeping the result only when its zone
+   reads PDT or PST. A sandbox shell usually runs on UTC, and a Saturday
+   evening in Pacific is already Sunday there.
+   Don't take it from the date the conversation opened, the date your last
+   message assumed, or what you'd guess the day is. If no clock is available,
+   say so and write every time as an absolute weekday, date and time in PT.
+   Don't write "tonight", "tomorrow" or "Friday's report" then, because
+   there's nothing to tell whether they've already passed.
+   Then check every time-bound phrase in your answer against it. **An event
+   that has passed is read and reported as what happened, never offered as
+   what's coming.** "Friday's practice report decides it" was written after
+   that report was out, and the owner had to say "It's Sunday just past
+   midnight" to correct it (27 Sep 2026 PT). A game whose kickoff has passed
+   is locked (step 9). Re-read `get_nfl_schedule` whenever a kickoff has
+   passed since the last read.
+2. **Read the owner's submitted lineup: step 3, from `get_weekly_results`,
+   again.** The owner may have changed it since your last message, and a
+   start/sit answer is only right against what's in MFL now. That rules out
+   what you recommended earlier and what you assume they did with it.
+   Re-read `get_rosters` with it: a starter who isn't in the pool you built
+   earlier may be a pickup since then, not a player who has left.
+   **A narrow question gets the same read.** "Should I start X over Y" is
+   answered against the submitted ten: which of the two is in it, and whose
+   slot the other would take. **A swap moves a bench player in and a
+   submitted starter out, never the other way round.** Don't offer a player
+   who is already submitted as the one to put in. When both players asked
+   about are already starting, that's the answer: say so, and say which
+   starter the next-best bench player would replace instead. The optimum
+   table in step 4 still lists all ten, submitted or not.
+   On 27 Sep 2026 PT a whole chat weighed two of an owner's starters as
+   options for a slot they both already held. The owner had to say "pull my
+   starters" twice before `get_weekly_results` was called at all.
+
 ### 1. Slots from live data, every run
 
 Read the `starters` block from `get_league`. **Do not hardcode any of it** — the
@@ -389,6 +432,23 @@ ten". Never folded into the first table, and never a third lineup.
 
 For the recommended ten plus close alternatives only: injury and practice reports,
 snap and touch share, depth-chart and quarterback changes, game total.
+
+**MFL's injury report is `get_injuries`: league-wide, ids only, no names.**
+Match it to the shortlist in code, never by eye: in the analysis tool or a
+shell, keep the injury rows whose `id` exactly equals the id on one of the
+shortlist's roster rows, and name each hit from the roster row it matched.
+With no code tool, go the other way: take each shortlist player's id from
+his roster row and look for that exact string in the report, one player at
+a time. Never scan the report for ids that look familiar.
+The ids in one league run in near-sequence, so a one-digit difference is
+another team's player. On 27 Sep 2026 PT a row for another franchise's
+player, four off in the last digit, was read as the owner's starter "twice,
+last night and again this morning". He was called questionable with a hip
+injury he didn't have. **Before you write that a player is on the report,
+check that the row's id and his roster row's id are the same string.** Never
+list, count or quote the rows that don't match. No row for him means MFL
+hasn't listed him, not that he's healthy (the lag is in
+`league-player-status`).
 
 **One clause after the name, never a paragraph**, and only where it could change
 the decision. A resolved minor injury gets four words or nothing. Do the research

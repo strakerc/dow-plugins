@@ -68,6 +68,14 @@ only a skill or mock change needs the model again, and only for the cases
 that cover it. Every transcript begins with a `dow-meta` line naming its
 case, model and fingerprints.
 
+Each result is compared with that case's previous ledger entry and labelled
+REGRESSED, NEW FAILURE, STILL FAILING, FIXED or FIRST RUN, per case and in a
+closing `against the last run:` summary (`--summary-json` writes the counts
+for `regress.py`). The entry keeps the failing check names and a five-run
+history for this. Labels never change a pass or a fail. Entries written
+before 27 Sep 2026 PT have no check names; their first failure afterwards
+reads "its checks were not recorded then" and records them.
+
 Seven shared graders run on every mocked case automatically -- no player ids,
 franchise ids, pick codes, usernames, emails or phone numbers in the answer,
 and at least one call to a league tool -- with the documented exceptions for

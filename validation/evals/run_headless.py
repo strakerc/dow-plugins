@@ -399,6 +399,25 @@ def print_result(mark, name, detail, gs, verbose):
             print(f"          {'ok ' if g['passed'] else 'BAD'} {g['name']} [{g['type']}] {g['evidence']}")
 
 
+def print_baseline(cmp_, name=""):
+    if cmp_:
+        print(f"          baseline: {cmp_['label']}{(' ' + name) if name else ''} -- {cmp_['detail']}")
+
+
+def print_baseline_summary(results, args):
+    """The run against the last one, and, with --summary-json, the same
+    counts for regress.py to put on its stage line."""
+    head, lines, counts = baseline_summary(results)
+    print(f"against the last run: {head}")
+    for line in lines:
+        print(line)
+    if getattr(args, "summary_json", None):
+        try:
+            Path(args.summary_json).write_text(json.dumps({"head": head, "counts": counts}), encoding="utf-8")
+        except OSError as e:
+            print(f"warning: could not write {args.summary_json} ({e})", file=sys.stderr)
+
+
 # --------------------------------------------------------------- running
 def find_claude():
     c = shutil.which("claude")
@@ -643,25 +662,30 @@ class LedgerFileLock:
 
 
 def record_now(case, passed, model, results_dir, skills_fp_value=None, tools=None,
-               effort=None, model_id=None):
-    """Read-modify-write one entry. Two runners can be alive at once (a rerun
-    loop and a regrade, 9 Sep 2026 PT; or two worktrees since the ledger is
-    shared, 24 Sep), and a process that held the ledger in memory for its
-    whole run wrote back over the other's entries."""
+               effort=None, model_id=None, checks=None):
+    """Read-modify-write one entry, and return its comparison with the entry
+    it replaced (None when there is nothing to say or it was not recorded).
+    Two runners can be alive at once (a rerun loop and a regrade, 9 Sep 2026
+    PT; or two worktrees since the ledger is shared, 24 Sep), and a process
+    that held the ledger in memory for its whole run wrote back over the
+    other's entries."""
     p = ledger_path()
     with _LEDGER_LOCK:
         if p is None:
-            return
+            return None
         # Called just after a case was paid for: a ledger that cannot be
         # written costs a rerun of that case, never the rest of the run.
         try:
             with LedgerFileLock(p.with_suffix(".json.lock")):
                 led = read_ledger()
-                record(led, case, passed, model, results_dir, skills_fp_value, tools, effort, model_id)
+                cmp_ = record(led, case, passed, model, results_dir, skills_fp_value, tools, effort,
+                              model_id, checks)
                 write_ledger(led)
+                return cmp_
         except (OSError, TimeoutError) as e:
             print(f"warning: {case['name']} not recorded in the ledger ({e}); it will run again next time",
                   file=sys.stderr)
+            return None
 
 
 def _hash_paths(paths, extra=b""):
@@ -784,13 +808,147 @@ def changed_set(value):
 
 
 def record(led, case, passed, model, results_dir, skills_fp_value=None, tools=None,
-           effort=None, model_id=None):
-    led[ledger_key(case, model, effort)] = {
+           effort=None, model_id=None, checks=None):
+    """Write this outcome over the entry, and return how it compares with the
+    one it replaces (see `compare`). The entry keeps the names of the checks
+    that failed and a short history, so a failure can be told apart from the
+    one already known."""
+    key = ledger_key(case, model, effort)
+    prev = led.get(key)
+    now = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    history = []
+    if prev:
+        history = prev.get("history", [])
+        # A regrade rescores the transcript the entry already holds: the same
+        # answer graded twice is one sample, not two, so it replaces the entry
+        # without pushing it into the history.
+        if prev.get("results") != results_dir.name:
+            history = ([{k: prev.get(k) for k in ("when", "passed", "failed_checks", "skills_fp", "evals_fp")}]
+                       + history)[:HISTORY]
+    if passed:
+        since, last_pass = None, now
+    else:
+        since = (prev.get("failing_since") or prev.get("when")) if prev and not prev.get("passed") else now
+        last_pass = (prev.get("last_pass") or (prev.get("when") if prev.get("passed") else None)) if prev else None
+    led[key] = {
         "passed": bool(passed), "model": model, "model_id": model_id, "effort": effort,
-        "when": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "when": now,
         "skills_fp": skills_fp_value or skills_fp(case),
         "evals_fp": evals_fp(case, tools), "tools": tools,   # None = unknown: every mock counts
-        "results": str(results_dir.name)}
+        "results": str(results_dir.name),
+        "failed_checks": [] if passed else sorted(set(checks or [])),
+        "failing_since": since, "last_pass": last_pass, "history": history}
+    return compare(prev, led[key])
+
+
+# --------------------------------------------------------------- baseline
+# Each run is compared with the ledger entry it replaces, so a failure reads
+# as new or as already known. Straker, 27 Sep 2026 PT: "store a baseline and
+# enable comparison against it". It labels; it never gates -- a known failure
+# under a gating model still fails the case (every combination gates, 10 Sep
+# 2026 PT). What it buys is reading: haiku's NOTEs repeat run after run, and
+# only a change in them is news.
+HISTORY = 5            # prior outcomes kept per entry, newest first
+
+
+def failed_checks(runs):
+    """Grader names that failed in any run, plus `(timeout)` for a run cut
+    off: the names a later run is compared against."""
+    out = {g["name"] for r in runs for g in r.get("graders", []) if not g["passed"]}
+    if any(r.get("timed_out") for r in runs):
+        out.add("(timeout)")
+    return sorted(out)
+
+
+def mended_note(before, checks):
+    mended = set(before or []) - checks
+    return f" (now passes {', '.join(sorted(mended))})" if mended else ""
+
+
+def compare(prev, cur):
+    """How `cur` differs from `prev`, the entry it replaced:
+    {"label", "detail"}, or None for a pass after a pass (no news).
+
+      REGRESSED     passed last time, fails now
+      NEW FAILURE   failed last time too, but a check that passed then fails now
+      STILL FAILING the same checks as last time (or fewer): a known failure
+      FIXED         failed last time, passes now
+      FIRST RUN     fails with no earlier entry to compare with
+
+    One run is one sample: a check that failed in an earlier run of this
+    entry is named as having done so, and a regression against the very
+    files and model that passed is said to be noise, not the change."""
+    passed, checks = cur["passed"], set(cur.get("failed_checks") or [])
+    since = day(prev.get("failing_since") or prev.get("when")) if prev else "?"
+    if not prev:
+        return None if passed else {"label": "FIRST RUN", "detail": "no earlier run to compare with; fails "
+                                    + ", ".join(sorted(checks))}
+    if passed:
+        if prev.get("passed"):
+            return None
+        return {"label": "FIXED", "detail": f"failing since {since}"}
+    before = prev.get("failed_checks")
+    if prev.get("passed"):
+        label, detail, fresh = "REGRESSED", f"passed {day(prev.get('when'))}; now fails ", checks
+    elif before is None:
+        return {"label": "STILL FAILING", "detail": f"since {since}; its checks were not recorded then, now "
+                + ", ".join(sorted(checks))}
+    elif checks - set(before):
+        fresh = checks - set(before)
+        label, detail = "NEW FAILURE", f"failing since {since}; newly fails "
+    else:
+        return {"label": "STILL FAILING", "detail": f"since {since}: " + ", ".join(sorted(checks))
+                + mended_note(before, checks)}
+    detail += ", ".join(sorted(fresh))
+    if label == "NEW FAILURE":
+        detail += mended_note(before, checks)
+    # Noise only when the earlier failure was against these very files: one
+    # recorded against older files is the check breaking before, and calling
+    # it noise would steer the reader off the edit that broke it again.
+    past = [prev] + prev.get("history", [])
+    seen = sorted(c for c in fresh if any(c in (h.get("failed_checks") or [])
+                                          and h.get("skills_fp") == cur.get("skills_fp")
+                                          and h.get("evals_fp") == cur.get("evals_fp") for h in past))
+    if seen:
+        detail += f"; {', '.join(seen)} failed on these same files in an earlier run (may be noise)"
+    if (label == "REGRESSED" and prev.get("skills_fp") == cur.get("skills_fp")
+            and prev.get("evals_fp") == cur.get("evals_fp")):
+        before_id, now_id = prev.get("model_id"), cur.get("model_id")
+        if before_id and now_id and before_id != now_id:
+            detail += f"; files unchanged, the model moved ({before_id} -> {now_id})"
+        elif before_id and now_id:
+            detail += "; same files and model as that pass: noise, not a change"
+        else:
+            detail += "; same files as that pass: noise or the model, not a change"
+    return {"label": label, "detail": detail}
+
+
+def day(ts):
+    """A ledger timestamp as its date and zone: every date here carries its
+    zone (CLAUDE.md), and a run's local time is Pacific."""
+    return f"{ts[:10]} {ts[19:]}".strip() if ts else "?"
+
+
+BASELINE_ORDER = ["REGRESSED", "NEW FAILURE", "FIRST RUN", "FIXED", "STILL FAILING"]
+
+
+def baseline_summary(results):
+    """[(case name, comparison or None)] -> (one-line counts, lines to print,
+    counts dict). STILL FAILING is counted and named, not detailed: it is the
+    part already read."""
+    counts = {k: 0 for k in BASELINE_ORDER}
+    lines = []
+    for name, cmp_ in results:
+        if not cmp_:
+            continue
+        counts[cmp_["label"]] += 1
+        if cmp_["label"] != "STILL FAILING":
+            lines.append(f"  {cmp_['label']:<13} {name}  {cmp_['detail']}")
+    known = sorted(n for n, c in results if c and c["label"] == "STILL FAILING")
+    if known:
+        lines.append(f"  {'STILL FAILING':<13} {', '.join(known)}")
+    head = ", ".join(f"{v} {k.lower()}" for k, v in counts.items() if v) or "no failure new, known or mended"
+    return head, lines, counts
 
 
 def resolve_model_id(claude, model, effort=None):
@@ -838,7 +996,7 @@ def regrade(args):
         return 1
     cases = {c["name"]: c for c in load_cases()}
     led = read_ledger()
-    report, any_fail, n = [], False, 0
+    report, any_fail, n, compared = [], False, 0, []
     for f in sorted(src.glob("*.run*.jsonl")):
         meta = transcript_meta(f)
         name = meta.get("case") or f.name.split(".run")[0].replace("__", "/", 1)
@@ -870,8 +1028,12 @@ def regrade(args):
         # grader side, so the current evals fingerprint is recorded.
         sfp = meta.get("skills_fp") or led.get(ledger_key(c, model, effort), {}).get("skills_fp")
         if sfp:
-            record_now(c, ok, model, src, sfp, tools=bare_tools(t["tools"]), effort=effort,
-                       model_id=meta.get("model_id") or t["model_id"])
+            cmp_ = record_now(c, ok, model, src, sfp, tools=bare_tools(t["tools"]), effort=effort,
+                              model_id=meta.get("model_id") or t["model_id"],
+                              checks=failed_checks([{"graders": gs}]))
+            print_baseline(cmp_)
+            compared.append((name, cmp_))
+            report[-1]["baseline"] = cmp_
         else:
             print("          (not recorded: this transcript predates the meta line and has no ledger entry; "
                   "run the case instead)")
@@ -879,6 +1041,7 @@ def regrade(args):
                                                          "regraded": src.name, "cases": report}, indent=2),
                                              encoding="utf-8")
     print(f"\n{sum(1 for r in report if r['passed'])}/{n} cases passed on regrade")
+    print_baseline_summary(compared, args)
     return 1 if any_fail else 0
 
 
@@ -895,9 +1058,15 @@ def print_ledger(args):
             st = ledger_status(c, led, m, args.effort)
             if st == "stale" and routing_only(c, led, m, args.effort, changed):
                 st = "routed"
+            if floor_status(c, m, args.effort) == "skip":
+                st = "floor"                  # below the case's floor: never run, whatever it last did
             counts[st] = counts.get(st, 0) + 1
             e = led.get(ledger_key(c, m, args.effort), {})
-            print(f"  {st:<8} {m:<8} {c['name']:<44} {e.get('when', '')[:19]} {e.get('model_id') or ''}")
+            line = f"  {st:<8} {m:<8} {c['name']:<44} {e.get('when', '')[:19]} {e.get('model_id') or ''}"
+            if st == "failed" and e.get("failed_checks") is not None:
+                line += (f"\n           failing since {day(e.get('failing_since') or e.get('when'))}: "
+                         + ", ".join(e["failed_checks"]))
+            print(line)
     print("\n" + ", ".join(f"{v} {k}" for k, v in sorted(counts.items())))
     return 0
 
@@ -1016,9 +1185,12 @@ def main_run(args):
         passed = bool(runs) and all(r["passed"] for r in runs)
         entry = {"case": c["name"], "title": c["title"], "tags": c["tags"], "passed": passed, "runs": runs}
         if runs and not any(r.get("unreachable") for r in runs):
-            record_now(c, passed, c["model"] or args.model, results_dir,
-                       tools=bare_tools(t["tools"]), effort=args.effort,
-                       model_id=t["model_id"])         # per case: a killed run keeps its passes
+            entry["baseline"] = record_now(c, passed, c["model"] or args.model, results_dir,
+                                           tools=bare_tools(t["tools"]), effort=args.effort,
+                                           model_id=t["model_id"],    # per case: a killed run keeps its passes
+                                           checks=failed_checks(runs))
+            with print_lock:
+                print_baseline(entry["baseline"], c["name"])
         return entry
 
     with ThreadPoolExecutor(max_workers=max(1, args.parallel)) as pool:
@@ -1034,6 +1206,7 @@ def main_run(args):
                               "unreachable": dead, "skippedBelowFloor": skipped}}
     (results_dir / "aggregate-result.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\n{n_pass}/{len(report)} cases passed, ${total_cost:.2f}, results in {results_dir.relative_to(ROOT)}")
+    print_baseline_summary([(e["case"], e.get("baseline")) for e in report], args)
     if dead:
         print("MODEL UNREACHABLE: the suite did not run. Nothing above is a pass.\n"
               "  The note on the run says why. Not logged in:  claude auth login  (from a real terminal)")
@@ -1352,6 +1525,71 @@ def selftest():
     check("ledger: recorded fail is failed", ledger_status(probe, led, "sonnet") == "failed")
     check("scope: a failed case is never routed", not routing_only(probe, led, "sonnet", None, other))
     check("ledger: effort is part of the key", ledger_key(probe, "sonnet", "high") != ledger_key(probe, "sonnet"))
+
+    # the baseline: each record is compared with the entry it replaced
+    bl = {}
+    runs_made = iter(range(1000))    # each record its own results dir, as each run has
+    rec = lambda ok, checks=None, **kw: record(bl, probe, ok, "haiku", Path(f"run{next(runs_made)}"),
+                                               checks=checks, **kw)
+    first = rec(False, ["a"])
+    check("baseline: a first failure has no baseline", first and first["label"] == "FIRST RUN")
+    check("baseline: a failure after a failure on the same checks is known",
+          rec(False, ["a"])["label"] == "STILL FAILING")
+    check("baseline: failing_since holds across known failures",
+          bl[ledger_key(probe, "haiku")]["failing_since"] == bl[ledger_key(probe, "haiku")]["history"][0]["when"])
+    new = rec(False, ["a", "b"])
+    check("baseline: an extra failing check is a new failure, and named",
+          new["label"] == "NEW FAILURE" and new["detail"].endswith("newly fails b"))
+    fewer = rec(False, ["b"])
+    check("baseline: fewer failing checks is still known, and says what mended",
+          fewer["label"] == "STILL FAILING" and "now passes a" in fewer["detail"])
+    check("baseline: a pass after a failure is fixed", rec(True)["label"] == "FIXED")
+    check("baseline: a pass after a pass says nothing", rec(True) is None)
+    reg = rec(False, ["b"])
+    check("baseline: a failure after a pass regressed", reg["label"] == "REGRESSED")
+    check("baseline: a check that failed on the same files in an earlier run is flagged as possible noise",
+          "b failed on these same files in an earlier run" in reg["detail"])
+    other_files = compare({"passed": True, "when": "t", "skills_fp": "s", "evals_fp": "e",
+                           "history": [{"passed": False, "failed_checks": ["b"], "skills_fp": "old", "evals_fp": "e"}]},
+                          {"passed": False, "failed_checks": ["b"], "skills_fp": "s2", "evals_fp": "e"})
+    check("baseline: a check that failed only on other files is not called noise",
+          other_files["label"] == "REGRESSED" and "may be noise" not in other_files["detail"])
+    swap = compare({"passed": False, "when": "t", "failed_checks": ["a"]}, {"passed": False, "failed_checks": ["b"]})
+    check("baseline: a new failure also names the check that mended",
+          swap["label"] == "NEW FAILURE" and "now passes a" in swap["detail"])
+    check("baseline: dates carry their zone", day("2026-09-27T12:52:04-0700") == "2026-09-27 -0700")
+    k = ledger_key(probe, "haiku")
+    depth = len(bl[k]["history"])
+    record(bl, probe, False, "haiku", Path(bl[k]["results"]), checks=["b"])
+    check("baseline: a regrade of the same transcript is not a new sample", len(bl[k]["history"]) == depth)
+    check("baseline: a regression on the same files is called noise, and an unknown model is not claimed same",
+          "same files as that pass: noise or the model" in reg["detail"])
+    same = {"passed": True, "when": "t", "skills_fp": "s", "evals_fp": "e", "model_id": "m"}
+    check("baseline: a regression on the same files and model id says so",
+          "same files and model" in compare(same, dict(same, passed=False, failed_checks=["a"]))["detail"])
+    rec(True, model_id="claude-haiku-4-5")
+    moved = rec(False, ["c"], model_id="claude-haiku-5")
+    check("baseline: a regression on the same files under a moved alias names the move",
+          "the model moved" in moved["detail"])
+    check("baseline: history is capped", len(bl[ledger_key(probe, "haiku")]["history"]) == HISTORY)
+    rec(True)
+    check("baseline: a pass records no failing checks and its time as the last pass",
+          bl[ledger_key(probe, "haiku")]["failed_checks"] == []
+          and bl[ledger_key(probe, "haiku")]["last_pass"] == bl[ledger_key(probe, "haiku")]["when"])
+    old_fail = {"passed": False, "when": "2026-09-13T14:47:31-0700"}
+    check("baseline: an entry from before checks were recorded reads as known",
+          compare(old_fail, {"passed": False, "failed_checks": ["a"]})["label"] == "STILL FAILING")
+    check("baseline: failed_checks unions runs and names a timeout",
+          failed_checks([{"graders": [{"name": "x", "passed": False}, {"name": "y", "passed": True}]},
+                         {"graders": [{"name": "z", "passed": False}], "timed_out": True}])
+          == ["(timeout)", "x", "z"])
+    head, lines, counts = baseline_summary([("c1", {"label": "REGRESSED", "detail": "d"}), ("c2", None),
+                                            ("c3", {"label": "STILL FAILING", "detail": "d"})])
+    check("baseline: the summary counts and names only what changed in detail",
+          counts["REGRESSED"] == 1 and counts["STILL FAILING"] == 1 and head == "1 regressed, 1 still failing"
+          and lines[0].split()[0] == "REGRESSED" and lines[-1].endswith("c3"))
+    check("baseline: the grading engine does not include the baseline code",
+          b"def compare" not in grader_engine() and b"failed_checks" not in grader_engine())
     old = {probe["name"]: {"passed": True, "model": "sonnet"}}
     import json as _j, tempfile as _t
     check("ledger: case-only keys are rekeyed on read",
@@ -1390,6 +1628,8 @@ def main():
     ap.add_argument("--all", action="store_true",
                     help="run every selected case, including ones with a current recorded pass")
     ap.add_argument("--ledger", action="store_true", help="show each case's recorded status and exit")
+    ap.add_argument("--summary-json", metavar="PATH",
+                    help="also write the comparison with the last run's counts here, for regress.py")
     ap.add_argument("--changed-skills", default=None,
                     help="relevant scope: comma list of the skills this change touched. A case stale only "
                          "through a change to skills it does not cover is skipped, not rerun")

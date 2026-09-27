@@ -44,6 +44,23 @@ fingerprints, which is what a regrade trusts. `--all` forces a case; `--post-pus
 need the model at all: `run_headless.py --regrade <results dir>` rescores the
 saved transcript and updates the ledger.
 
+**Every result is compared with the case's last run.** The ledger entry
+also keeps the names of the checks that failed, when the current failure
+began, the last pass, and the five outcomes before it. Each case's result is
+labelled against the entry it replaces -- REGRESSED (passed last time),
+NEW FAILURE (failed before, but a check that passed then fails now), STILL
+FAILING (the same checks: already known), FIXED, or FIRST RUN -- and the run
+ends with the counts, which `regress.py` puts on each stage's line. A
+regression against the same files as the pass is labelled noise, and so is a
+check that failed on these same files in an earlier run (not one that failed
+against older files: that is the check breaking again). A `--regrade`
+replaces the entry without adding to the history, since one answer graded
+twice is one sample. The labels explain;
+they never gate: a known failure under a gating model still fails the case.
+Where they pay is the haiku NOTE line, whose failures repeat run after run.
+`--ledger` shows a below-floor combination as `floor`, not as the failure it
+last recorded before the floor existed.
+
 **The push is blocked when the gate fails.** `.githooks/pre-push` (installed
 by the same `core.hooksPath` command as the other hooks) runs
 `regress.py --pre-push` once per distinct commit being pushed: the free

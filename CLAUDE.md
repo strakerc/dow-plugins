@@ -298,6 +298,10 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    `regress.py --evals` again — which by construction reruns only the cases the
    fix touched. A grader-only fix needs no model run at all:
    `run_headless.py --regrade <results dir>` rescores the saved transcript.
+   Each result is labelled against the case's last run -- REGRESSED, NEW
+   FAILURE, STILL FAILING, FIXED -- and the counts sit on every stage line,
+   haiku's NOTE included: read what changed first. A label never turns a
+   gating failure into a pass (27 Sep 2026 PT).
 5. Push the task branch with the same scope: `DOW_EVAL_SCOPE=relevant git
    push` for Relevant, `DOW_EVAL_SCOPE=bypass git push` for Bypass, plain `git
    push` for All. The pre-push hook (invariant 7) runs the same ledger check

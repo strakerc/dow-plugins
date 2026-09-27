@@ -63,7 +63,7 @@ EXIT CODES
 Why the gate is an exit code and not a note: every bug this project has
 shipped came from a check that reported clean while never running.
 """
-import argparse, os, re, shutil, subprocess, sys, tempfile, time, types
+import argparse, json, os, re, shutil, subprocess, sys, tempfile, time, types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -289,7 +289,22 @@ def stage_evals(args, gates=True):
         cmd.append("--all")
     elif getattr(args, "changed_skills", None) is not None:
         cmd += ["--changed-skills", ",".join(sorted(args.changed_skills))]
-    p = run(cmd, timeout=6 * 3600)
+    # The runner compares each case with its last recorded run; its counts go
+    # on this stage's line, so a NOTE says whether anything in it is news.
+    fd, summary = tempfile.mkstemp(prefix="dow-baseline-", suffix=".json")
+    os.close(fd)
+    cmd += ["--summary-json", summary]
+    try:
+        p = run(cmd, timeout=6 * 3600)
+        try:
+            baseline = json.loads(Path(summary).read_text(encoding="utf-8") or "{}").get("head")
+        except (OSError, ValueError):
+            baseline = None
+    finally:
+        try:
+            os.remove(summary)
+        except OSError:
+            pass
     if p.returncode == 2:
         say("evals", "FAIL", "model unreachable -- `claude auth login` in a real terminal, then re-run")
         return 2
@@ -298,6 +313,8 @@ def stage_evals(args, gates=True):
               + (", forced" if args.all else
                  ", relevant scope" if getattr(args, "changed_skills", None) is not None
                  else ", stale and failed only"))
+    if baseline:
+        detail += f"; against the last run: {baseline}"
     if p.returncode != 0 and not gates:
         say(label, "NOTE", detail + "; failures reported, not gating")
         return 0

@@ -486,6 +486,15 @@ MFL locks each player at their own kickoff, not at a single weekly deadline.
 ten in the answer with team name and kickoff before you name the earliest** —
 never scan the schedule for teams you remember (opus at low effort said nobody
 played Thursday while two of the ten did, 14 Sep 2026 PT).
+**Do the join in the same code call as the conversion.** Put the ten in it
+as name and `team` pairs, look each team up among the games' side `id`s, and
+print one line per player: name, kickoff weekday, date and time, zone, or
+"bye" when his team has no game (a bye starter is a zero; say so). Then
+copy those lines into the answer as printed, dates included. Don't retype a
+date from what you remember of the NFL calendar. On 27 Sep 2026 PT sonnet at
+low effort converted the kickoffs correctly as times alone. It then wrote
+dates two days off, taken from the real calendar, and repeated the 14 Sep
+miss, with the two Thursday starters named in its own matchup section.
 Name the **earliest-starting recommended players and their kickoff, in Pacific
 with the zone labelled** — a Thursday game locks two starters days before the
 rest. A player whose game has already started is locked; say so instead of

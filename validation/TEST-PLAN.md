@@ -51,8 +51,11 @@ labelled against the entry it replaces -- REGRESSED (passed last time),
 NEW FAILURE (failed before, but a check that passed then fails now), STILL
 FAILING (the same checks: already known), FIXED, or FIRST RUN -- and the run
 ends with the counts, which `regress.py` puts on each stage's line. A
-regression against the same files as the pass is labelled noise, and a check
-that failed in an earlier run is named as having done so. The labels explain;
+regression against the same files as the pass is labelled noise, and so is a
+check that failed on these same files in an earlier run (not one that failed
+against older files: that is the check breaking again). A `--regrade`
+replaces the entry without adding to the history, since one answer graded
+twice is one sample. The labels explain;
 they never gate: a known failure under a gating model still fails the case.
 Where they pay is the haiku NOTE line, whose failures repeat run after run.
 `--ledger` shows a below-floor combination as `floor`, not as the failure it

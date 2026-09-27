@@ -818,8 +818,13 @@ def record(led, case, passed, model, results_dir, skills_fp_value=None, tools=No
     now = time.strftime("%Y-%m-%dT%H:%M:%S%z")
     history = []
     if prev:
-        history = ([{"when": prev.get("when"), "passed": bool(prev.get("passed")),
-                     "failed_checks": prev.get("failed_checks")}] + prev.get("history", []))[:HISTORY]
+        history = prev.get("history", [])
+        # A regrade rescores the transcript the entry already holds: the same
+        # answer graded twice is one sample, not two, so it replaces the entry
+        # without pushing it into the history.
+        if prev.get("results") != results_dir.name:
+            history = ([{k: prev.get(k) for k in ("when", "passed", "failed_checks", "skills_fp", "evals_fp")}]
+                       + history)[:HISTORY]
     if passed:
         since, last_pass = None, now
     else:
@@ -855,6 +860,11 @@ def failed_checks(runs):
     return sorted(out)
 
 
+def mended_note(before, checks):
+    mended = set(before or []) - checks
+    return f" (now passes {', '.join(sorted(mended))})" if mended else ""
+
+
 def compare(prev, cur):
     """How `cur` differs from `prev`, the entry it replaced:
     {"label", "detail"}, or None for a pass after a pass (no news).
@@ -869,32 +879,38 @@ def compare(prev, cur):
     entry is named as having done so, and a regression against the very
     files and model that passed is said to be noise, not the change."""
     passed, checks = cur["passed"], set(cur.get("failed_checks") or [])
+    since = day(prev.get("failing_since") or prev.get("when")) if prev else "?"
     if not prev:
         return None if passed else {"label": "FIRST RUN", "detail": "no earlier run to compare with; fails "
                                     + ", ".join(sorted(checks))}
     if passed:
         if prev.get("passed"):
             return None
-        return {"label": "FIXED", "detail": "failing since "
-                + (prev.get("failing_since") or prev.get("when") or "?")[:10]}
+        return {"label": "FIXED", "detail": f"failing since {since}"}
     before = prev.get("failed_checks")
     if prev.get("passed"):
-        label, detail, fresh = "REGRESSED", f"passed {(prev.get('when') or '?')[:10]}; now fails ", checks
+        label, detail, fresh = "REGRESSED", f"passed {day(prev.get('when'))}; now fails ", checks
     elif before is None:
-        return {"label": "STILL FAILING", "detail": "since " + (prev.get("failing_since") or prev.get("when") or "?")[:10]
-                + "; its checks were not recorded then, now " + ", ".join(sorted(checks))}
+        return {"label": "STILL FAILING", "detail": f"since {since}; its checks were not recorded then, now "
+                + ", ".join(sorted(checks))}
     elif checks - set(before):
         fresh = checks - set(before)
-        label, detail = "NEW FAILURE", "failing since " + (prev.get("failing_since") or prev.get("when") or "?")[:10] + "; newly fails "
+        label, detail = "NEW FAILURE", f"failing since {since}; newly fails "
     else:
-        mended = set(before) - checks
-        return {"label": "STILL FAILING", "detail": "since " + (prev.get("failing_since") or prev.get("when") or "?")[:10]
-                + ": " + ", ".join(sorted(checks)) + (f" (now passes {', '.join(sorted(mended))})" if mended else "")}
+        return {"label": "STILL FAILING", "detail": f"since {since}: " + ", ".join(sorted(checks))
+                + mended_note(before, checks)}
     detail += ", ".join(sorted(fresh))
+    if label == "NEW FAILURE":
+        detail += mended_note(before, checks)
+    # Noise only when the earlier failure was against these very files: one
+    # recorded against older files is the check breaking before, and calling
+    # it noise would steer the reader off the edit that broke it again.
     past = [prev] + prev.get("history", [])
-    seen = sorted(c for c in fresh if any(c in (h.get("failed_checks") or []) for h in past))
+    seen = sorted(c for c in fresh if any(c in (h.get("failed_checks") or [])
+                                          and h.get("skills_fp") == cur.get("skills_fp")
+                                          and h.get("evals_fp") == cur.get("evals_fp") for h in past))
     if seen:
-        detail += f"; {', '.join(seen)} failed in an earlier run too (may be noise)"
+        detail += f"; {', '.join(seen)} failed on these same files in an earlier run (may be noise)"
     if (label == "REGRESSED" and prev.get("skills_fp") == cur.get("skills_fp")
             and prev.get("evals_fp") == cur.get("evals_fp")):
         before_id, now_id = prev.get("model_id"), cur.get("model_id")
@@ -905,6 +921,12 @@ def compare(prev, cur):
         else:
             detail += "; same files as that pass: noise or the model, not a change"
     return {"label": label, "detail": detail}
+
+
+def day(ts):
+    """A ledger timestamp as its date and zone: every date here carries its
+    zone (CLAUDE.md), and a run's local time is Pacific."""
+    return f"{ts[:10]} {ts[19:]}".strip() if ts else "?"
 
 
 BASELINE_ORDER = ["REGRESSED", "NEW FAILURE", "FIRST RUN", "FIXED", "STILL FAILING"]
@@ -925,7 +947,7 @@ def baseline_summary(results):
     known = sorted(n for n, c in results if c and c["label"] == "STILL FAILING")
     if known:
         lines.append(f"  {'STILL FAILING':<13} {', '.join(known)}")
-    head = ", ".join(f"{v} {k.lower()}" for k, v in counts.items() if v) or "no change from the last run"
+    head = ", ".join(f"{v} {k.lower()}" for k, v in counts.items() if v) or "no failure new, known or mended"
     return head, lines, counts
 
 
@@ -1042,7 +1064,7 @@ def print_ledger(args):
             e = led.get(ledger_key(c, m, args.effort), {})
             line = f"  {st:<8} {m:<8} {c['name']:<44} {e.get('when', '')[:19]} {e.get('model_id') or ''}"
             if st == "failed" and e.get("failed_checks") is not None:
-                line += (f"\n           failing since {(e.get('failing_since') or e.get('when') or '?')[:10]}: "
+                line += (f"\n           failing since {day(e.get('failing_since') or e.get('when'))}: "
                          + ", ".join(e["failed_checks"]))
             print(line)
     print("\n" + ", ".join(f"{v} {k}" for k, v in sorted(counts.items())))
@@ -1506,7 +1528,9 @@ def selftest():
 
     # the baseline: each record is compared with the entry it replaced
     bl = {}
-    rec = lambda ok, checks=None, **kw: record(bl, probe, ok, "haiku", Path("x"), checks=checks, **kw)
+    runs_made = iter(range(1000))    # each record its own results dir, as each run has
+    rec = lambda ok, checks=None, **kw: record(bl, probe, ok, "haiku", Path(f"run{next(runs_made)}"),
+                                               checks=checks, **kw)
     first = rec(False, ["a"])
     check("baseline: a first failure has no baseline", first and first["label"] == "FIRST RUN")
     check("baseline: a failure after a failure on the same checks is known",
@@ -1523,8 +1547,21 @@ def selftest():
     check("baseline: a pass after a pass says nothing", rec(True) is None)
     reg = rec(False, ["b"])
     check("baseline: a failure after a pass regressed", reg["label"] == "REGRESSED")
-    check("baseline: a check that failed in an earlier run is flagged as possible noise",
-          "b failed in an earlier run too" in reg["detail"])
+    check("baseline: a check that failed on the same files in an earlier run is flagged as possible noise",
+          "b failed on these same files in an earlier run" in reg["detail"])
+    other_files = compare({"passed": True, "when": "t", "skills_fp": "s", "evals_fp": "e",
+                           "history": [{"passed": False, "failed_checks": ["b"], "skills_fp": "old", "evals_fp": "e"}]},
+                          {"passed": False, "failed_checks": ["b"], "skills_fp": "s2", "evals_fp": "e"})
+    check("baseline: a check that failed only on other files is not called noise",
+          other_files["label"] == "REGRESSED" and "may be noise" not in other_files["detail"])
+    swap = compare({"passed": False, "when": "t", "failed_checks": ["a"]}, {"passed": False, "failed_checks": ["b"]})
+    check("baseline: a new failure also names the check that mended",
+          swap["label"] == "NEW FAILURE" and "now passes a" in swap["detail"])
+    check("baseline: dates carry their zone", day("2026-09-27T12:52:04-0700") == "2026-09-27 -0700")
+    k = ledger_key(probe, "haiku")
+    depth = len(bl[k]["history"])
+    record(bl, probe, False, "haiku", Path(bl[k]["results"]), checks=["b"])
+    check("baseline: a regrade of the same transcript is not a new sample", len(bl[k]["history"]) == depth)
     check("baseline: a regression on the same files is called noise, and an unknown model is not claimed same",
           "same files as that pass: noise or the model" in reg["detail"])
     same = {"passed": True, "when": "t", "skills_fp": "s", "evals_fp": "e", "model_id": "m"}

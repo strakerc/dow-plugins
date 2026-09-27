@@ -146,7 +146,8 @@ worker it mirrors -- see "Validating a change to a skill".
 
 The commit hooks scan **added lines only** (and the message itself) — a rule that
 re-flags existing content trains everyone to use `--no-verify`. The pre-push hook is
-the exception, on purpose: it runs the whole gate, because the push is the release.
+the exception, on purpose: it runs the whole gate, because the push of the task
+branch is the last check before the merge releases it.
 
 **Invariant 3 needs an interpreter** (it is section 4 in the hook). The JSON check
 wants a working `python3`, `python` or `node`. When no candidate qualifies the check
@@ -301,10 +302,12 @@ one would otherwise pay to find. Straker set this order on 9 Sep 2026 PT.
    FAILURE, STILL FAILING, FIXED -- and the counts sit on every stage line,
    haiku's NOTE included: read what changed first. A label never turns a
    gating failure into a pass (27 Sep 2026 PT).
-5. Push with the same scope: `DOW_EVAL_SCOPE=relevant git push` for Relevant,
-   `DOW_EVAL_SCOPE=bypass git push` for Bypass, plain `git push` for All. The
-   pre-push hook (invariant 7) runs the same ledger check under that scope, so a
-   push straight after a green step 3 pays nothing.
+5. Push the task branch with the same scope: `DOW_EVAL_SCOPE=relevant git
+   push` for Relevant, `DOW_EVAL_SCOPE=bypass git push` for Bypass, plain `git
+   push` for All. The pre-push hook (invariant 7) runs the same ledger check
+   under that scope, so a push straight after a green step 3 pays nothing.
+   Then `gh pr create` and `gh pr merge --squash --delete-branch`. **The merge
+   is the delivery** (see Publishing); a push to `main` delivers nothing.
 6. Only on **All**: `python3 validation/regress.py --post-push` — every case,
    forced, against what actually shipped.
 
@@ -346,7 +349,7 @@ leave the rest for the batch's All run.
 Bypass skips the model, not the rules: the hook still runs the free stages,
 including the whole-tree audit behind invariant 6. The skipped cases stay stale
 and run on the next All, or the next Relevant push that touches their skill.
-The push still reaches every owner, so say plainly that it shipped without a
+The merge still reaches every owner, so say plainly that it shipped without a
 model run. A push that does not touch `plugins/` has no evals to choose; do
 not ask.
 
@@ -436,40 +439,59 @@ by accident rather than on merit.
 
 What is specific to this repo is what a branch is protecting you from:
 
-- **`main` is the publish channel.** A change to files under `plugins/<name>/` reaches
-  every installed owner on the next marketplace sync (see Publishing below), so
-  landing on `main` *is* the release. That makes the merge the deliberate act — not
-  the commit, and not the push of a task branch.
-- **There is no CI here**, and no second reviewer, so a PR on this repo runs no checks
-  and gates nothing. Prefer the local merge the global defaults describe unless a PR
-  is asked for.
+- **`main` is the publish channel, and a PR merged on GitHub is what delivers
+  it.** A change to files under `plugins/<name>/` reaches installed owners on the
+  next marketplace sync, and syncs follow GitHub merges, not pushes (see
+  Publishing below). So **every change lands as a PR merged on GitHub**
+  (`gh pr merge --squash --delete-branch`), never as a local merge pushed
+  to `main`. That overrides the global default of skipping the PR on a repo with
+  no CI: here the PR isn't a gate, it's the delivery trigger.
+  **Enforced:** `.claude/protect-main` at the root opts this repo, and only
+  this repo, into the machine-wide branch guard, which refuses a Claude Code
+  commit on `main` or a push to it. It reads commands as text and fails open
+  (see the hook's header), so it's a seatbelt; the rule still stands without it.
+- **There is no CI here**, and no second reviewer, so a PR on this repo runs no
+  checks and gates nothing. The pre-push hook is the gate; the merge is the
+  release.
 - Work that never touches `plugins/` — this file, `README.md`, `scripts/release.mjs` —
   publishes nothing when it lands. Branch anyway; just don't treat the merge as a
   release.
 
 ## Publishing
 
-**Committing IS publishing, measured 9 Sep 2026 PT.** An earlier version of this
-section said the opposite — that `version` in `plugin.json` gates delivery and a
-commit at an unchanged version reaches nobody. That was taken from the plugin docs
-and never observed. It is wrong, and it was wrong in this file for one morning.
+**A PR merged on GitHub is what publishes, measured 27 Sep 2026 PT.** The
+plugin's **Contents** tab in claude.ai lists every sync it received. Every
+automatic sync from 13 to 21 Sep landed in the same minute as a PR merge,
+#4 through #12, nine of nine. That includes #8, which touched only an eval
+mock, so a merge syncs both plugins whatever it changes. The roughly twenty
+commits pushed straight to `main` in that window got no sync of their own.
+From 22 to 27 Sep everything went in as direct pushes (the 24 Sep
+`league-cut-audit` and league-rules changes, and the 27 Sep lineup fixes),
+and neither plugin synced once in six days. Straker's account showed "updated
+6 days ago" on both.
 
-What was actually watched: the marketplace synced 62df110 → 03ae6e9; `dow-league`,
-whose files changed in between, showed **updated "now"**; `dow-league-lm`, whose
-files did not, stayed at 14h. A new claude.ai chat then loaded `league-lineup` —
-a skill added in that range with **no version bump on either manifest**.
+Every one of those syncs was at version 0.2.0, so **`version` does not gate
+delivery**, and bumping it wouldn't have helped. The 9 Sep sync of a direct
+push (62df110 to 03ae6e9, no version bump) was most likely a manual **Check
+for updates**, since the sync toggle was being located that same day. That's
+unconfirmed. What triggers a sync is inferred from timing, not documented.
+**Confirmed 27 Sep 2026 PT:** #13, a CLAUDE.md-only PR, merged at 1:11 PM PT,
+and within minutes both plugins read "updated 4m ago". That delivered the six
+days of direct pushes, including `league-cut-audit`, which had never reached
+the LM plugin.
 
-So delivery follows **file changes under `plugins/<name>/`**, on sync. Treat every
-push to `main` as reaching everyone who has installed, immediately.
+So:
 
-Two things follow. **A skill is live the moment it is pushed** — "committed
-deliberately unreleased" is not a state this marketplace has, and `league-lineup`
-was delivered while its work order still called it unreleased. And **deleting a
-skill file and pushing removes it from installs**, which is the only lever for
-pulling something back.
-
-What `version` does instead is unmeasured. Do not write another claim about it
-here without watching it.
+- **Land every change through a PR merged on GitHub**, even a one-line fix.
+  After `gh pr merge`, the change is on its way to everyone. Until then,
+  nobody has it, even though it's on `main` if it was pushed there directly.
+- **If something reached `main` by a direct push, it isn't delivered.** Any
+  later PR merge carries it, because a sync takes the whole of `main`.
+- **Deleting a skill file and merging removes it from installs**, which is
+  the only lever for pulling something back.
+- An owner can pull a sync by hand: **Customize → Plugins → Manage
+  marketplaces → ⋮ → Check for updates** (SETUP.md). That's a workaround, not
+  a delivery plan.
 
 ```bash
 node scripts/release.mjs                 # report: versions, and what is unreleased
@@ -483,10 +505,13 @@ Run it with no version first: it lists every commit touching `plugins/` since th
 `v*` tag, which is the mechanical answer to "is a release pending?". It refuses a
 re-release of the current version, a lower version and a non-semver string, and it
 writes files only — the commit, the annotated `v<version>` tag and the push stay a
-human act. What it cannot tell you is whether something is undelivered: pushing to
-`main` already delivered it, tag or no tag.
+human act. What it cannot tell you is whether something is undelivered: that is
+whether a PR merge has happened since, tag or no tag. A version bump is
+bookkeeping, not delivery, and it costs something. A manifest is a change
+under `plugins/` outside a skill directory, so under `relevant` it widens the
+eval run to every stale case.
 
-Push to `main`. Installed owners pick it up on their next update. A plugin installed or
+Merge the PR on GitHub. Installed owners pick it up on that sync. A plugin installed or
 updated **mid-session does not appear until a new session**, because skills resolve at
 task start — start a new task rather than uninstalling and reinstalling.
 

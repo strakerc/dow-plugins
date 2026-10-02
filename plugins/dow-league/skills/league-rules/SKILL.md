@@ -276,8 +276,9 @@ before 2026. Being off an NFL roster is not by itself a reason he can't be
 added; whether he is actually available here — rostered by another franchise,
 locked, on waivers — is `league-player-status`. If he is unrostered here and
 still missing from the pool, the bug may be back: say the LMs should check. The
-constitution records this under mid-season free agency and says nothing either
-way about the FA auction, so do not claim it for the auction.
+note sits under mid-season free agency, and the FA auction is covered too: its
+own rule puts **all unsigned players** in the pool, so an unsigned NFL free
+agent can be bid on in the auction like anyone else.
 
 **Consequence worth stating:** unspent auction capital is in-season buying power.
 Leaving the auction with money is a position, not a failure.

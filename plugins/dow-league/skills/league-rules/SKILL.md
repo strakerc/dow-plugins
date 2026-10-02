@@ -267,6 +267,19 @@ Sunday at noon ET, an hour before the 1PM ET kickoff. No spending limit beyond
 staying under the cap after each signing — and you may **not** bid above your
 cap space intending to drop afterwards; drops must come first.
 
+**Current NFL free agents can be signed** — players with no NFL team are in our
+free-agent pool like anyone else, and one signed in-season gets an ordinary Free
+Agent contract. This is not a rule that passed: the `[2026]` note records a bug.
+MFL's list was missing existing NFL free agents until Blake found it mid-2026,
+and it was corrected in MFL's settings. So do not tell an owner they were barred
+before 2026. Being off an NFL roster is not by itself a reason he can't be
+added; whether he is actually available here — rostered by another franchise,
+locked, on waivers — is `league-player-status`. If he is unrostered here and
+still missing from the pool, the bug may be back: say the LMs should check. The
+note sits under mid-season free agency, and the FA auction is covered too: its
+own rule puts **all unsigned players** in the pool, so an unsigned NFL free
+agent can be bid on in the auction like anyone else.
+
 **Consequence worth stating:** unspent auction capital is in-season buying power.
 Leaving the auction with money is a position, not a failure.
 

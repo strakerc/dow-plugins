@@ -34,10 +34,14 @@ Two plugins will appear:
 | Plugin | Who installs it |
 |---|---|
 | **Dow league** | **Everyone.** All the owner tools. |
-| **Dow league lm** | Only if Straker has told you that you are an LM. |
+| **Dow league lm** | Only if Straker has told you that you are an LM, or that you hold the scheduler key. |
 
 Install **Dow league**. Skip the LM one unless it applies to you — its skills
 need permissions your key does not carry, so installing it just adds clutter.
+
+**If you hold the scheduler key,** install both. The LM plugin carries the
+schedule builder, which your key runs in full. Its other skills — the draft and
+auction writeups and the cut audit — need an LM key, so ignore those.
 
 ### Turn on automatic sync
 

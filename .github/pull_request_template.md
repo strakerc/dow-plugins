@@ -8,4 +8,4 @@
 
 ## What will owners notice?
 
-<!-- The one section the release announcer reads; nothing else in this body reaches it. One to four plain sentences for a league member who reads nothing else: what changes in Discord or in their Claude, and who caused it, by first name. Only things that happened. "Nothing" is a valid answer; say so in one line. No examples, no hypotheticals, no code. -->
+<!-- The one section the release announcer reads; nothing else in this body reaches it. One to four plain sentences for a league member who reads nothing else: what changes in Discord or in their Claude, and who caused it, by first name. Only things that happened, and only things an owner could have seen: never a preview, a dry run, a draft, a chat, a review or the announcer itself (a change to the announcer is "Nothing" to owners). "Nothing" is a valid answer; say so in one line. No examples, no hypotheticals, no code. -->

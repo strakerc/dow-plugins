@@ -73,7 +73,9 @@ jobs:
                 kind: "pr",
                 number: $p.number,
                 title: ($p.title | explode | map(if . < 32 or . == 127 then 32 else . end) | implode | .[0:300]),
-                body: (($p.body // "") | .[0:20000]),
+                # Tradebot reads only the "What will owners notice?" section, the
+                # template's last, so a body over the cap is cut from that heading on.
+                body: (($p.body // "") | if length > 20000 then (split("## What will owners notice") | if length > 1 then "## What will owners notice" + .[-1] else .[0] end) else . end | .[0:20000]),
                 author: (($p.user.login // "") | .[0:100]),
                 url: $p.html_url
               }],

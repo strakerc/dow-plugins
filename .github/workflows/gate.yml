@@ -1,0 +1,46 @@
+# The free regression gate, on every pull request and every push to main.
+# It is what .githooks/pre-push runs first (validation/regress.py's free
+# stages: the seven invariants, the script tests, the lineup back-test when
+# its fixtures exist, the eval lint). Seconds, no money, no credentials.
+#
+# What it does NOT run: the skill evals. Those cost money, come off
+# Straker's claude.ai plan rather than an API key, and which scope a push
+# gets is his call every time (CLAUDE.md, "The push choice"). So when
+# plugins/ changed and regress.py reports INCOMPLETE (exit 3: the evals are
+# required before the push), this check WARNS and passes: the pre-push hook
+# on his machine is still where that decision is made. Exit 1 or 2 (a free
+# stage failed, or the runner could not run) fails the check.
+#
+# Added 17 Oct 2026 PT with the release announcement (announce.yml).
+name: gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  free-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # regress.py compares plugins/ against origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Free stages (validation/regress.py)
+        run: |
+          python3 validation/regress.py && rc=0 || rc=$?
+          case "$rc" in
+            0) echo "- free gate: **pass**" >> "$GITHUB_STEP_SUMMARY" ;;
+            3) echo "::warning::plugins/ changed and the skill evals were not run here (they cost money and the scope is Straker's call; the pre-push hook on his machine runs them). The free stages passed."
+               echo "- free gate: **pass** (evals not run here: Straker's call, on his machine)" >> "$GITHUB_STEP_SUMMARY" ;;
+            *) echo "::error::validation/regress.py exited $rc. Read the stage output above."
+               echo "- free gate: **FAIL** (exit $rc)" >> "$GITHUB_STEP_SUMMARY"
+               exit 1 ;;
+          esac

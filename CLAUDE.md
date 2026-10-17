@@ -460,9 +460,15 @@ What is specific to this repo is what a branch is protecting you from:
   the merged PR's title, body, author and changed plugin files go to tradebot's
   `/admin/release-note` (the `dow-workers` repo), which writes a "New
   achievement!" post in the voice of Dungeon Crawler Carl's announcer and roasts
-  the owners the PR body names. So **write a PR body for the announcer as well as
-  the reviewer**: the real case, with the owner's name in it, is what gets him
-  roasted; a body that names nobody roasts the commissioner alone. Dry run (text
+  the owners the PR names. **It reads one section of the body and nothing
+  else: "What will owners notice?"**, the last section of
+  `.github/pull_request_template.md`. Write it for a league member who reads
+  nothing else: one to four plain sentences, what changes in their Claude and
+  who caused it, by first name, only things that happened. A note that names
+  nobody roasts the commissioner alone; a PR without the section is announced
+  by its title as a change nobody can see. The rest of the body never reaches
+  the announcer (it read whole bodies at first, 17 Oct 2026 PT, and announced
+  their examples as league history). Dry run (text
   in the run's step summary) until tradebot has a release channel; needs the
   `TRADEBOT_RELEASE_TOKEN` Actions secret, which opens that one route and
   nothing else -- this repo is public, and never holds tradebot's `ADMIN_TOKEN`.

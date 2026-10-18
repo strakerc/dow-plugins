@@ -7,9 +7,10 @@
 #
 # The PR's title, body, author and changed plugin files are the whole
 # payload; tradebot owns the voice and remembers what it announced, so a
-# re-delivered event is answered `duplicate`, never posted twice. Until
-# RELEASE_CHANNEL_ID is set on tradebot every call is a dry run and the
-# text lands in this run's step summary.
+# re-delivered event is answered `duplicate`, never posted twice. Tradebot
+# posts to #claudebot-release-notes since 18 Oct 2026 PT; while its
+# RELEASE_CHANNEL_ID is empty every call is a dry run and the text lands
+# in this run's step summary.
 #
 # Needs the TRADEBOT_RELEASE_TOKEN secret (tradebot's RELEASE_TOKEN, which
 # opens that one route and nothing else -- this repo is public, and its

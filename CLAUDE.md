@@ -450,9 +450,29 @@ What is specific to this repo is what a branch is protecting you from:
   this repo, into the machine-wide branch guard, which refuses a Claude Code
   commit on `main` or a push to it. It reads commands as text and fails open
   (see the hook's header), so it's a seatbelt; the rule still stands without it.
-- **There is no CI here**, and no second reviewer, so a PR on this repo runs no
-  checks and gates nothing. The pre-push hook is the gate; the merge is the
-  release.
+- **CI runs the free gate only** (from 17 Oct 2026 PT: `.github/workflows/gate.yml`,
+  on every PR and push to `main`, the same `validation/regress.py` free stages the
+  pre-push hook runs first). It never runs the evals: they cost money, come off
+  Straker's plan, and the scope is his call every time, so an INCOMPLETE (exit 3)
+  warns and passes there. The pre-push hook on his machine is still the gate for
+  the evals; there is no second reviewer; the merge is the release.
+- **A merge is announced in the league Discord** (`.github/workflows/announce.yml`):
+  the merged PR's title, body, author and changed plugin files go to tradebot's
+  `/admin/release-note` (the `dow-workers` repo), which writes a "New
+  achievement!" post in the voice of Dungeon Crawler Carl's announcer and roasts
+  the owners the PR names. **It reads one section of the body and nothing
+  else: "What will owners notice?"**, the last section of
+  `.github/pull_request_template.md`. Write it for a league member who reads
+  nothing else: one to four plain sentences, what changes in their Claude and
+  who caused it, by first name, only things that happened. A note that names
+  nobody roasts the commissioner alone; a PR without the section is announced
+  by its title as a change nobody can see. The rest of the body never reaches
+  the announcer (it read whole bodies at first, 17 Oct 2026 PT, and announced
+  their examples as league history). Tradebot posts to
+  #claudebot-release-notes since 18 Oct 2026 PT (a dry run, text in the
+  run's step summary, only while its channel id is empty); needs the
+  `TRADEBOT_RELEASE_TOKEN` Actions secret, which opens that one route and
+  nothing else -- this repo is public, and never holds tradebot's `ADMIN_TOKEN`.
 - Work that never touches `plugins/` — this file, `README.md`, `scripts/release.mjs` —
   publishes nothing when it lands. Branch anyway; just don't treat the merge as a
   release.

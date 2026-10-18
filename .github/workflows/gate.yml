@@ -1,0 +1,69 @@
+# The free regression gate, on every pull request and every push to main.
+# It is what .githooks/pre-push runs first (validation/regress.py's free
+# stages: the seven invariants, the script tests, the lineup back-test when
+# its fixtures exist, the eval lint). Seconds, no money, no credentials.
+#
+# What it does NOT run: the skill evals. Those cost money, come off
+# Straker's claude.ai plan rather than an API key, and which scope a push
+# gets is his call every time (CLAUDE.md, "The push choice"). So when
+# plugins/ changed and regress.py reports INCOMPLETE (exit 3: the evals are
+# required before the push), this check WARNS and passes: the pre-push hook
+# on his machine is still where that decision is made. Exit 1 or 2 (a free
+# stage failed, or the runner could not run) fails the check.
+#
+# Two things the gate wants that a runner does not have, found by its first
+# run (17 Oct 2026 PT, 8 seconds, two stages red):
+#   - the Claude Code CLI: `claude plugin validate` in the static stage and
+#     the eval lint's "claude CLI found" selftest. Installed below; `plugin
+#     validate` needs no login (checked with an empty HOME).
+#   - the private dow-workers clone beside this repo, which audit.py's
+#     checks 9 and 10 read worker versions and gateway routes from. A public
+#     repo's runner cannot read it, so DOW_ALLOW_MISSING_WORKERS=1 is set
+#     here, as a standing CI override and nowhere else: those two checks
+#     print OVERRIDE with a note instead of PASS, and the pre-push hook on
+#     Straker's machine, which has the sibling, is where they gate.
+#
+# Added 17 Oct 2026 PT with the release announcement (announce.yml).
+name: gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  free-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # regress.py compares plugins/ against origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Claude Code CLI (for `claude plugin validate`; no login needed)
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude --version
+      - name: Free stages (validation/regress.py)
+        env:
+          # CI cannot read the private dow-workers sibling: checks 9 and 10
+          # report OVERRIDE here and gate in the pre-push hook (header above).
+          DOW_ALLOW_MISSING_WORKERS: "1"
+        run: |
+          python3 validation/regress.py && rc=0 || rc=$?
+          case "$rc" in
+            0) echo "- free gate: **pass** (mock-mirror checks 9 and 10 OVERRIDE here: no dow-workers clone on a runner; they gate in the pre-push hook)" >> "$GITHUB_STEP_SUMMARY" ;;
+            3) echo "::warning::plugins/ changed and the skill evals were not run here (they cost money and the scope is Straker's call; the pre-push hook on his machine runs them). The free stages passed."
+               echo "- free gate: **pass** (evals not run here: Straker's call, on his machine)" >> "$GITHUB_STEP_SUMMARY" ;;
+            *) echo "::error::validation/regress.py exited $rc. Read the stage output above."
+               echo "- free gate: **FAIL** (exit $rc)" >> "$GITHUB_STEP_SUMMARY"
+               exit 1 ;;
+          esac

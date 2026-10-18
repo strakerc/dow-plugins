@@ -1,0 +1,127 @@
+# Announces a merged pull request in the league's release channel, in the
+# voice of Dungeon Crawler Carl's announcer, through tradebot's
+# POST /admin/release-note (dow-workers: workers/tradebot, "release
+# achievements"). A PR merged on GitHub is this repo's publish (CLAUDE.md,
+# "Publishing"), so the merge is the moment to announce; a direct push to
+# main delivers nothing and announces nothing.
+#
+# The PR's title, body, author and changed plugin files are the whole
+# payload; tradebot owns the voice and remembers what it announced, so a
+# re-delivered event is answered `duplicate`, never posted twice. Tradebot
+# posts to #claudebot-release-notes since 18 Oct 2026 PT; while its
+# RELEASE_CHANNEL_ID is empty every call is a dry run and the text lands
+# in this run's step summary.
+#
+# Needs the TRADEBOT_RELEASE_TOKEN secret (tradebot's RELEASE_TOKEN, which
+# opens that one route and nothing else -- this repo is public, and its
+# Actions must never hold tradebot's ADMIN_TOKEN). Without it the run says
+# so and announces nothing. Fork PRs never see secrets, and this workflow
+# runs only after a merge.
+#
+# By hand (workflow_dispatch): any PR number, as a preview (text only) or
+# a post; both are a force, so a backfill or a re-read of the voice works
+# whatever tradebot's record says.
+name: announce
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Pull request number to announce"
+        required: true
+        type: number
+      post:
+        description: "Post to Discord (if tradebot has a release channel). Unticked: preview, text in the summary only."
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  announce:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    env:
+      TRADEBOT_URL: https://tradebot.strakercarryer.workers.dev
+    steps:
+      - name: The pull request, as tradebot wants it
+        id: payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event_name == 'workflow_dispatch' && inputs.pr || github.event.pull_request.number }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' }}
+          DRY: ${{ github.event_name == 'workflow_dispatch' && inputs.post != true }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" > pr.json
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename' > files.txt
+          if [ "$(jq -r .merged pr.json)" != "true" ]; then
+            echo "::error::pull request $PR is not merged; nothing to announce."; exit 1
+          fi
+          # Titles are one line of at most 300; bodies at most 20,000; the
+          # shipped list is the plugin files, at most 100 -- tradebot's caps.
+          jq -n --slurpfile pr pr.json --rawfile files files.txt \
+            --argjson force "$FORCE" --argjson dry "$DRY" '
+            ($pr[0]) as $p |
+            {
+              source: "dow-plugins",
+              items: [{
+                kind: "pr",
+                number: $p.number,
+                title: ($p.title | explode | map(if . < 32 or . == 127 then 32 else . end) | implode | .[0:300]),
+                # Tradebot reads only the "What will owners notice?" section, the
+                # template's last, so a body over the cap is cut from that heading on.
+                body: (($p.body // "") | if length > 20000 then (split("## What will owners notice") | if length > 1 then "## What will owners notice" + .[-1] else .[0] end) else . end | .[0:20000]),
+                author: (($p.user.login // "") | .[0:100]),
+                url: $p.html_url
+              }],
+              shipped: ($files | split("\n") | map(select(startswith("plugins/"))) | map(.[0:200]) | .[0:100])
+            }
+            + (if $force then {force: true} else {} end)
+            + (if $dry then {dryRun: true} else {} end)' > payload.json
+          echo "announcing pull request $PR: $(jq -r '.items[0].title' payload.json) -- $(jq '.shipped | length' payload.json) plugin file(s)"
+
+      - name: Announce (tradebot /admin/release-note)
+        env:
+          TRADEBOT_RELEASE_TOKEN: ${{ secrets.TRADEBOT_RELEASE_TOKEN }}
+        run: |
+          if [ -z "$TRADEBOT_RELEASE_TOKEN" ]; then
+            echo "::notice::TRADEBOT_RELEASE_TOKEN is not set; the release was not announced."
+            echo "### Release announcement" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "- skipped: no TRADEBOT_RELEASE_TOKEN secret" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # The token travels in the query string, as every tradebot admin
+          # route takes it; curl's -s keeps it out of the log.
+          status=$(curl -sS -o resp.json -w '%{http_code}' -X POST \
+            -H 'Content-Type: application/json' --data @payload.json \
+            "$TRADEBOT_URL/admin/release-note?token=$TRADEBOT_RELEASE_TOKEN") || status=0
+          ok=$(jq -r '.ok // false' resp.json 2>/dev/null || echo false)
+          posted=$(jq -r '.posted // false' resp.json 2>/dev/null || echo false)
+          dup=$(jq -r '.duplicate // false' resp.json 2>/dev/null || echo false)
+          text=$(jq -r '.text // ""' resp.json 2>/dev/null || echo "")
+          err=$(jq -r '.error // ""' resp.json 2>/dev/null || echo "")
+          if [ "$status" = "200" ] && [ "$ok" = "true" ] && [ "$posted" = "true" ]; then
+            line="posted to Discord (message $(jq -r .messageId resp.json))"; rc=0
+          elif [ "$status" = "200" ] && [ "$ok" = "true" ] && [ "$dup" = "true" ]; then
+            line="nothing new: tradebot had already announced it"; rc=0
+          elif [ "$status" = "200" ] && [ "$ok" = "true" ]; then
+            line="dry run ($(jq -r '.reason // "no channel"' resp.json)); nothing posted"; rc=0
+          elif [ "$status" = "429" ]; then
+            line="deferred by tradebot's daily Anthropic cap; it keeps the item for its next call"; rc=0
+          else
+            line="failed (HTTP $status): ${err:-no body}"; rc=1
+          fi
+          echo "release announcement: $line"
+          [ -n "$text" ] && printf '\n%s\n\n' "$text"
+          {
+            echo "### Release announcement"; echo ""; echo "- $line"
+            if [ -n "$text" ]; then echo ""; echo '```'; echo "$text"; echo '```'; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$rc"

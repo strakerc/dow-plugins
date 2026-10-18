@@ -65,6 +65,11 @@ jobs:
           fi
           # Titles are one line of at most 300; bodies at most 20,000; the
           # shipped list is the plugin files, at most 100 -- tradebot's caps.
+          # Tradebot reads only the "What will owners notice?" section, the
+          # last in the template, so a body over the cap is cut from that
+          # heading on. No comments INSIDE the jq program below: it is a
+          # single-quoted shell string, and an apostrophe in a comment ended
+          # it (run 1, 18 Oct 2026 PT, failed on "template's").
           jq -n --slurpfile pr pr.json --rawfile files files.txt \
             --argjson force "$FORCE" --argjson dry "$DRY" '
             ($pr[0]) as $p |
@@ -74,8 +79,6 @@ jobs:
                 kind: "pr",
                 number: $p.number,
                 title: ($p.title | explode | map(if . < 32 or . == 127 then 32 else . end) | implode | .[0:300]),
-                # Tradebot reads only the "What will owners notice?" section, the
-                # template's last, so a body over the cap is cut from that heading on.
                 body: (($p.body // "") | if length > 20000 then (split("## What will owners notice") | if length > 1 then "## What will owners notice" + .[-1] else .[0] end) else . end | .[0:20000]),
                 author: (($p.user.login // "") | .[0:100]),
                 url: $p.html_url

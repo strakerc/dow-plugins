@@ -251,6 +251,11 @@ reference instead, as they currently do.
 - Both writeup skills (`rookie-draft-grades`, `fa-auction-grades`) have a **hard review
   gate**: nothing posts to Discord without an explicit go-ahead, and that gate is
   load-bearing — it has caught factually wrong headline claims.
+- **That gate applies to every Discord post, not only the two writeup skills.**
+  Set 18 Oct 2026 PT. Straker reads the full text as a draft first and posts
+  only what he approved; "write it and post it" asks for the draft, not for the
+  post. A session that day took "post about it" as the go-ahead and put a
+  roast in #general he had not read. A posted message cannot be unposted.
 - **Never automate writes** to MFL's schedule setup (saving overwrites all 84 rows with
   no undo) or to the league gSheet (it holds member phone numbers and emails). KTC
   scraping is forbidden by their ToS; the Google service-account key never ships.

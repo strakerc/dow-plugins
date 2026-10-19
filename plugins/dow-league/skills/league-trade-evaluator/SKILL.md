@@ -95,14 +95,18 @@ nothing to read, so it gets none of it.
 
 **For every player on either side of a scored trade:**
 
-1. **Open his MFL player page, with the web fetch tool.** Each player asset
+1. **Open his Rotowire page, with the web fetch tool.** Each player asset
    carries `news.links`: his MFL player page, and his Rotowire and ESPN pages
-   when MFL holds those ids; the payload's `notes` say to open them. The MFL
-   page carries the Rotowire notes, so it is the one to open; the other two
-   are for when it does not open or shows nothing dated. Pages are opened only
-   with the web fetch tool, never through a shell, a script or a file search,
-   the same as the league tools. Never build an MFL, Rotowire or ESPN address
-   by hand; open only the ones the payload gives. **Do not print the links**:
+   when MFL holds those ids; the payload's `notes` say to open them. The
+   Rotowire page carries the same notes MFL shows on his player page, so it
+   is the one to open; ESPN is for when it does not open or shows nothing
+   dated. **The MFL page is the owner's link, not one to open from a chat**:
+   measured 19 Oct 2026 PT, it answers anything but a logged-in browser with
+   MFL's login page, so opening it reads as a failed check every time. Say
+   nothing about it unless the owner asks for it. Pages are opened only with
+   the web fetch tool, never through a shell, a script or a file search, the
+   same as the league tools. Never build an MFL, Rotowire or ESPN address by
+   hand; open only the ones the payload gives. **Do not print the links**:
    they carry his player id, which never appears in an answer. Cite the
    source and its date instead.
 2. **Search when the pages did not answer**: when no link given opened to his
@@ -120,7 +124,8 @@ nothing to read, so it gets none of it.
    is the news, dated.
 
 **A page that does not open, or opens to something that is not his page, is a
-failed check, not "nothing new".** Say which page failed and go to step 2.
+failed check, not "nothing new".** Say which page failed and go to step 2
+(the MFL page excepted, as above).
 **No web access this turn?** Then say so in one line, say the values were
 priced without news, and give the verdict with that caveat. Never fill the gap
 from memory: a note you remember is undated and may predate his last game.

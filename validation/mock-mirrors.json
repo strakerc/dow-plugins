@@ -2,7 +2,8 @@
  "mocks": {
   "evaluate_trade": {
    "worker": "tradeval",
-   "version": "0.2.4"
+   "version": "0.2.5",
+   "note": "re-read against tradeval 0.2.5 on 19 Oct 2026 PT, from the dow-workers branch that carries it (ccr-2eb27e04-c5y2xr): every player asset is an object with id, label, position, nflTeam, marketValue, salary, contract, contractThrough, rosterStatus and news.links, and notes carries the standing news note. Left out on purpose, as before this re-read: marketBasis, receipt and the surplus fields (annual, termFactor, escapable, currentYearWeight), which no case reads; a skill edit that starts reading one adds it here first. The pin is ahead of dow-workers main until that branch merges, which is the order these two land in"
   },
   "get_league": {
    "worker": "myfantasyleague",
@@ -74,7 +75,7 @@
   },
   "get_player_values": {
    "worker": "dowgateway",
-   "version": "1.10.0"
+   "version": "1.10.1"
   },
   "list_channels": {
    "worker": "discord",
@@ -91,7 +92,7 @@
  },
  "schemas": {
   "worker": "dowgateway",
-  "version": "1.10.0",
-  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; re-read against dowgateway 1.8.0 on 21 Sep 2026 PT: its one new tool, get_points_allowed, takes only `season` and is left on the open schema rather than staling every mocked case for one optional argument; re-read against 1.9.0 on 2 Oct 2026 PT: it adds only an admin route and an audit record on send_message, no change to ROUTES, any description or any schema; re-read against 1.10.0 the same day: one new tool, get_discord_audit, LM-only, used by no skill and mocked by no case, so the SCHEMAS table needs no row for it; move this pin only after re-reading it"
+  "version": "1.10.1",
+  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; re-read against dowgateway 1.8.0 on 21 Sep 2026 PT: its one new tool, get_points_allowed, takes only `season` and is left on the open schema rather than staling every mocked case for one optional argument; re-read against 1.9.0 on 2 Oct 2026 PT: it adds only an admin route and an audit record on send_message, no change to ROUTES, any description or any schema; re-read against 1.10.0 the same day: one new tool, get_discord_audit, LM-only, used by no skill and mocked by no case, so the SCHEMAS table needs no row for it; move this pin only after re-reading it; re-read against 1.10.1 on 19 Oct 2026 PT: description only, evaluate_trade names the news.links tradeval 0.2.5 attaches to every player asset, no schema moved, and the mock's description carries the same sentences"
  }
 }

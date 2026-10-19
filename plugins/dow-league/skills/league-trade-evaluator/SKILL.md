@@ -26,7 +26,8 @@ description: "Invoke before any league tool call to score a proposed trade in th
 
 Prices a **proposed** trade. One tool call does the work: `evaluate_trade`
 returns two verdicts that are deliberately never merged, and the gap between
-them is the whole point.
+them is the whole point. **Then the news, before the verdict is spoken** (the
+section after this one): every value in the payload was priced without it.
 
 | | What it is | How much to trust it |
 |---|---|---|
@@ -77,6 +78,56 @@ So:
   defensible, and is the actual finding.
 
 The market percentage is fine to quote.
+
+---
+
+## The news, before the verdict: the values were priced without it
+
+The evaluator prices from value boards that are days old at best, and it reads
+no news. Measured 19 Oct 2026 PT: an answer recommended Jaylen Warren, and the
+Rotowire note on his MFL player page from the night before (his workload shrank
+once Rico Dowdle returned, and the coach is running a timeshare) was never
+mentioned. The owner found it himself. That is the answer being wrong in the
+one way the board cannot see, and it is why this is a step, not a caveat.
+
+This step is for a scored answer (`ok: true`). A refusal has no assets and
+nothing to read, so it gets none of it.
+
+**For every player on either side of a scored trade:**
+
+1. **Open his MFL player page, with the web fetch tool.** Each player asset
+   carries `news.links`: his MFL player page, and his Rotowire and ESPN pages
+   when MFL holds those ids; the payload's `notes` say to open them. The MFL
+   page carries the Rotowire notes, so it is the one to open; the other two
+   are for when it does not open or shows nothing dated. Pages are opened only
+   with the web fetch tool, never through a shell, a script or a file search,
+   the same as the league tools. Never build an MFL, Rotowire or ESPN address
+   by hand; open only the ones the payload gives. **Do not print the links**:
+   they carry his player id, which never appears in an answer. Cite the
+   source and its date instead.
+2. **Search when the pages did not answer**: when no link given opened to his
+   page, when they showed nothing dated, or when the payload carries no
+   `news.links` at all (an older evaluator). Search once for dated news on him
+   this month, with the month and year in the query rather than his name
+   alone (a search on the name returns the most-linked story, rarely the
+   newest), and open the hit you cite.
+3. **Lead his line with the newest dated item**, in Pacific time: what it
+   says, where from, and when. If nothing has changed, say "nothing new since
+   <date of the newest item>" with that date; never "nothing new" alone.
+4. **Say which way the news moves the verdict.** A board value that was set
+   before the newest item is stale, and the answer says whether the item cuts
+   with or against the number. The verdict stays the evaluator's; the caveat
+   is the news, dated.
+
+**A page that does not open, or opens to something that is not his page, is a
+failed check, not "nothing new".** Say which page failed and go to step 2.
+**No web access this turn?** Then say so in one line, say the values were
+priced without news, and give the verdict with that caveat. Never fill the gap
+from memory: a note you remember is undated and may predate his last game.
+
+`league-player-status` owns the injury question itself ("how long is he out").
+This step is narrower: it is the newest dated word on each player, read before
+his price is repeated.
 
 ---
 
@@ -140,7 +191,9 @@ be scored at all. Say that instead.
 - **Always surface `legality`.** A trade that puts someone over the cap or past
   the 18-man active limit cannot be executed, however good it looks. `blocked`
   is not advisory.
-- **Read `notes`, and pass on a data caveat in one clause.** The evaluator says
+- **Read `notes`, and pass on a data caveat in one clause.** One standing note
+  tells you to open each player's `news.links` first; that is the section
+  above, not a caveat to repeat. The evaluator also says
   when a value board came back short. Since September 2026 FantasyPros serves a
   limited public board, so most answers carry a line of the shape "FantasyPros
   returned only N players — expected at least M": that is a thinner blend, not
@@ -161,7 +214,7 @@ be scored at all. Say that instead.
   surplus. The tool sees assets, not plans.
 - **Why the trade is being offered** — a roster crunch, a bye week, a favour.
 - **Conditional picks.** No MFL call represents them; see `league-draft-picks`.
-- **News since the values were pulled.** Search when a specific player is named.
+- **News.** It reads none, which is why the news step above is not optional.
 
 When the tool and a person disagree and the reason is one of these, that is worth
 saying out loud. It is not the engine being wrong.

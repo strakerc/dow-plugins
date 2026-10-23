@@ -91,6 +91,11 @@ always a conditional settling.** In `get_transactions(transaction_type="TRADE")`
 that shows as an empty `franchise1_gave_up` or `franchise2_gave_up`. It is the
 only machine-readable signal available.
 
+Every trade must have something on both sides, and a conditional pick counts
+(`league-rules`). So a one-sided record is half of a conditional — the trade
+that created it, or the one that settled it. If no conditional is on record,
+say the record is incomplete; whether anything broke a rule is for the LMs.
+
 ### The vocabulary — settled 5 Sep 2026
 
 These words have league meanings. Draft order is reverse standings, so a pick

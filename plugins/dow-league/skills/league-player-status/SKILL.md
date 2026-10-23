@@ -143,8 +143,8 @@ of every name, all in one answer.
 | Step | Call |
 |---|---|
 | 1 | The injury, exactly as in the section above: `get_injuries`, `get_player_scores`, dated news |
-| 2 | `get_player_scores` with his `position` for the latest week with games in it, then `get_players` on every id returned; keep the rows on his NFL team. From week 3 on, add `week=AVG` |
-| 3 | `get_rosters` with no `franchise_id`, `get_free_agents` for the position, and `get_league` for the owners — the one pass from "Who has him", covering every teammate you will name |
+| 2 | `get_player_scores` with his `position` and **no** `players` list, for the latest week with games in it, then `get_players` on every id returned; keep the rows on his NFL team. From week 3 on, add `week=AVG` |
+| 3 | `get_rosters` with no `franchise_id`, `get_free_agents` for the position, and `get_league` for the owners — the one pass from "Who has him", covering every teammate you will name. Any free-agent id not already in step 2's `get_players` call goes through `get_players` too: free-agent rows carry no NFL team |
 | 4 | The news, for the depth chart: who takes his snaps, and who the team signed or promoted. Put the month and year in the query |
 
 `get_player_scores` names other skills in its tool description. That line is
@@ -156,6 +156,13 @@ about routing a first call; here, call it directly.
   another owner's roster, listed a free agent third without saying he was
   available, and closed by offering to check who owned them. The owner had
   asked who to consider; which of them he can have was the answer.
+- **A free agent's NFL team comes only from `get_players`.** `get_rosters`
+  rows carry each rostered player's team, so the owned teammates look complete
+  without it, but `get_free_agents` rows carry none. Measured 22 Oct 2026 PT:
+  an answer narrowed the scores call to rostered ids, never called
+  `get_players`, left out the free agent who led the room in points, and said
+  he was not on that team. Never say a free agent is or is not on his team
+  without the call.
 - **Scores come from this league, not from memory of last season.** Write each
   teammate's points from step 2 next to his name. The same answer ranked the room
   on last season's target counts while MFL already held this season's first

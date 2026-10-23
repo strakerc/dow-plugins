@@ -196,6 +196,12 @@ be scored at all. Say that instead.
 - **Always surface `legality`.** A trade that puts someone over the cap or past
   the 18-man active limit cannot be executed, however good it looks. `blocked`
   is not advisory.
+- **Whether a trade is allowed, and when it can go through, is `league-rules`.**
+  Score the trade as usual, then add one line pointing there when either
+  applies: one side gives nothing (allowed only with a conditional pick going
+  back), or the owner has said a player in it has already played this week.
+  A locked player is timing only — when the trade can be processed, never a
+  reason it scores worse or is blocked.
 - **Read `notes`, and pass on a data caveat in one clause.** One standing note
   tells you to open each player's `news.links` first; that is the section
   above, not a caveat to repeat. The evaluator also says

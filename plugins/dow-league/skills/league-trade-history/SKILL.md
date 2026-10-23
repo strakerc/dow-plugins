@@ -156,7 +156,9 @@ rather than presenting a gap as "nobody was taken."
   An empty `franchise1_gave_up` or `franchise2_gave_up` is the only
   machine-readable signal that a conditional exists — one settled 82 days after
   it was agreed, recorded as a separate one-sided trade with nothing linking the
-  two. Check `conditional-picks.md` and say the record is incomplete.
+  two. Check `conditional-picks.md` and say the record is incomplete. A trade
+  must have something on both sides, a conditional counting (`league-rules`);
+  never call a one-sided trade a breach — that is the LMs' call.
 - **Conditional legs are invisible.** MFL records only the identified assets, so
   a trade with a conditional attached cannot be judged from the API alone. Flag
   it; do not quietly score the visible half.

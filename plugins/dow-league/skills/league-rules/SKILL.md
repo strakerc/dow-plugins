@@ -1,6 +1,6 @@
 ---
 name: league-rules
-description: "Invoke for any question about how the Dynasty of Whiners dynasty league (MyFantasyLeague 29557) works — salary cap, contracts, dead money, taxi and IR eligibility, trades, deadlines, penalties, playoffs and draft order. Use for \"can I do this\", \"what does that cost\", \"what does pick 1.05 pay\", \"rookie contract\", \"rookie salary\", \"contract prices\", \"is he IR eligible\", \"what's the deadline\", \"how much dead money\", \"what happens to our league if\", or \"under our league rules\" — any question about the rules. Answers come from the digest here, not from memory of other leagues."
+description: "Invoke for any question about how the Dynasty of Whiners dynasty league (MyFantasyLeague 29557) works — salary cap, contracts, dead money, taxi and IR eligibility, trades, deadlines, penalties, playoffs and draft order. Use for \"can I do this\", \"what does that cost\", \"what does pick 1.05 pay\", \"rookie contract\", \"rookie salary\", \"contract prices\", \"is he IR eligible\", \"what's the deadline\", \"how much dead money\", \"is this trade allowed\", \"can I trade him this week\", \"can I just give X to Y\", \"what happens to our league if\", or \"under our league rules\" — any question about the rules. Answers come from the digest here, not from memory of other leagues."
 ---
 
 # League Rules
@@ -214,9 +214,39 @@ Roster structure: 10 starters, 8 bench, 6 taxi, 4 IR. Starters resolve to
 - **Dead money cannot be traded.**
 - **Picks for the upcoming three seasons only** `[2022]`. In the 2026 offseason
   that means 2027, 2028 and 2029.
+- **Something must change hands on both sides** `[2026]`. No giving a player
+  away for free. A **conditional pick counts** as something given up, even
+  though MFL never records it in the trade.
+- **A locked player cannot be traded until he unlocks** `[2026]` — locked
+  because his game has already been played that week. He can be traded again
+  "after midnight Tuesday morning". The constitution names no time zone for
+  that midnight, so this is the one time the house rule of writing PT cannot
+  be met: quote it as written and say the zone is not stated. Writing PT, or
+  converting from ET, would be inventing the rule.
 - LM-reviewable and vetoable — reserved for collusion or clearly abnormal
   behaviour such as giving assets away for nothing, **not** for a subjectively
   lopsided deal. A vetoing LM may transfer a 4th-round pick as compensation.
+
+### Is this trade allowed?
+
+Whether a trade is allowed, and when it can go through, is answered here; what
+it is worth is `league-trade-evaluator`. Check every line that applies:
+
+- Both teams at or under the cap afterwards, with at least 1 dollar of space
+  per open roster spot. Dropping players as part of the trade is allowed.
+- At most one active franchise tag per team afterwards; a second must be
+  converted.
+- Picks only for the upcoming three seasons.
+- Something on both sides; a conditional pick counts.
+- No player locked this week until after midnight Tuesday morning.
+- Not collusion or a giveaway — the LMs review every trade and can veto.
+
+Dead money never moves with a trade, so there is nothing to check for it.
+
+**A locked player changes when, never whether.** A trade that includes one is
+the same trade on Tuesday: say when it can be processed, not that it is
+disallowed. A Thursday-night player waits most of the week; a Monday-night
+player only hours.
 
 **The thing owners underweight:** an incoming above-market contract is a
 liability regardless of the player's external trade value, because salary

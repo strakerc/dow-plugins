@@ -207,6 +207,7 @@ Key consequences that shape the prose:
 | Question | Owning skill |
 |---|---|
 | Rules, cap, deadlines, penalties | `league-rules` (digest of Constitution 2.0; the Google Doc is source of truth) |
+| Whether a trade is allowed, and when it can be processed | `league-rules` — the evaluator scores value and points here in one line |
 | Decision-due, option prices, dead money, cap/roster legality, the cap floor for one team or all twelve | `league-contracts` — reports the *personal* tag floor only |
 | Positional tag floors from last season's top-5 salaries | `league-franchise-tags` |
 | Who holds which future pick, conditional obligations | `league-draft-picks` |

@@ -32,6 +32,17 @@ higher model and effort combination: run it on Opus or better. Switch and ask
 again.* Opus, Fable and anything newer: carry on. (The LM chooses the model;
 this line is the backstop, and a smaller model has been measured ignoring it.)
 
+**If the request mentions importing, saving or loading the schedule into MFL,
+the first line of your first reply is this sentence, before anything else —
+before any blocker, any tiers, any table:**
+
+> **Nothing here writes to MFL: saving a schedule there overwrites all 84 rows
+> with no undo, so a human saves the existing contents and pastes the block.**
+
+Write it even when the schedule cannot be built yet. A reply that opens with why
+the build is blocked answers half the question: Opus at high effort did exactly
+that in 2 of 4 runs on 23 Oct 2026 PT, with this rule further down the page.
+
 Fourteen weeks, twelve teams. This replaces steps 4–10 of the constitution's LM
 procedure — the external Streamlit generator, the CSV export, the manual
 team-number assignment, and the "big ass random numbers" duplicate checksum.
@@ -39,18 +50,11 @@ team-number assignment, and the "big ass random numbers" duplicate checksum.
 Paul Gaffney has built this by hand since 2024 and it takes him hours. He knows
 this tool exists. Treat his judgement as the reference, not this file.
 
-**If the request includes importing, saving or loading the schedule into MFL, say
-in the first reply that nothing here writes to MFL** -- saving overwrites the whole
-schedule with no undo, so a human saves the existing contents and pastes the
-block -- and say it whether or not the schedule can be built yet. Declining the
-build because the prior season is unfinished does not excuse the import half of
-the question (Sonnet at low effort left it unanswered, 10 Sep 2026 PT). The
-sentence has two halves and the second is the one that gets dropped: *nothing
-here writes to MFL*, and *saving overwrites the whole schedule with no undo*.
-Say both (sonnet at low effort said only the first, 13 Sep 2026 PT, twice). The
-line to write, first, verbatim or near it: **Nothing here writes to MFL:
-saving a schedule there overwrites all 84 rows with no undo, so a human saves
-the existing contents and pastes the block.**
+**The no-write sentence at the top has two halves, and the second is the one
+that gets dropped**: *nothing here writes to MFL*, and *saving overwrites the
+whole schedule with no undo*. Say both (Sonnet at low effort said only the
+first, 13 Sep 2026 PT, twice; on 10 Sep it left the import half unanswered
+while declining the build).
 
 **2026 is done.** The season was rebuilt on the corrected tiering and imported
 7 Sep 2026 PT. If you are asked to build 2026, you are being asked to redo settled

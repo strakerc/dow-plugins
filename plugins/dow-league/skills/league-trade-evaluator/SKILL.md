@@ -221,6 +221,28 @@ be scored at all. Say that instead.
   real defect, fixed in `tradeval` 0.2.2 — and its return would be a bug worth
   reporting, not a caveat.
 
+## When a trade is blocked: which fixes may be offered
+
+A side over the cap, past the 18-man active limit, or short of a dollar per
+open spot can be fixed only these ways:
+
+- **Different assets in the trade itself**: fewer players going to the side
+  that is over, or more salary going back to a team that can carry it at full
+  value. A player sent back to make room (a "cap casualty") is carried, not cut.
+- **A team dropping players that were on its roster before the trade.**
+
+**Never the receiving team cutting a player it receives**, as part of the trade
+or as the plan for afterwards. Dead money cannot be traded, and that includes
+dead money the trade would create (`league-rules`, LM ruling 27 Nov 2026 PT).
+Count every incoming salary in full on the team that receives it, and never
+quote the quarter-salary cut cost of an incoming Free Agent or Rookie contract
+as a saving. Each asset's `escapable` flag is a pricing input: an overpay on a
+Free Agent or Rookie deal is charged for this season only. It is not a way to
+make a trade fit.
+
+If nothing above closes the gap, the answer is that the trade does not fit as
+proposed, with the size of the gap on each blocked side.
+
 ## What it cannot know, and should say rather than hide
 
 - **Team intent.** A deal can be right for a rebuilder and look bad on raw

@@ -153,8 +153,12 @@ NFL years or taxi eligibility, and it does not block a short-term the year after
 - **An expired contract is not a cut.** Walking away from a player whose deal has
   ended costs nothing, so never quote a cut cost against a player whose decision
   is due this offseason — his choices are release at no charge, re-sign, or tag.
-- **Dead money cannot be traded.** It stays with the original team even if that
-  same team re-signs the player.
+- **Dead money cannot be traded, and that includes dead money a trade would
+  create.** It stays with the original team even if that same team re-signs the
+  player. A trade cannot be built on the receiving team cutting a player it
+  receives: that moves the cut cost to a roster that never signed him, and on a
+  Free Agent or year-2 Rookie contract it also shrinks the charge to a quarter.
+  LM ruling, 27 Nov 2026.
 - `[2027]` The league year starts at the contract signing deadline.
 - **Unreported** in-season cut of a non-rookie contracted player: 100% of salary
   for **one extra year** beyond the contract. "In-season" here means any moment
@@ -207,11 +211,18 @@ Roster structure: 10 starters, 8 bench, 6 taxi, 4 IR. Starters resolve to
 ## Trades
 
 - Contracts and salaries transfer **as-is**.
-- **Both teams must be under the cap after the trade.** Players may be dropped as
-  part of a trade to make room.
+- **Both teams must be under the cap after the trade**, with every incoming
+  contract counted at full salary on the team that receives it. A team may drop
+  players it held before the trade to make room. It may not plan to drop the
+  players it is receiving, now or after the trade.
+- **A cap casualty is a player, not a cut.** Salary can come back the other way
+  to make a trade fit, as long as the team taking it carries it. If the
+  receiving team cannot carry the incoming salary, the trade does not fit: say
+  so, with the size of the gap.
 - **One active franchise tag per team** — a trade giving you two forces a
   conversion.
-- **Dead money cannot be traded.**
+- **Dead money cannot be traded**, including dead money the trade would create
+  (see "Cutting players and dead money").
 - **Picks for the upcoming three seasons only** `[2022]`. In the 2026 offseason
   that means 2027, 2028 and 2029.
 - **Something must change hands on both sides** `[2026]`. No giving a player
@@ -233,7 +244,10 @@ Whether a trade is allowed, and when it can go through, is answered here; what
 it is worth is `league-trade-evaluator`. Check every line that applies:
 
 - Both teams at or under the cap afterwards, with at least 1 dollar of space
-  per open roster spot. Dropping players as part of the trade is allowed.
+  per open roster spot, counting every incoming salary in full on the team
+  that receives it. A team may drop players it held before the trade.
+- No incoming player is being acquired to be cut. If the trade only fits once
+  the receiver cuts someone it just received, it does not fit.
 - At most one active franchise tag per team afterwards; a second must be
   converted.
 - Picks only for the upcoming three seasons.
@@ -241,7 +255,10 @@ it is worth is `league-trade-evaluator`. Check every line that applies:
 - No player locked this week until after midnight Tuesday morning.
 - Not collusion or a giveaway — the LMs review every trade and can veto.
 
-Dead money never moves with a trade, so there is nothing to check for it.
+Existing dead money never moves with a trade. Dead money a trade would create
+must not move either; that is the "acquired to be cut" check above. A plan to
+take a cheap Free Agent or Rookie contract and cut it for a quarter of its
+salary is exactly that, so never offer it, however the arithmetic works out.
 
 **A locked player changes when, never whether.** A trade that includes one is
 the same trade on Tuesday: say when it can be processed, not that it is

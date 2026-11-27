@@ -45,7 +45,13 @@ permissions:
 
 jobs:
   announce:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true }}
+    # A bot's pull request (Dependabot, from 27 Nov 2026 PT) has no "What
+    # will owners notice?" section a person could fill in, so it is "Nothing"
+    # to owners and is not announced on its merge; without this, every
+    # actions bump would be posted by its title. dow-workers does the same
+    # in tools/release-note.mjs (prBody). By hand (workflow_dispatch) still
+    # announces it, as a deliberate force.
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.user.type != 'Bot') }}
     runs-on: ubuntu-latest
     env:
       TRADEBOT_URL: https://tradebot.strakercarryer.workers.dev

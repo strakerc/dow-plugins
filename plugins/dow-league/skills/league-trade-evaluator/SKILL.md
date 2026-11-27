@@ -195,7 +195,11 @@ be scored at all. Say that instead.
   are internal plumbing. Say "Zef's 2027 4th", never the code.
 - **Always surface `legality`.** A trade that puts someone over the cap or past
   the 18-man active limit cannot be executed, however good it looks. `blocked`
-  is not advisory.
+  is not advisory. A blocked side can be fixed by changing the assets, or by
+  that team cutting players, its own or ones it receives in the trade, with
+  each cut priced on that team (`league-contracts`). Never offer a team's
+  existing dead money as something the other side can take on: dead money
+  cannot be traded (`league-rules`).
 - **Whether a trade is allowed, and when it can go through, is `league-rules`.**
   Score the trade as usual, then add one line when either applies, saying the
   rule itself rather than offering to look it up: one side gives nothing
@@ -220,36 +224,6 @@ be scored at all. Say that instead.
   valuation moved with the counterparty rather than measuring the asset — a
   real defect, fixed in `tradeval` 0.2.2 — and its return would be a bug worth
   reporting, not a caveat.
-
-## When a trade is blocked: which fixes may be offered
-
-A side over the cap, past the 18-man active limit, or short of a dollar per
-open spot can be fixed these ways:
-
-- **Different assets in the trade itself**: fewer players going to the side
-  that is over, or more salary going back to a team that can carry it at full
-  value. A player sent back to make room (a "cap casualty") is carried, not cut.
-- **A team dropping players that were on its roster before the trade.**
-- **A roster move that keeps the player**: an eligible player to IR (a quarter
-  of his salary against the cap) or an eligible rookie or sophomore to taxi
-  (clears an active spot, still full salary). Check eligibility in
-  `league-rules`; these are not cuts.
-
-A second franchise tag is fixed by converting one (`league-rules`); a side
-below a positional minimum is fixed by changing the assets. Neither is ever
-fixed by cutting a player the team receives.
-
-**Never the receiving team cutting a player it receives**, as part of the trade
-or as the plan for afterwards. Dead money cannot be traded, and that includes
-dead money the trade would create (`league-rules`, LM ruling 27 Nov 2026 PT).
-Count every incoming salary in full on the team that receives it, and never
-quote the quarter-salary cut cost of an incoming Free Agent or Rookie contract
-as a saving. Each asset's `escapable` flag is a pricing input: an overpay on a
-Free Agent or Rookie deal is charged for this season only. It is not a way to
-make a trade fit.
-
-If nothing above closes the gap, the answer is that the trade does not fit as
-proposed, with the size of the gap on each blocked side.
 
 ## What it cannot know, and should say rather than hide
 

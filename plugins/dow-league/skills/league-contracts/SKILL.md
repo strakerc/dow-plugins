@@ -120,10 +120,6 @@ was flagged as facing one. The pricing model is verified against real signings.
 | **Rookie between years 1 and 2** | **Nothing** |
 | Player who formally retires | Nothing |
 
-These are the costs of cutting a player already on the roster. They are never a
-reason to take a player in a trade: dead money cannot be traded, and that
-rules out acquiring a player in order to cut him (`league-rules`).
-
 **An expired contract is not a cut, and costs nothing to walk away from.** Never
 quote a cut cost against a player whose decision is due — his options are release
 at no charge, re-sign, or tag. Cut cost applies only to players still under

@@ -379,7 +379,15 @@ PT). Each shared mock names the worker and version it was last read against;
 the check reads the worker's version out of the sibling `../dow-workers` clone
 (from a linked worktree, the main checkout's sibling; `DOW_WORKERS_ROOT` to
 point elsewhere) and fails when it has moved. Moving the
-pin is the acknowledgement that someone re-read the mock. **A missing clone is a
+pin is the acknowledgement that someone re-read the mock. **From 27 Nov 2026
+PT a pin is per tool:** each mocked worker in `dow-workers` keeps
+`workers/<name>/tool-versions.json` (the version that last changed each
+tool, and the worker version it was reviewed at; its `npm test` fails a bump
+the table was not reviewed for), and the check fails a mock only when its
+own tool changed after its pin. Rehearsed the same day: a myfantasyleague
+bump that touched only `get_transactions` failed that one mock, where the
+old check failed all fifteen. A worker with no table, or a table not
+reviewed at the live version, falls back to the worker's version. **A missing clone is a
 failure, not a skip** -- Straker's rule, 13 Sep 2026 PT -- and only
 `DOW_ALLOW_MISSING_WORKERS=1` lets a push through, reported as `OVERRIDE`
 rather than `PASS`, with a `note:` line saying the bodies were NOT checked. The pins live outside `mocks/` on purpose: a pin

@@ -1,0 +1,20 @@
+# Dependabot keeps the GitHub Actions in gate.yml current (27 Nov 2026 PT,
+# Straker's call: "use the latest version of everything"). One grouped pull
+# request per week. This repo has no npm or pip dependencies to track.
+#
+# A merge here syncs the marketplace to every owner, but a workflow file is
+# outside plugins/ and changes no skill. A bot's pull request is never
+# announced in Discord (announce.yml, the job's `if`).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Los_Angeles
+    groups:
+      actions:
+        patterns: ["*"]
+    open-pull-requests-limit: 3

@@ -299,6 +299,51 @@ def worker_version(workers_root, worker):
             return m.group(1)
     return None
 
+# Per-tool pins (27 Nov 2026 PT, Straker's call). Each mocked worker in
+# dow-workers keeps workers/<name>/tool-versions.json: the version that last
+# changed each tool, and `reviewedAt`, the worker version it was checked at
+# (dow-workers' npm test fails a bump the table was not reviewed for). A pin
+# is stale only when its OWN tool changed after the version it was read
+# against, so a bump that touches one tool fails one mock, not every mock of
+# that worker (myfantasyleague 0.11.0 failed fifteen for one). A worker with
+# no table, or a table not reviewed at the live version, falls back to the
+# worker's version, as before.
+def semver(v):
+    return tuple(int(x) for x in v.split("."))
+
+@functools.lru_cache(maxsize=None)
+def tool_table(workers_root, worker):
+    path = os.path.join(workers_root, "workers", worker, "tool-versions.json")
+    if not os.path.isfile(path):
+        return None
+    try:
+        return json.loads(io.open(path, encoding="utf-8").read())
+    except ValueError:
+        return {"_unreadable": True}
+
+def pin_problem(label, tool, pin, workers_root, what):
+    """One pin against its worker: None when current, else the failure line."""
+    live = worker_version(workers_root, pin["worker"])
+    if live is None:
+        return f"{label}: no version found for worker {pin['worker']} under {workers_root}"
+    table = tool_table(workers_root, pin["worker"])
+    if table and not table.get("_unreadable") and table.get("reviewedAt") == live:
+        changed = (table.get("tools") or {}).get(tool)
+        if changed is None:
+            return (f"{label}: {pin['worker']}'s tool-versions.json has no entry for {tool} -- "
+                    f"add one in dow-workers, or re-read {what} against {live} and move the pin")
+        if semver(changed) > semver(pin["version"]):
+            return (f"{label}: pinned to {pin['worker']} {pin['version']}, and {tool} changed in {changed} -- "
+                    f"re-read {what} against the worker, then move the pin")
+        return None
+    if live != pin["version"]:
+        why = ("" if table is None else
+               " (its tool-versions.json does not parse)" if table.get("_unreadable") else
+               f" (its tool-versions.json was reviewed at {table.get('reviewedAt')}, not {live})")
+        return (f"{label}: pinned to {pin['worker']} {pin['version']}, the worker is now {live}{why} -- "
+                f"re-read {what} against the worker, then move the pin")
+    return None
+
 def check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin=None):
     """Returns (bad, note): the failures, and the override line when the clone
     is absent and the override is set."""
@@ -318,23 +363,17 @@ def check_mirrors(pins, workers_root, allow_missing, mock_names, schema_pin=None
             bad.append(msg)
         return bad, note
     for name, pin in sorted(pins.items()):
-        live = worker_version(workers_root, pin["worker"])
-        if live is None:
-            bad.append(f"{name}: no version found for worker {pin['worker']} under {workers_root}")
-        elif live != pin["version"]:
-            bad.append(f"{name}: pinned to {pin['worker']} {pin['version']}, the worker is now {live} -- "
-                       f"re-read the mock against the worker, then move the pin")
+        p = pin_problem(name, name, pin, workers_root, "the mock")
+        if p:
+            bad.append(p)
     # The argument schemas the mock server advertises (SCHEMAS in
     # mock_mcp_server.py) are a hand copy of the gateway's tools/list, pinned
     # the same way: a gateway bump fails here until someone re-reads them
     # (added 17 Sep 2026 PT; the copy itself dates from 14 Sep).
     if schema_pin:
-        live = worker_version(workers_root, schema_pin["worker"])
-        if live is None:
-            bad.append(f"schemas: no version found for worker {schema_pin['worker']} under {workers_root}")
-        elif live != schema_pin["version"]:
-            bad.append(f"schemas: SCHEMAS in mock_mcp_server.py pinned to {schema_pin['worker']} "
-                       f"{schema_pin['version']}, the worker is now {live} -- re-read tools/list, then move the pin")
+        p = pin_problem("schemas", "tools/list", schema_pin, workers_root, "SCHEMAS in mock_mcp_server.py (tools/list)")
+        if p:
+            bad.append(p)
     return bad, note
 
 def default_workers_root():
@@ -381,10 +420,30 @@ with tempfile.TemporaryDirectory() as fake:
                               {"worker": "tradeval", "version": "0.0.0"})
     _nodir, _ = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), False, _names)
     _over, _overnote = check_mirrors(_pins, os.path.join(fake, "no-such-dir"), True, _names)
+    # Per tool: a worker at 2.0.0 whose table says get_a last changed in 1.0.0,
+    # get_b in 2.0.0, and has no get_c. Pinned at 1.5.0: get_a is current,
+    # get_b is stale, get_c fails for want of an entry. The same table
+    # reviewed at 1.9.0 is ignored, and the worker version decides.
+    d = os.path.join(fake, "workers", "mflx", "src")
+    os.makedirs(d)
+    io.open(os.path.join(d, "worker.js"), "w", encoding="utf-8").write('const VERSION = "2.0.0";\n')
+    def _table(reviewed):
+        io.open(os.path.join(fake, "workers", "mflx", "tool-versions.json"), "w", encoding="utf-8").write(
+            json.dumps({"reviewedAt": reviewed, "tools": {"get_a": "1.0.0", "get_b": "2.0.0"}}))
+        tool_table.cache_clear()
+    _tp = {n: {"worker": "mflx", "version": "1.5.0"} for n in ("get_a", "get_b", "get_c")}
+    _table("2.0.0")
+    _per, _ = check_mirrors(_tp, fake, False, set(_tp))
+    _table("1.9.0")
+    _unrev, _ = check_mirrors(_tp, fake, False, set(_tp))
+    tool_table.cache_clear()
 control = (len(_moved) == 3 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
            and _moved[2].startswith("schemas:") and "9.9.9" in _moved[2]
            and len(_nodir) == 1 and not _over and _overnote is not None
-           and native_path("/c/x/y") in ("C:/x/y", "/c/x/y"))
+           and native_path("/c/x/y") in ("C:/x/y", "/c/x/y")
+           and len(_per) == 2 and _per[0].startswith("get_b:") and "changed in 2.0.0" in _per[0]
+           and _per[1].startswith("get_c:") and "no entry for get_c" in _per[1]
+           and len(_unrev) == 3 and all("reviewed at 1.9.0" in x for x in _unrev))
 report(f"all {len(mock_names)} shared mocks and the schema table pinned to a current worker version", bad, control, note=note)
 
 # --- 9b. every shared mock's role matches the gateway route it mirrors -------

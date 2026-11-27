@@ -7,59 +7,60 @@
   },
   "get_league": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_rosters": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_players": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_player_scores": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_free_agents": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_salary_adjustments": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_future_draft_picks": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_standings": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_transactions": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0",
+   "note": "re-read against myfantasyleague 0.11.0 on 27 Nov 2026 PT: the decoded 2026 pick carries `became`, written as the worker writes it against these mocks (the synthetic draft lists round 1 only), and the description names the field; the other myfantasyleague tools did not change in 0.11.0"
   },
   "get_matchups": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_draft_results": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_weekly_results": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_injuries": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_nfl_schedule": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   },
   "get_dynasty_rankings": {
    "worker": "fantasypros",
@@ -75,7 +76,7 @@
   },
   "get_player_values": {
    "worker": "dowgateway",
-   "version": "1.11.0",
+   "version": "1.12.1",
    "note": "re-read against dowgateway 1.11.0 on 22 Oct 2026 PT: gate 2.4.0 changes how a superseded key is refused and two admin routes; no tool, route, description or schema moved"
   },
   "list_channels": {
@@ -88,12 +89,12 @@
   },
   "get_points_allowed": {
    "worker": "myfantasyleague",
-   "version": "0.10.0"
+   "version": "0.11.0"
   }
  },
  "schemas": {
   "worker": "dowgateway",
-  "version": "1.11.0",
-  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; re-read against dowgateway 1.8.0 on 21 Sep 2026 PT: its one new tool, get_points_allowed, takes only `season` and is left on the open schema rather than staling every mocked case for one optional argument; re-read against 1.9.0 on 2 Oct 2026 PT: it adds only an admin route and an audit record on send_message, no change to ROUTES, any description or any schema; re-read against 1.10.0 the same day: one new tool, get_discord_audit, LM-only, used by no skill and mocked by no case, so the SCHEMAS table needs no row for it; move this pin only after re-reading it; re-read against 1.10.1 on 19 Oct 2026 PT: description only, evaluate_trade names the news.links tradeval 0.3.1 attaches to every player asset, no schema moved, and the mock's description carries the same sentences; re-read against 1.11.0 on 22 Oct 2026 PT: key revocation and admin routes only, no change to ROUTES, any description or any schema"
+  "version": "1.12.1",
+  "note": "SCHEMAS in validation/evals/mock_mcp_server.py, copied from the live tools/list 14 Sep 2026 PT; re-read against dowgateway 1.8.0 on 21 Sep 2026 PT: its one new tool, get_points_allowed, takes only `season` and is left on the open schema rather than staling every mocked case for one optional argument; re-read against 1.9.0 on 2 Oct 2026 PT: it adds only an admin route and an audit record on send_message, no change to ROUTES, any description or any schema; re-read against 1.10.0 the same day: one new tool, get_discord_audit, LM-only, used by no skill and mocked by no case, so the SCHEMAS table needs no row for it; move this pin only after re-reading it; re-read against 1.10.1 on 19 Oct 2026 PT: description only, evaluate_trade names the news.links tradeval 0.3.1 attaches to every player asset, no schema moved, and the mock's description carries the same sentences; re-read against 1.11.0 on 22 Oct 2026 PT: key revocation and admin routes only, no change to ROUTES, any description or any schema; re-read against 1.12.1 on 27 Nov 2026 PT: 1.12.0 adds backfill_trade_roast, LM-only with no mock, and 1.12.1 changes only get_transactions' description, so no schema here moves"
  }
 }

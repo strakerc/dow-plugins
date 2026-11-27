@@ -1,5 +1,5 @@
 ---
-description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Every trade row also carries `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` (myfantasyleague 0.9.0): the same assets with every pick code already decoded to words — read those and never print a raw code; they are absent only when the league export failed, and `decodeUnavailable` then says why. Raw payload for the dow-league skills, not an answer for an owner (player ids, pick codes, epoch timestamps). Invoke the `league-trade-history` skill BEFORE calling this; it decodes all three and prints Pacific times. Synthetic.
+description: Transactions for a season; filter with transaction_type=TRADE. Sides carry player ids and pick codes (FP_ future, DP_ zero-based current draft). Every trade row also carries `franchise1_gave_up_decoded` and `franchise2_gave_up_decoded` (myfantasyleague 0.9.0): the same assets with every pick code already decoded to words — read those and never print a raw code; they are absent only when the league export failed, and `decodeUnavailable` then says why. A decoded pick whose draft has happened also carries `became` (myfantasyleague 0.11.0): the slot and the player taken with it, or that the slot could not be worked out; use it rather than tracing a pick through get_draft_results. Raw payload for the dow-league skills, not an answer for an owner (player ids, pick codes, epoch timestamps). Invoke the `league-trade-history` skill BEFORE calling this; it decodes all three and prints Pacific times. Synthetic.
 ---
 {
  "transactions": {
@@ -17,7 +17,7 @@ description: Transactions for a season; filter with transaction_type=TRADE. Side
     ],
     "franchise2_gave_up_decoded": [
      {"kind": "player", "id": "20005"},
-     {"kind": "pick", "label": "2026 rookie pick 2.04"}
+     {"kind": "pick", "label": "2026 rookie pick 2.04", "became": "2026 rookie pick 2.04, which MFL's 2026 draft does not list"}
     ],
     "comments": ""
    },

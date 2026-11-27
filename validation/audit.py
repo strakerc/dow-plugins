@@ -308,6 +308,12 @@ def worker_version(workers_root, worker):
 # that worker (myfantasyleague 0.11.0 failed fifteen for one). A worker with
 # no table, or a table not reviewed at the live version, falls back to the
 # worker's version, as before.
+# Known gap, the same as the per-worker pin's: a mock pinned to a backend
+# never sees the gateway reshape that tool on its way through. Today the
+# gateway forwards backend bodies as they are, so the gap is empty; a
+# gateway that starts reshaping one should list it in its own table and
+# pin the mock to dowgateway.
+SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 def semver(v):
     return tuple(int(x) for x in v.split("."))
 
@@ -332,6 +338,10 @@ def pin_problem(label, tool, pin, workers_root, what):
         if changed is None:
             return (f"{label}: {pin['worker']}'s tool-versions.json has no entry for {tool} -- "
                     f"add one in dow-workers, or re-read {what} against {live} and move the pin")
+        if not (isinstance(changed, str) and SEMVER_RE.match(changed)):
+            return f"{label}: {pin['worker']}'s tool-versions.json gives {tool} as {changed!r}, not x.y.z"
+        if not (isinstance(pin.get("version"), str) and SEMVER_RE.match(pin["version"])):
+            return f"{label}: pinned to {pin.get('version')!r}, not x.y.z"
         if semver(changed) > semver(pin["version"]):
             return (f"{label}: pinned to {pin['worker']} {pin['version']}, and {tool} changed in {changed} -- "
                     f"re-read {what} against the worker, then move the pin")
@@ -436,6 +446,10 @@ with tempfile.TemporaryDirectory() as fake:
     _per, _ = check_mirrors(_tp, fake, False, set(_tp))
     _table("1.9.0")
     _unrev, _ = check_mirrors(_tp, fake, False, set(_tp))
+    io.open(os.path.join(fake, "workers", "mflx", "tool-versions.json"), "w", encoding="utf-8").write(
+        json.dumps({"reviewedAt": "2.0.0", "tools": {"get_a": "latest"}}))
+    tool_table.cache_clear()
+    _malformed, _ = check_mirrors({"get_a": {"worker": "mflx", "version": "1.5.0"}}, fake, False, {"get_a"})
     tool_table.cache_clear()
 control = (len(_moved) == 3 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
            and _moved[2].startswith("schemas:") and "9.9.9" in _moved[2]
@@ -443,7 +457,8 @@ control = (len(_moved) == 3 and "9.9.9" in _moved[0] and "8.8.8" in _moved[1]
            and native_path("/c/x/y") in ("C:/x/y", "/c/x/y")
            and len(_per) == 2 and _per[0].startswith("get_b:") and "changed in 2.0.0" in _per[0]
            and _per[1].startswith("get_c:") and "no entry for get_c" in _per[1]
-           and len(_unrev) == 3 and all("reviewed at 1.9.0" in x for x in _unrev))
+           and len(_unrev) == 3 and all("reviewed at 1.9.0" in x for x in _unrev)
+           and len(_malformed) == 1 and "not x.y.z" in _malformed[0])
 report(f"all {len(mock_names)} shared mocks and the schema table pinned to a current worker version", bad, control, note=note)
 
 # --- 9b. every shared mock's role matches the gateway route it mirrors -------

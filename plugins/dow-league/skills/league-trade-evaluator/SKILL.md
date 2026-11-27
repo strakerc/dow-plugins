@@ -195,7 +195,11 @@ be scored at all. Say that instead.
   are internal plumbing. Say "Zef's 2027 4th", never the code.
 - **Always surface `legality`.** A trade that puts someone over the cap or past
   the 18-man active limit cannot be executed, however good it looks. `blocked`
-  is not advisory.
+  is not advisory. A blocked side can be fixed by changing the assets, or by
+  that team cutting players, its own or ones it receives in the trade, with
+  each cut priced on that team (`league-contracts`). Never offer a team's
+  existing dead money as something the other side can take on: dead money
+  cannot be traded (`league-rules`).
 - **Whether a trade is allowed, and when it can go through, is `league-rules`.**
   Score the trade as usual, then add one line when either applies, saying the
   rule itself rather than offering to look it up: one side gives nothing

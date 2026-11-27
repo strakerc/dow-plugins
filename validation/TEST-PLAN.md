@@ -144,14 +144,14 @@ and reports `Unknown tool` the way the real one does.
 
 ## Stage 5 — the skill evals (costs money)
 
-Forty-six cases under `validation/evals/`, in the layout `claude plugin eval`
+Forty-seven cases under `validation/evals/`, in the layout `claude plugin eval`
 documents: `<case>/prompt.md`, `<case>/graders/*.md`, `mocks/dow/<tool>.md`.
 They are run today by `validation/evals/run_headless.py`, which drives
 `claude -p` with the plugin loaded from the working tree and a synthetic
 gateway as the only MCP server. See `validation/evals/README.md` for the
 mechanics and the synthetic league.
 
-**Gate set** (`--evals`, 37 cases, tagged `gate`): at least one behavioural
+**Gate set** (`--evals`, 38 cases, tagged `gate`): at least one behavioural
 case for every skill, the footer, and every case where a wrong answer costs
 the league something. This is what the pre-push hook runs.
 **Full set** (`--full`, all 41): everything below.
@@ -181,7 +181,7 @@ newer model the old passes read as stale and rerun.
 | Skill | Cases | What is asserted |
 |---|---|---|
 | all fifteen (the footer) | `no-connector-roster` ⚑, `no-connector-picks` ⚑, `no-connector-contracts` | With no MCP server at all: names the connector, gives the fix, invents nothing |
-| `league-rules` | `rules-dead-money` ⚑, `rules-rookie-scale` ⚑, `rules-short-term-price` ⚑ (the dollar-digit canary), `rules-cap-ir` ⚑, `rules-tag-consecutive`, `rules-ir-exempt`, `rules-shortened-season`, `rules-nfl-free-agent` ⚑, `rules-trade-giveaway` ⚑, `rules-trade-locked` ⚑ | The digest's numbers survive loading; the undefined 1–5 game band is called undefined; a player with no NFL team is signable in-season and in the auction, and the 2026 note reads as a fixed bug, not a new rule; a trade with nothing on one side is refused, a conditional pick counting; a locked player delays a trade until after midnight Tuesday and never cancels it, with no time zone invented |
+| `league-rules` | `rules-dead-money` ⚑, `rules-rookie-scale` ⚑, `rules-short-term-price` ⚑ (the dollar-digit canary), `rules-cap-ir` ⚑, `rules-tag-consecutive`, `rules-ir-exempt`, `rules-shortened-season`, `rules-nfl-free-agent` ⚑, `rules-trade-giveaway` ⚑, `rules-trade-locked` ⚑, `rules-dead-money-trade` ⚑ | The digest's numbers survive loading; the undefined 1–5 game band is called undefined; a player with no NFL team is signable in-season and in the auction, and the 2026 note reads as a fixed bug, not a new rule; a trade with nothing on one side is refused, a conditional pick counting; a locked player delays a trade until after midnight Tuesday and never cancels it, with no time zone invented; another team's existing dead money cannot be taken on in a trade, but a player received in one may be cut, the cut priced on the team that makes it (LM ruling, 27 Nov 2026 PT) |
 | `league-contracts` | `contracts-expiring` ⚑, `contracts-floor-self` ⚑, `contracts-floor-league` ⚑, `contracts-floor-in-season` ⚑ | Expiring players named, the short-term dead end shown, release free, no ids; the cap floor for one owner (IR in full, dead money in) and for all twelve (exactly the two teams short, not the two carried over by IR or dead money); mid-season the floor is called out of force, not violated |
 | `league-draft-picks` | `picks-holdings` ⚑ | Origin named for an acquired pick, no `FP_` codes, the conditional raised |
 | `league-franchise-tags` | `tags-price-brandt` ⚑ | The positional floor binds (24 over a personal 23), the binding branch is named and flagged as unusual, the five contracts behind the average are shown with owners, eligibility confirmed |

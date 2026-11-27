@@ -154,7 +154,11 @@ NFL years or taxi eligibility, and it does not block a short-term the year after
   ended costs nothing, so never quote a cut cost against a player whose decision
   is due this offseason — his choices are release at no charge, re-sign, or tag.
 - **Dead money cannot be traded.** It stays with the original team even if that
-  same team re-signs the player.
+  same team re-signs the player. No trade can take on another team's dead
+  money, so never offer "his dead money" or "his dead salary" as part of a
+  deal. Cutting a player is different: a team may cut any player it holds,
+  including one it just received in a trade, and the dead money from that cut
+  is its own. LM ruling, 27 Nov 2026 PT.
 - `[2027]` The league year starts at the contract signing deadline.
 - **Unreported** in-season cut of a non-rookie contracted player: 100% of salary
   for **one extra year** beyond the contract. "In-season" here means any moment
@@ -208,10 +212,12 @@ Roster structure: 10 starters, 8 bench, 6 taxi, 4 IR. Starters resolve to
 
 - Contracts and salaries transfer **as-is**.
 - **Both teams must be under the cap after the trade.** Players may be dropped as
-  part of a trade to make room.
+  part of a trade to make room, including players received in it; the team that
+  drops a player books his cut cost.
 - **One active franchise tag per team** — a trade giving you two forces a
   conversion.
-- **Dead money cannot be traded.**
+- **Dead money cannot be traded.** Salary adjustments already on a team's books
+  never move in a trade, whatever is offered for them.
 - **Picks for the upcoming three seasons only** `[2022]`. In the 2026 offseason
   that means 2027, 2028 and 2029.
 - **Something must change hands on both sides** `[2026]`. No giving a player
@@ -241,7 +247,9 @@ it is worth is `league-trade-evaluator`. Check every line that applies:
 - No player locked this week until after midnight Tuesday morning.
 - Not collusion or a giveaway — the LMs review every trade and can veto.
 
-Dead money never moves with a trade, so there is nothing to check for it.
+Existing dead money never moves with a trade, so there is nothing to check for
+it, and a trade cannot be built on taking it on. A cut made as part of the
+trade is priced on the team that makes it.
 
 **A locked player changes when, never whether.** A trade that includes one is
 the same trade on Tuesday: say when it can be processed, not that it is

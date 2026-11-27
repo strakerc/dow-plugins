@@ -156,9 +156,9 @@ NFL years or taxi eligibility, and it does not block a short-term the year after
 - **Dead money cannot be traded, and that includes dead money a trade would
   create.** It stays with the original team even if that same team re-signs the
   player. A trade cannot be built on the receiving team cutting a player it
-  receives: that moves the cut cost to a roster that never signed him, and on a
-  Free Agent or year-2 Rookie contract it also shrinks the charge to a quarter.
-  LM ruling, 27 Nov 2026.
+  receives: the team that signed him sheds his contract without booking any
+  cut, and the cut lands on a roster that never signed him. LM ruling, 27 Nov
+  2026 PT.
 - `[2027]` The league year starts at the contract signing deadline.
 - **Unreported** in-season cut of a non-rookie contracted player: 100% of salary
   for **one extra year** beyond the contract. "In-season" here means any moment

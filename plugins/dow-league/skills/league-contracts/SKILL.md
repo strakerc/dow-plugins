@@ -93,6 +93,9 @@ week-22 snapshot with everything intact.
 | **Short-Term**, after its first season | Release · **two-year extension** (+10, then +5 more: a short-term at 22 extends at 32, then 37) · Franchise tag. **A second short-term is not legal.** |
 | **Franchise Tag** | Release · Long-term · Extension. Short-term only if he was *not* on a short-term before the tag. **Never tagged two years running.** |
 
+Owners still use the old names: short-term was formerly "Option A", long-term
+"Option B".
+
 **The extension's first year is previous + 10, never + 5.** A short-term at 22
 extends at 32, then 37; writing 27 is the plain short-term price, which is the one
 option a short-term cannot take again.

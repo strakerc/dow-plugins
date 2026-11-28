@@ -964,7 +964,12 @@ def resolve_model_id(claude, model, effort=None):
                            text=True, encoding="utf-8", timeout=120)
         out = json.loads(p.stdout)
         usage = out.get("modelUsage") or {}
-        return next(iter(usage)) if usage else None
+        # The CLI may make a side call on another model (haiku, measured 27 Nov
+        # 2026 PT on CLI 2.1.332) and list it first; the answering model is the
+        # one whose id names the alias. An alias that is already a full id
+        # matches itself.
+        named = [k for k in usage if model.lower() in k.lower()]
+        return named[0] if named else (next(iter(usage)) if usage else None)
     except Exception:
         return None
 

@@ -66,7 +66,9 @@ and the wrong version shipped an entire season's schedule before anyone noticed.
 
 **The IR asymmetry catches people:** 25% against the cap, 100% against the floor.
 Cutting an IR player also costs 100% of the remaining contract, not 25% — the cap
-relief does not follow him out the door.
+relief does not follow him out the door. For an injured rookie, IR is cheaper
+than taxi against the cap (25% vs 100%), though 100% is what counts toward the
+floor.
 
 Effective cap = $375 − salary adjustments (dead money). Never quote cap space
 without checking `get_salary_adjustments`. `get_league`'s
@@ -78,7 +80,11 @@ dropped, and an LM adds the remaining **75%** by hand as a *second* row. The two
 together make the 100% the constitution requires. So one cut appears as two
 entries, and a cut the LM has not finished processing shows only a quarter of its
 real charge. Sum every row for a franchise, and flag a lone 25% row as "LM entry
-still outstanding" rather than quoting the smaller number as fact.
+still outstanding" rather than quoting the smaller number as fact. **Exception:**
+a 25% row on a contract that had already expired, from the offseason cuts, owes
+nothing, and the LMs delete it once the cuts are done. Until they do, MFL
+still counts it against the cap and the auction balance, so give both figures:
+what MFL charges now, and what the team has once the row is cleared.
 
 ---
 
@@ -95,6 +101,9 @@ player's previous salary.
 | **Rookie** | 2 years | by draft slot, see below |
 | **Free Agent** | 1 year | auction/waiver price, expires end of season |
 | **Franchise tag** | 1 year | see below |
+
+Owners still use the old names: short-term was formerly **"Option A"**, and
+long-term was formerly **"Option B"**.
 
 `[2026, effective 2028]` A short-term extension signed 2028 or later has year 2
 at **+10**, not +5 — so the first year anyone actually pays it is **2030**.
@@ -139,7 +148,8 @@ NFL years or taxi eligibility, and it does not block a short-term the year after
 - Freezes contract progression: a player tagged after year 1 can later be signed
   short-term or long-term off the **pre-tag** salary.
 - Convertible mid-year to a valid short-term, extension, or long-term,
-  retroactive to the start of the year. A player who was on a short-term before
+  retroactive to the start of the year, and the salary change hits the
+  **current owner's** cap going forward. A player who was on a short-term before
   the tag cannot get another short-term — only long-term or the extension.
 
 ---
@@ -204,7 +214,10 @@ you've bought him and used the spot.
 Taxi and IR count toward them.
 
 Roster structure: 10 starters, 8 bench, 6 taxi, 4 IR. Starters resolve to
-1 QB, 2 RB, 3 WR, 1 TE, 2 FLEX, 1 SUPERFLEX.
+1 QB, 2 RB, 3 WR, 1 TE, 2 FLEX, 1 SUPERFLEX. MFL enforces them as position
+min/max: **QB 1–2, RB 2–5, WR 3–6, TE 1–4**, total always 10. Those are the
+bounds as of 2026; the `starters` block in `get_league` is the live
+authority, and `league-lineup` reads it every run.
 
 ---
 
@@ -232,6 +245,11 @@ Roster structure: 10 starters, 8 bench, 6 taxi, 4 IR. Starters resolve to
 - LM-reviewable and vetoable — reserved for collusion or clearly abnormal
   behaviour such as giving assets away for nothing, **not** for a subjectively
   lopsided deal. A vetoing LM may transfer a 4th-round pick as compensation.
+  *Precedent* (2019): paying a draft pick for a player you then immediately
+  cut was ruled giving a pick away for nothing. The fault is the giveaway, not
+  the cut: a team may still cut any player it holds, including one it just
+  received in a trade. What makes a trade vetoable is a side that gets nothing
+  of value back for what it gives up.
 
 ### Is this trade allowed?
 
@@ -321,6 +339,12 @@ agent can be bid on in the auction like anyone else.
 **Consequence worth stating:** unspent auction capital is in-season buying power.
 Leaving the auction with money is a position, not a failure.
 
+**Game-day bye announcements** (a COVID-era rule, still on the books). If a bye
+is announced on Sunday game day and you have no un-started substitute, you may
+announce in the Discord `#covid-conditions` channel a swap to a player who is
+already locked and playing, provided that player **has not played more than one
+quarter** and **has not scored more than 5 fantasy points** at the time you post.
+
 ---
 
 ## Standings, playoffs, draft order
@@ -339,7 +363,8 @@ rule from memory: the wrong version once shipped a whole season.
 **Next year's rookie draft order:** non-playoff teams in reverse regular-season
 standings (H2H record, then points for — lowest points picks first among equal
 records); playoff teams by finish. **Exception:** first-round playoff losers take
-**#7** (lower seed) and **#8** (higher seed).
+**#7** (lower seed) and **#8** (higher seed); if their records match, the same
+seeding tiebreaker (total points for) decides which is the lower seed.
 
 **Scoring:** passing TD 4, 25 yds 1, INT −1; rushing TD 6, 10 yds 1; receiving
 TD 6, 10 yds 1, **reception 0.5**; 40+ yard TD bonus 1 on passing, rushing and
@@ -349,11 +374,12 @@ receiving TDs alike; fumble −1 and fumble lost
 **Tanking** — triggered by fielding an incomplete roster, starting inactive
 players, or `[2026]` missing the cap floor. Penalties: docked draft
 compensation (moved last in a round, or losing your latest pick; floor
-violations can apply across several rounds), applied only to a team's **own**
-picks. Match outcomes can be reversed where a winning lineup was available, with
-2+ LMs agreeing. `[2025]` Precedent for not setting a roster: lose your latest
-pick next year, stacking, at most one warning per owner per year — and LMs
-retroactively correct the lineup so points-for stays accurate, which can flip a
+violations can apply across multiple or all rounds), applied only to a team's
+**own** picks. Match outcomes can be reversed where a winning lineup was
+available, with 2+ LMs agreeing — best decided before final results are known
+when multiple substitutes were available. `[2025]` Precedent for not setting a
+roster: lose your latest pick next year, stacking, at most one warning per
+owner per year — and LMs retroactively correct the lineup so points-for stays accurate, which can flip a
 game.
 
 ---
@@ -372,17 +398,22 @@ game.
 | 2nd place | 750 |
 | **1st place** | **1,180** (1,160 without the discount) |
 
-The rolling pot held **$925** entering 2026. Pat is treasurer.
+The rolling pot held **$925** entering 2026. Pat is treasurer, collecting dues
+before the FA draft and paying out after league end.
 
 ---
 
 ## Rule changes
 
 Explicitly **not a democracy** — a coregency of three equal LMs (Straker, Mike,
-Pat). `[2025]` Every proposal gets a **minimum 14-day** public comment and vote in
+Pat) — an odd number by design, so disputes are settled by majority vote.
+`[2025]` Every proposal gets a **minimum 14-day** public comment and vote in
 Discord. A majority of players (**≥7**) settles it; absent a majority the LMs
 vote. One active vote at a time is recommended. Passed changes go into the
 constitution with a `[YEAR]` tag.
+
+Rules normally change between seasons; in-season changes are reserved for
+things not working as intended (usually tanking rules or add/drop mechanics).
 
 ---
 

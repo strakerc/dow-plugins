@@ -106,6 +106,8 @@ efforts answered yes from #3 alone (14 Sep 2026 PT), which is the wrong answer t
 the question owners actually ask. Plus, from the constitution:
 
 - **One active tag per team.** A trade creating a second forces a conversion.
+  A tag converted mid-year applies retroactively to the start of the year, and
+  the salary change hits the current owner's cap going forward.
 - A player on a **short-term** contract before the tag cannot take another short-term
   afterward — only long-term or an extension.
 - A tag **freezes contract progression**: a player tagged after year 1 of a short-term can

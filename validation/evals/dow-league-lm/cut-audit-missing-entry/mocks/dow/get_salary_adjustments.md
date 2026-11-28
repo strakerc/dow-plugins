@@ -8,6 +8,8 @@ description: Dead money rows per franchise: MFL's automatic 25% on a drop plus t
     "description": "Dropped Quint, Ozzie DEN RB (Salary: $16, Type of Contract: Long-Term, Year: 2, Signed Through: 2026)"},
    {"id": "42", "franchise_id": "0001", "amount": "12.00", "timestamp": "1755636500",
     "description": "For Ozzie Quint through 2026"},
+   {"id": "58", "franchise_id": "0007", "amount": "3.50", "timestamp": "1787900000",
+    "description": "Dropped Rook, Abel GB WR (Salary: $14, Type of Contract: Short-Term, Year: 1, Signed Through: 2025)"},
    {"id": "51", "franchise_id": "0006", "amount": "3.00", "timestamp": "1788485140",
     "description": "Dropped Arden, Colt CHI TE (Salary: $12, Type of Contract: Short-Term, Year: 1, Signed Through: 2026)"},
    {"id": "52", "franchise_id": "0006", "amount": "9.00", "timestamp": "1788485700",

@@ -83,11 +83,26 @@ Extension`, `Long-Term`, `Franchise Tag`. Treat every variant as guaranteed. A
 Free Agent or Rookie row's 25% is its whole charge: it needs no LM row and is not
 listed as a finding.
 
+**Offseason cuts of expired contracts: the 25% row is cleared, not completed.**
+Players not re-signed between seasons are cut, and owners should make their own
+cuts so MFL resets the Free Agent contract info. MFL still writes its blanket
+25% row on each one, but an expired contract owes nothing, so the LMs delete
+that row by hand once the cuts are done. A `Dropped` row is an expired
+contract when its `Signed Through` is earlier than the season the row is dated
+in, **whatever its contract type**, Free Agent and Rookie included. It is
+**not a guaranteed cut** for anything below: never Missing, never given a 75%
+entry, never put through the report check, and never the reason to read
+Discord. List it under **Rows to clear**, with its amount. A player still
+under contract who is cut in the offseason is an ordinary guaranteed cut —
+reported within 24 hours, and the LM adds the remaining 75% — and is paired
+below like any other.
+
 **Drops with no MFL row owed nothing.** Measured 24 Sep 2026 PT against every
-drop of the 2026 cut deadline on three teams: each one without a row was a
-contract that had already ended or a rookie between years 1 and 2, both free. So
-the adjustments list is the complete record of the cuts that cost money, and the
-transactions feed is not needed.
+drop of the 2026 cut deadline on three teams, after the LMs had cleared the
+expired rows: each one without a row was a contract that had already ended or
+a rookie between years 1 and 2, both free. So once the expired rows are
+cleared, the adjustments list is the complete record of the cuts that cost
+money, and the transactions feed is not needed.
 
 ## Pairing each guaranteed cut with its LM row
 
@@ -182,7 +197,9 @@ reported."
    as plain numbers with two decimals.
    Missing rows, wrong amounts, possible partial entries and carry-forward
    gaps all go here; last season's gaps go in a second table under "Last
-   season".
+   season". **Rows to clear** — the 25% rows on expired contracts — go in
+   their own table after it: Team (owner) | Player | Contract | Signed Through
+   | Cut (PT) | Amount to delete.
 2. **Reporting**, one line per guaranteed cut this season: reported where and
    when, or no report found and what that means for the "through" year.
 3. **Complete**, one line: how many guaranteed cuts matched, by name.
@@ -203,6 +220,9 @@ If the LM asked for the entries to be made, the no-write sentence comes first.
   That holds when the short row names nobody too: an unpaired LM row on the same
   team is a possible partial entry until the LM says otherwise.
 - **Being in this season's list does not make a cut this season's.** Date it.
+- **A lone 25% row on an expired contract is the opposite of a missing entry.**
+  Telling the LM to add 75% would charge a player who owed nothing; the row is
+  to be deleted.
 - **Never re-derive the unreported rule from memory.** `league-rules` has it,
   with its window; quote it.
 
